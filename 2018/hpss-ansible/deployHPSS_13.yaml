@@ -1,0 +1,73 @@
+---
+### SECTIOn 13 ###
+
+# hostname variable: set hosts in masterDeploy.yaml
+- hosts: "{{ hostname }}"
+  tasks:
+
+# Configure HPSS using mkhpss
+
+# Save off the original security files for security preconfig setup
+  - name: mkhpss save original security files 1/3
+    copy:
+      src: /etc/passwd
+      dest: /etc/passwd-Orig
+#    command: cp -p /etc/passwd /etc/passwd-Orig
+
+  - name: mkhpss save original security files 2/3
+    copy:
+      src: /etc/group
+      dest: /etc/group-Orig
+#    command: cp -p /etc/group /etc/group-Orig
+
+  - name: mkhpss save original security files 3/3
+    copy:
+      src: /etc/shadow
+      dest: /etc/shadow-Orig
+#    command: cp -p /etc/shadow /etc/shadow-Orig
+
+# In case of reinstall or repeat mkhpss run, restore the original security files
+#  - name: mkhpss restore original security files
+#    copy:
+#      src: /etc/passwd-Orig
+#      dest: /etc/passwd
+##    command: cp -p /etc/passwd-Orig /etc/passwd
+#
+#  - name: mkhpss restore original security files
+#    copy:
+#      src: /etc/group-Orig
+#      dest: /etc/group
+##    command: cp -p /etc/group-Orig /etc/group
+#
+#  - name: mkhpss restore original security files
+#    copy:
+#      src: /etc/shadow-Orig
+#      dest: /etc/shadow
+##    command: cp -p /etc/shadow-Orig /etc/shadow
+
+# Disable security settings
+  - name: authconfig test initial
+    command: authconfig --test
+
+  - name: disable nis
+    command: authconfig --disablenis --update
+
+  - name: disable ldap
+    command: authconfig --disableldap --update
+
+  - name: disable krb5
+    command: authconfig --disablekrb5 --update
+
+  - name: authconfig test final
+    command: authconfig --test
+
+# Run the mkhpss GUI tool
+#  - name: mkhpss GUI folder
+#    command: cd /opt/hpss/bin
+
+#  - name: mkhpss display
+#    command: export DISPLAY=<session_hostname>:0.0
+
+#  - name: mkhpss run
+#    command: ./mkhpss
+

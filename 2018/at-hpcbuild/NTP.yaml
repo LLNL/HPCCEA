@@ -1,0 +1,21 @@
+---
+- hosts: nodes
+  tasks:
+    - name: install ntp
+      yum:
+        name: ntp,ntpdate
+        state: present
+
+    - name: enable ntp
+      systemd:
+        name: ntp
+        state: enabled
+
+    - name: start ntp
+      systemd:
+        name: ntp
+        state: started
+
+    - name: fix date
+      command: ntpq -c pe
+

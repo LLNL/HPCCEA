@@ -1,0 +1,100 @@
+---
+- hosts: cbuild
+  tasks:
+  - name: Install dependencies
+    yum:
+      name: wget,rpm-build,bzip2-devel,perl-ExtUtils-MakeMaker,perl-Switch,openssl,openssl-devel,pam-devel,readline-devel
+      state: present
+
+  - name: install rpms
+    get_url:
+      url: https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz 
+      dest: /root 
+
+  - name: download rpms
+    get_url:
+      url: https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+      dest: /root
+
+  - name: rpmbuild
+    command: rpmbuild -ta munge-0.5.12.tar.xz
+
+#  - name: rpm
+#    command: rpm -ivh rpmbuild/RPMS/x86_64/munge-*
+
+  - name: rpmbuild
+    command: rpmbuild -ta slurm-17.02.11.tar.bz2
+
+#  - name: rpm
+#    command: rpm -ivh rpmbuild/RPMS/x86_64/slurm-*
+
+  - name: useradd
+    command: useradd -r -s /sbin/nologin slurm
+
+  - name: mkdir
+    file:
+      path=/var/spool/slurm
+      state=directory
+
+  - name: chown
+    file:
+      path: /var/spool/slurm
+      owner: slurm
+      group: slurm
+
+  - name: enable
+    systemd:
+      name: munge
+      enabled: yes 
+
+  - name: start
+    systemd:
+      name: munge
+      state: started
+  
+  - name: mkdir 
+    file: 
+      path=/var/log/slurm
+      state=directory
+ 
+  - name: owner permissions
+    file:
+      path: /var/log/slurm
+      owner: slurm
+      group: slurm
+  
+- hosts: management
+  tasks:
+  - include_tasks: slurmManagementPart.yml
+
+- hosts: cbuild
+  tasks:
+  - name: enable slurmd on compute nodes
+    systemd:
+      name: slurmd
+      enabled: yes
+
+  - name: start slurmd on compute node
+    systemd: 
+      name: slurmd
+      state: started
+
+  - name: check sinfo
+    command: sinfo
+  
+  - name: check hostname
+    command: srun hostname
+
+  - name: stop firewalld
+    systemd:
+      name: firewalld
+      state: stopped
+ 
+  - name: iptables
+    command: iptables -F
+    
+  - name: disable firewalld
+    systemd:
+      name: firewalld
+      enabled: False
+...

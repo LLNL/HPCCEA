@@ -1,0 +1,324 @@
+--- 
+- hosts: nodes,management
+  tasks:
+    - name: install epel-release
+      yum:
+        name: epel-release
+        state: present
+
+    - name: install network tools
+      yum:
+        name: net-tools
+        state: present
+
+    - name: install openMPI
+      yum:
+        name: openmpi,openmpi-devel
+        state: present
+
+- hosts: management
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/boroninfiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network 
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd: 
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node4
+  tasks:
+    - name: network scripts config file
+      copy: 
+        src: /ansible/files/node4infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes 
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node5
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/node5infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node6
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/node6infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node7
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/node7infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node8
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/node8infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node9
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/node9infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node10
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/node10infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+- hosts: node11
+  tasks:
+    - name: network scripts config file
+      copy:
+        src: /ansible/files/node11infiniband.conf
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        backup: yes
+
+    - name: turn on infiniband network
+      command: ifdown ib0
+      command: ifup ib0
+      command: ip a
+
+    - name: enable opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: enabled
+
+# verify openMPI
+# ls /usr/lib64/openmpi/bin/mpicc
+# which mpicc
+
+    - name: append PATH variable
+      blockinfile:
+        path: /etc/profile.d/mpi.sh
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+

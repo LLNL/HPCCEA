@@ -1,0 +1,12 @@
+---
+# required stuff for running deployHPSS playbooks on nodes 
+- hosts: node10
+  tasks:
+  - name: yum update
+    yum: name=* state=latest
+  
+  - name: add /etc/hosts 
+    copy: 
+      src=/etc/hosts
+      dest=/etc/hosts
+  

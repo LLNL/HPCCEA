@@ -1,0 +1,81 @@
+---
+- hosts: nodes
+  tasks:
+  - name: Install syslinux
+    yum:
+      name: syslinux
+      state: present
+
+  - name: Install tftp-server
+    yum:
+      name: tftp-server
+      state: present
+
+  - name: make pxelinux directory
+    file:
+     path=/tftpboot/pxelinux.cfg
+     state=directory
+
+  - name: append file vi /tftpboot/pxelinux.cfg/default
+    blockinfile:
+      path: /var/www/html/hello.html
+      content: |
+        DEFAULT menu.c32
+        PROMPT 0
+        MENU TITLE ########## PXE Boot Menu ##########
+        TIMEOUT 150
+        TOTALTIMEOUT 6000
+        ONTIMEOUT 1 # go to this label after timeout expires
+
+        LABEL 1
+                MENU LABEL ^1) Install CentOS 7 x64 over the network with Kickstart
+                MENU DEFAULT
+                KERNEL centos7/vmlinuz
+                APPEND initrd=centos7/initrd.img inst.ks=ftp://ftp:ftp@192.168.95.1/pub/anaconda-ks.cfg inst.cmdline inst.gpt
+
+        LABEL local
+                MENU LABEL ^2) local boot
+                COM32 chain.c32
+                APPEND hd0
+  
+
+# mount
+- hosts: nodes
+  tasks:
+  - name: Install
+    wget:
+      name: wget https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz, https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+      state: present
+
+  - name: make centos7 directory
+    file:
+      path=/tftpboot/centos7
+      state=directory
+
+# cp
+- hosts: nodes
+  tasks:
+  - name: Install
+    wget:
+      name: wget https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz, https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+      state: present
+
+# cp
+- hosts: nodes
+  tasks:
+  - name: Install
+    wget:
+      name: wget https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz, https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+      state: present
+
+  - name: Install vsftpd
+    yum:
+      name: vsftpd
+      state: present
+
+  - name: Install tftp
+    yum:
+      name: tftp
+      state: present
+
+...

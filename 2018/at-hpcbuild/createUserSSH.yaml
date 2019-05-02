@@ -1,0 +1,35 @@
+---
+# all nodes in the future
+- hosts: cbuild
+  tasks:
+
+  - name: Create gabriel login user
+    user:
+       name: gabriel1
+       password: '$6$F4NWXRFtSdCi8$DsB5vvMJYusQhSbvGXrYDXL6Xj37MUuqFCd4dGXdKd6NyxT3lpdELN07/Kpo7EjjWnm9zusFg/LLFv6oc.ynu/'
+       state: present
+
+  - name: Create alicja login user
+    user:
+      name: alicja1
+      password: '$6$F4NWXRFtSdCi8$DsB5vvMJYusQhSbvGXrYDXL6Xj37MUuqFCd4dGXdKd6NyxT3lpdELN07/Kpo7EjjWnm9zusFg/LLFv6oc.ynu/'
+      state: present
+
+#  - name: Generate /etc/ssh/ RSA host key
+#    shell: echo -e 'y\n'|ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key -C "" -N ""
+#    register: output 
+#  - debug: var=output.stdout_lines
+  
+#  - name: copy RSA host key to user home
+
+  - name: install sshpass
+    yum:
+      name: sshpass
+      state: present
+
+  - name: ssh-copy-id for gabriel
+    command: sshpass -p password ssh-copy-id -i /etc/ssh/ssh_host_rsa_key -o StrictHostKeyChecking=no gabriel1@root
+
+  - name: ssh-copy-id for alicja
+    command: sshpass -p password ssh-copy-id -i /etc/ssh/ssh_host_rsa_key -o StrictHostKeyChecking=no alicja1@boron6
+

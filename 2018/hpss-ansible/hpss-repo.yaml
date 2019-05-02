@@ -1,0 +1,21 @@
+---
+# Copies a set of RPMs that are in srdir to dstdir, then creates a
+# yum repo with these RPMS
+- hosts: management
+  vars: 
+    srcdir: /root/ansible/files/HPSS-RPMS/
+    dstdir: /var/www/html/HPSS-RPMS/
+
+  # 
+  tasks:
+  - name: Copy HPSS files
+    synchronize:
+      src:  "{{ srcdir }}"
+      dest: "{{ dstdir }}" 
+
+  - name: Install createrepo
+    yum:
+       name: createrepo
+
+  - name: Create HPSS repo
+    command: /usr/bin/createrepo "{{ dstdir }}"

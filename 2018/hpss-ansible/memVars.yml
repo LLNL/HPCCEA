@@ -1,0 +1,26 @@
+# core memory variables
+---
+core_MemTotal: 65711772 # total memory from /proc/meminfo
+core_Memory_in_Bytes: 67288854528 # core_MemTotal*1024
+core_Memory_in_GB: 62 # core_MemTotal/1024/1024
+core_shmmax: 67288854528 # core_Memory_in_Bytes
+core_shmall: 32855886 # 2*Memory_in_Bytes
+core_shmmni: 15872 # 256*Memory_in_GB
+core_sem: 1644420584658272 # "256 256000 32 (1024*Memory_in_GB)"
+core_msgmni: 64171 # 1024*Memory_in_GB
+core_msgmnb: 65536
+core_msgmax: 65536
+core_space: 0
+
+mover_MemTotal:
+mover_Memory_in_Bytes:
+mover_Memory_in_GB:
+mover_shmmax:
+mover_shmall:
+mover_shmmni:
+mover_sem:
+mover_msgmni:
+mover_msgmnb: 65536
+mover_msgmax: 65536
+mover_space: 0
+

@@ -1,0 +1,720 @@
+Rule	xccdf_org.ssgproject.content_rule_partition_for_tmp
+Info: The /tmp directory is a world-writable directory used for temporary file storage. Ensure it has its own partition or logical volume at installation time, or migrate it using LVM.
+
+Rule	xccdf_org.ssgproject.content_rule_partition_for_var
+Info: The /var directory is used by daemons and other system services to store frequently-changing data. Ensure that /var has its own partition or logical volume at installation time, or migrate it using LVM. 
+
+Rule	xccdf_org.ssgproject.content_rule_partition_for_var_log_audit
+Info: Audit logs are stored in the /var/log/audit directory. Ensure that it has its own partition or logical volume at installation time, or migrate it later using LVM. Make absolutely certain that it is large enough to store all audit logs that will be created by the auditing daemon. 
+
+Rule	xccdf_org.ssgproject.content_rule_partition_for_home
+Info: If user home directories will be stored locally, create a separate partition for /home at installation time (or migrate it later using LVM). If /home will be mounted from another system such as an NFS server, then creating a separate partition is not necessary at installation time, and the mountpoint can instead be configured later. 
+
+Rule	xccdf_org.ssgproject.content_rule_ensure_gpgcheck_globally_activated
+Info: The gpgcheck option controls whether RPM packages' signatures are always checked prior to installation. To configure yum to check package signatures before installing them, ensure the following line appears in /etc/yum.conf in the [main] section: gpgcheck=1 
+
+Rule	xccdf_org.ssgproject.content_rule_security_patches_up_to_date
+Info: If the system is joined to the Red Hat Network, a Red Hat Satellite Server, or a yum server, run the following command to install updates: $ sudo yum update If the system is not configured to use one of these sources, updates (in the form of RPM packages) can be manually downloaded from the Red Hat Network and installed using rpm. NOTE: U.S. Defense systems are required to be patched within 30 days or sooner as local policy dictates.
+
+Rule	xccdf_org.ssgproject.content_rule_clean_components_post_updating
+Info: Yum should be configured to remove previous software components after previous versions have been installed. To configure yum to remove the previous software components after updating, set the clean_requirements_on_remove to 1 in /etc/yum.conf. 
+
+Rule	xccdf_org.ssgproject.content_rule_ensure_gpgcheck_local_packages
+Info: Yum should be configured to verify the signature(s) of local packages prior to installation. To configure yum to verify signatures of local packages, set the localpkg_gpgcheck to 1 in /etc/yum.conf. 
+
+Rule	xccdf_org.ssgproject.content_rule_ensure_gpgcheck_repo_metadata
+Info: Verify the operating system prevents the installation of patches, service packs, device drivers, or operating system components of local packages without verification of the repository metadata. Check that yum verifies the repository metadata prior to install with the following command. This should be configured by setting repo_gpgcheck to 1 in /etc/yum.conf. 
+
+Rule	xccdf_org.ssgproject.content_rule_package_aide_installed
+Info: Install the AIDE package with the command: $ sudo yum install aide 
+
+Rule	xccdf_org.ssgproject.content_rule_aide_periodic_cron_checking
+Info: At a minimum, AIDE should be configured to run a weekly scan. At most, AIDE should be run daily. To implement a daily execution of AIDE at 4:05am using cron, add the following line to /etc/crontab: 05 4 * * * root /usr/sbin/aide --check To implement a weekly execution of AIDE at 4:05am using cron, add the following line to /etc/crontab: 05 4 * * 0 root /usr/sbin/aide --check AIDE can be executed periodically through other means; this is merely one example. 
+
+Rule	xccdf_org.ssgproject.content_rule_aide_scan_notification
+Info: AIDE should notify appropriate personnel of the details of a scan after the scan has been run. If AIDE has already been configured for periodic execution in /etc/crontab, append the following line to the existing AIDE line: | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost Otherwise, add the following line to /etc/crontab: 05 4 * * * root /usr/sbin/aide --check | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost AIDE can be executed periodically through other means; this is merely one example.
+
+Rule	xccdf_org.ssgproject.content_rule_aide_verify_acls
+Info: By default, the acl option is added to the FIPSR ruleset in AIDE. If using a custom ruleset or the acl option is missing, add acl to the appropriate ruleset. For example, add acl to the following line in /etc/aide.conf: FIPSR = p+i+n+u+g+s+m+c+acl+selinux+xattrs+sha256 AIDE rules can be configured in multiple ways; this is merely one example that is already configured by default. 
+
+Rule	xccdf_org.ssgproject.content_rule_aide_verify_ext_attributes
+Info: By default, the xattrs option is added to the FIPSR ruleset in AIDE. If using a custom ruleset or the xattrs option is missing, add xattrs to the appropriate ruleset. For example, add xattrs to the following line in /etc/aide.conf: FIPSR = p+i+n+u+g+s+m+c+acl+selinux+xattrs+sha256 AIDE rules can be configured in multiple ways; this is merely one example that is already configured by default. 
+
+Rule	xccdf_org.ssgproject.content_rule_aide_use_fips_hashes
+Info: By default, the sha512 option is added to the NORMAL ruleset in AIDE. If using a custom ruleset or the sha512 option is missing, add sha512 to the appropriate ruleset. For example, add sha512 to the following line in /etc/aide.conf: NORMAL = FIPSR+sha512 AIDE rules can be configured in multiple ways; this is merely one example that is already configured by default. 
+
+Rule	xccdf_org.ssgproject.content_rule_rpm_verify_permissions
+Info: The RPM package management system can check file access permissions of installed software packages, including many that are important to system security. Verify that the file permissions of system files and commands match vendor values. Check the file permissions with the following command: $ sudo rpm -Va | grep '^.M' Output indicates files that do not match vendor defaults. After locating a file with incorrect permissions, run the following command to determine which package owns it: $ rpm -qf FILENAME Next, run the following command to reset its permissions to the correct values: $ sudo rpm --setperms PACKAGENAME 
+
+Rule	xccdf_org.ssgproject.content_rule_rpm_verify_ownership
+Info: The RPM package management system can check file ownership permissions of installed software packages, including many that are important to system security. After locating a file with incorrect permissions, which can be found with rpm -Va | grep "^.....\(U\|.G\)" run the following command to determine which package owns it: $ rpm -qf FILENAME Next, run the following command to reset its permissions to the correct values: $ sudo rpm --setugids PACKAGENAME 
+
+Rule	xccdf_org.ssgproject.content_rule_rpm_verify_hashes
+Info: Without cryptographic integrity protections, system executables and files can be altered by unauthorized users without detection. The RPM package management system can check the hashes of installed software packages, including many that are important to system security. To verify that the cryptographic hash of system files and commands match vendor values, run the following command to list which files on the system have hashes that differ from what is expected by the RPM database: $ rpm -Va | grep '^..5' A "c" in the second column indicates that a file is a configuration file, which may appropriately be expected to change. If the file was not expected to change, investigate the cause of the change using audit logs or other means. The package can then be reinstalled to restore the file. Run the following command to determine which package owns the file: $ rpm -qf FILENAME The package can be reinstalled from a yum repository using the command: $ sudo yum reinstall PACKAGENAME Alternatively, the package can be reinstalled from trusted media using the command: $ sudo rpm -Uvh PACKAGENAME 
+
+Rule	xccdf_org.ssgproject.content_rule_install_mcafee_antivirus
+Info: Install McAfee VirusScan Enterprise for Linux antivirus software which is provided for DoD systems and uses signatures to search for the presence of viruses on the filesystem. 
+
+Rule	xccdf_org.ssgproject.content_rule_mcafee_antivirus_definitions_updated
+Info: Ensure virus definition files are no older than 7 days or their last release.  
+
+Rule	xccdf_org.ssgproject.content_rule_grub2_enable_fips_mode
+Info: To ensure FIPS mode is enabled, rebuild initramfs by running the following command: dracut -f After the dracut command has been run, add the argument fips=1 to the default GRUB 2 command line for the Linux operating system in /etc/default/grub, in the manner below: GRUB_CMDLINE_LINUX="crashkernel=auto rd.lvm.lv=VolGroup/LogVol06 rd.lvm.lv=VolGroup/lv_swap rhgb quiet rd.shell=0 fips=1" Finally, rebuild the grub.cfg file by using the grub2-mkconfig -o command as follows: On BIOS-based machines, issue the following command as root: ~]# grub2-mkconfig -o /boot/grub2/grub.cfgOn UEFI-based machines, issue the following command as root: ~]# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg 
+
+Rule	xccdf_org.ssgproject.content_rule_installed_OS_is_certified
+Info: The installed operating system must be maintained and certified by a vendor. Red Hat Enterprise Linux is supported by Red Hat, Inc. As the Red Hat Enterprise Linux vendor, Red Hat, Inc. is responsible for providing security patches as well as meeting and maintaining goverment certifications and standards. 
+
+Rule	xccdf_org.ssgproject.content_rule_gnome_gdm_disable_automatic_login
+Info: The GNOME Display Manager (GDM) can allow users to automatically login without user interaction or credentials. User should always be required to authenticate themselves to the system that they are authorized to use. To disable user ability to automatically login to the system, set the AutomaticLoginEnable to false in the [daemon] section in /etc/gdm/custom.conf. For example: [daemon] AutomaticLoginEnable=false 
+
+Rule	xccdf_org.ssgproject.content_rule_gnome_gdm_disable_guest_login
+Info: The GNOME Display Manager (GDM) can allow users to login without credentials which can be useful for public kiosk scenarios. Allowing users to login without credentials or "guest" account access has inherent security risks and should be disabled. To do disable timed logins or guest account access, set the TimedLoginEnable to false in the [daemon] section in /etc/gdm/custom.conf. For example: [daemon] TimedLoginEnable=false 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_enable_smartcard_auth
+Info: In the default graphical environment, smart card authentication can be enabled on the login screen by setting enable-smartcard-authentication to true. To enable, add or edit enable-smartcard-authentication to /etc/dconf/db/gdm.d/00-security-settings. For example: [org/gnome/login-screen] enable-smartcard-authentication=true Once the setting has been added, add a lock to /etc/dconf/db/gdm.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/login-screen/enable-smartcard-authentication After the settings have been set, run dconf update. 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_screensaver_idle_delay
+Info: The idle time-out value for inactivity in the GNOME3 desktop is configured via the idle-delay setting must be set under an appropriate configuration file(s) in the /etc/dconf/db/local.d directory and locked in /etc/dconf/db/local.d/locks directory to prevent user modification. For example, to configure the system for a 15 minute delay, add the following to /etc/dconf/db/local.d/00-security-settings: [org/gnome/desktop/session] idle-delay='uint32 900' Once the setting has been added, add a lock to /etc/dconf/db/local.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/desktop/session/idle-delay After the settings have been set, run dconf update. 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_screensaver_idle_activation_enabled
+Info: To activate the screensaver in the GNOME3 desktop after a period of inactivity, add or set idle-activation-enabled to true in /etc/dconf/db/local.d/00-security-settings. For example: [org/gnome/desktop/screensaver] idle_activation_enabled=true Once the setting has been added, add a lock to /etc/dconf/db/local.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/desktop/screensaver/idle-activation-enabled After the settings have been set, run dconf update.
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_screensaver_lock_enabled
+Info: To activate locking of the screensaver in the GNOME3 desktop when it is activated, add or set lock-enabled to true in /etc/dconf/db/local.d/00-security-settings. For example: [org/gnome/desktop/screensaver] lock-enabled=true Once the settings have been added, add a lock to /etc/dconf/db/local.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/desktop/screensaver/lock-enabled After the settings have been set, run dconf update. 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_screensaver_lock_delay
+Info: To activate the locking delay of the screensaver in the GNOME3 desktop when the screensaver is activated, add or set lock-delay to uint32 5 in /etc/dconf/db/local.d/00-security-settings. For example: [org/gnome/desktop/screensaver] lock-delay=uint32 5 Once the setting has been added, add a lock to /etc/dconf/db/local.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/desktop/screensaver/lock-delay After the settings have been set, run dconf update. 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_screensaver_user_locks
+Info: If not already configured, ensure that users cannot change GNOME3 screensaver lock settings by adding /org/gnome/desktop/screensaver/lock-delay to /etc/dconf/db/local.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/desktop/screensaver/lock-delay After the settings have been set, run dconf update. 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_session_idle_user_locks
+Info: If not already configured, ensure that users cannot change GNOME3 session idle settings by adding /org/gnome/desktop/session/idle-delay to /etc/dconf/db/local.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/desktop/session/idle-delay After the settings have been set, run dconf update. 
+
+Rule	xccdf_org.ssgproject.content_rule_sudo_remove_nopasswd
+Info: The sudo NOPASSWD tag, when specified, allows a user to execute commands using sudo without having to authenticate. This should be disabled by making sure that the NOPASSWD tag does not exist in /etc/sudoers configuration file or any sudo configuration snippets in /etc/sudoers.d/. 
+
+Rule	xccdf_org.ssgproject.content_rule_sudo_remove_no_authenticate
+Info: The sudo !authenticate option, when specified, allows a user to execute commands using sudo without having to authenticate. This should be disabled by making sure that the !authenticate option does not exist in /etc/sudoers configuration file or any sudo configuration snippets in /etc/sudoers.d/. 
+
+Rule	xccdf_org.ssgproject.content_rule_mount_option_nosuid_removable_partitions
+Info: The nosuid mount option prevents set-user-identifier (SUID) and set-group-identifier (SGID) permissions from taking effect. These permissions allow users to execute binaries with the same permissions as the owner and group of the file respectively. Users should not be allowed to introduce SUID and SGID files into the system via partitions mounted from removeable media. Add the nosuid option to the fourth column of /etc/fstab for the line which controls mounting of any removable media partitions. 
+
+Rule	xccdf_org.ssgproject.content_rule_mount_option_home_nosuid
+Info: The nosuid mount option can be used to prevent execution of setuid programs in /home. The SUID and SGID permissions should not be required in these user data directories. Add the nosuid option to the fourth column of /etc/fstab for the line which controls mounting of /home. 
+
+Rule	xccdf_org.ssgproject.content_rule_kernel_module_usb-storage_disabled
+Info: To prevent USB storage devices from being used, configure the kernel module loading system to prevent automatic loading of the USB storage driver. To configure the system to prevent the usb-storage kernel module from being loaded, add the following line to a file in the directory /etc/modprobe.d: install usb-storage /bin/true This will prevent the modprobe program from loading the usb-storage module, but will not prevent an administrator (or another program) from using the insmod program to load the module manually.
+
+Rule	xccdf_org.ssgproject.content_rule_service_autofs_disabled
+Info: The autofs daemon mounts and unmounts filesystems, such as user home directories shared via NFS, on demand. In addition, autofs can be used to handle removable media, and the default configuration provides the cdrom device as /misc/cd. However, this method of providing access to removable media is not common, so autofs can almost always be disabled if NFS is not in use. Even if NFS is required, it may be possible to configure filesystem mounts statically by editing /etc/fstab rather than relying on the automounter. The autofs service can be disabled with the following command: $ sudo systemctl disable autofs.service 
+
+Rule	xccdf_org.ssgproject.content_rule_no_files_unowned_by_user
+Info: If any files are not owned by a user, then the cause of their lack of ownership should be investigated. Following this, the files should be deleted or assigned to an appropriate user. 
+
+Rule	xccdf_org.ssgproject.content_rule_file_permissions_ungroupowned
+Info: If any files are not owned by a group, then the cause of their lack of group-ownership should be investigated. Following this, the files should be deleted or assigned to an appropriate group. 
+
+Rule	xccdf_org.ssgproject.content_rule_dir_perms_world_writable_system_owned
+Info: All directories in local partitions which are world-writable should be owned by root or another system account. If any world-writable directories are not owned by a system account, this should be investigated. Following this, the files should be deleted or assigned to an appropriate group. 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_kernel_randomize_va_space
+Info: To set the runtime status of the kernel.randomize_va_space kernel parameter, run the following command: $ sudo sysctl -w kernel.randomize_va_space=2 If this is not the system's default value, add the following line to /etc/sysctl.conf: kernel.randomize_va_space = 2 
+
+Rule	xccdf_org.ssgproject.content_rule_selinux_state
+Info: The SELinux state should be set to enforcing at system boot time. In the file /etc/selinux/config, add or correct the following line to configure the system to boot into enforcing mode: SELINUX=enforcing 
+
+Rule	xccdf_org.ssgproject.content_rule_selinux_policytype
+Info: The SELinux targeted policy is appropriate for general-purpose desktops and servers, as well as systems in many other roles. To configure the system to use this policy, add or correct the following line in /etc/selinux/config: SELINUXTYPE=targeted Other policies, such as mls, provide additional security labeling and greater confinement but are not compatible with many general-purpose use cases.
+
+Rule	xccdf_org.ssgproject.content_rule_selinux_all_devicefiles_labeled
+Info: Device files, which are used for communication with important system resources, should be labeled with proper SELinux types. If any device files do not carry the SELinux type device_t, report the bug so that policy can be corrected. Supply information about what the device is and what programs use it. To check for unlabeled device files, run the following command: $ sudo find /dev -context *:device_t:* \( -type c -o -type b \) -printf "%p %Z\n" It should produce no output in a well-configured system. 
+
+Rule	xccdf_org.ssgproject.content_rule_selinux_user_login_roles
+Info: Configure the operating system to prevent non-privileged users from executing privileged functions to include disabling, circumventing, or altering implemented security safeguards/countermeasures. All administrators must be mapped to the sysadm_u or staff_u users with the appropriate domains (sysadm_t and staff_t). $ sudo semanage login -m -s sysadm_u USER or $ sudo semanage login -m -s staff_u USER All authorized non-administrative users must be mapped to the user_u role or the appropriate domain (user_t). $ sudo semanage login -m -s user_u USER 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_no_uid_except_zero
+Info: If any account other than root has a UID of 0, this misconfiguration should be investigated and the accounts other than root should be removed or have their UID changed. If the account is associated with system commands or applications the UID should be changed to one greater than "0" but less than "1000." Otherwise assign a UID greater than "1000" that has not already been assigned. 
+
+Rule	xccdf_org.ssgproject.content_rule_no_empty_passwords
+Info: If an account is configured for password authentication but does not have an assigned password, it may be possible to log into the account without authentication. Remove any instances of the nullok option in /etc/pam.d/system-auth to prevent logins with empty passwords.  
+
+Rule	xccdf_org.ssgproject.content_rule_gid_passwd_group_same
+Info: Add a group to the system for each GID referenced without a corresponding group. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_minimum_age_login_defs
+Info: To specify password minimum age for new accounts, edit the file /etc/login.defs and add or correct the following line: PASS_MIN_DAYS 1 A value of 1 day is considered sufficient for many environments. The DoD requirement is 1. The profile requirement is 1. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_maximum_age_login_defs
+Info: To specify password maximum age for new accounts, edit the file /etc/login.defs and add or correct the following line: PASS_MAX_DAYS 60 A value of 180 days is sufficient for many environments. The DoD requirement is 60. The profile requirement is 60. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_set_min_life_existing
+Info: Configure non-compliant accounts to enforce a 24 hours/1 day minimum password lifetime by running the following command: $ sudo chage -m 1 USER  
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_set_max_life_existing
+Info:  Configure non-compliant accounts to enforce a 60-day maximum password restriction by running the following command: $ sudo chage -M 60 USER
+
+Rule	xccdf_org.ssgproject.content_rule_account_disable_post_pw_expiration
+Info: To specify the number of days after a password expires (which signifies inactivity) until an account is permanently disabled, add or correct the following lines in /etc/default/useradd, substituting NUM_DAYS appropriately: INACTIVE=0 A value of 35 is recommended. If a password is currently on the verge of expiration, then 35 days remain until the account is automatically disabled. However, if the password will not expire for another 60 days, then 95 days could elapse until the account would be automatically disabled. See the useradd man page for more information. Determining the inactivity timeout must be done with careful consideration of the length of a "normal" period of inactivity for users in the particular environment. Setting the timeout too low incurs support costs and also has the potential to impact availability of the system to legitimate users. 
+
+Rule	xccdf_org.ssgproject.content_rule_display_login_attempts
+Info: To configure the system to notify users of last logon/access using pam_lastlog, add or correct the pam_lastlog settings in /etc/pam.d/postlogin to read as follows: session [success=1 default=ignore] pam_succeed_if.so service !~ gdm* service !~ su* quiet session [default=1] pam_lastlog.so nowtmp showfailed session optional pam_lastlog.so silent noupdate showfailed 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_retry
+Info: To configure the number of retry prompts that are permitted per-session: Edit the pam_pwquality.so statement in /etc/pam.d/system-auth to show retry=3, or a lower value if site policy is more restrictive. The DoD requirement is a maximum of 3 prompts per session. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_maxrepeat
+Info: The pam_pwquality module's maxrepeat parameter controls requirements for consecutive repeating characters. When set to a positive number, it will reject passwords which contain more than that number of consecutive characters. Modify the maxrepeat setting in /etc/security/pwquality.conf to equal 2 to prevent a run of (2 + 1) or more identical characters. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_maxclassrepeat
+Info: The pam_pwquality module's maxclassrepeat parameter controls requirements for consecutive repeating characters from the same character class. When set to a positive number, it will reject passwords which contain more than that number of consecutive characters from the same character class. Modify the maxclassrepeat setting in /etc/security/pwquality.conf to equal 4 to prevent a run of (4 + 1) or more identical characters. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_dcredit
+Info: The pam_pwquality module's dcredit parameter controls requirements for usage of digits in a password. When set to a negative number, any password will be required to contain that many digits. When set to a positive number, pam_pwquality will grant +1 additional length credit for each digit. Modify the dcredit setting in /etc/security/pwquality.conf to require the use of a digit in passwords
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_minlen
+Info: The pam_pwquality module's minlen parameter controls requirements for minimum characters required in a password. Add minlen=15 after pam_pwquality to set minimum password length requirements. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_ucredit
+Info: The pam_pwquality module's ucredit= parameter controls requirements for usage of uppercase letters in a password. When set to a negative number, any password will be required to contain that many uppercase characters. When set to a positive number, pam_pwquality will grant +1 additional length credit for each uppercase character. Modify the ucredit setting in /etc/security/pwquality.conf to require the use of an uppercase character in passwords.
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_ocredit
+Info: The pam_pwquality module's ocredit= parameter controls requirements for usage of special (or "other") characters in a password. When set to a negative number, any password will be required to contain that many special characters. When set to a positive number, pam_pwquality will grant +1 additional length credit for each special character. Modify the ocredit setting in /etc/security/pwquality.conf to equal -1 to require use of a special character in passwords. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_lcredit
+Info: The pam_pwquality module's lcredit parameter controls requirements for usage of lowercase letters in a password. When set to a negative number, any password will be required to contain that many lowercase characters. When set to a positive number, pam_pwquality will grant +1 additional length credit for each lowercase character. Modify the lcredit setting in /etc/security/pwquality.conf to require the use of a lowercase character in passwords. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_difok
+Info: The pam_pwquality module's difok parameter sets the number of characters in a password that must not be present in and old password during a password change. Modify the difok setting in /etc/security/pwquality.conf to equal 8 to require differing characters when changing passwords. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_minclass
+Info: The pam_pwquality module's minclass parameter controls requirements for usage of different character classes, or types, of character that must exist in a password before it is considered valid. For example, setting this value to three (3) requires that any password must have characters from at least three different categories in order to be approved. The default value is zero (0), meaning there are no required classes. There are four categories available: * Upper-case characters * Lower-case characters * Digits * Special characters (for example, punctuation) Modify the minclass setting in /etc/security/pwquality.conf entry to require 4 differing categories of characters when changing passwords. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_passwords_pam_faillock_deny
+Info: To configure the system to lock out accounts after a number of incorrect login attempts using pam_faillock.so, modify the content of both /etc/pam.d/system-auth and /etc/pam.d/password-auth as follows: add the following line immediately before the pam_unix.so statement in the AUTH section: auth required pam_faillock.so preauth silent deny=3 unlock_time=never fail_interval=900 add the following line immediately after the pam_unix.so statement in the AUTH section: auth [default=die] pam_faillock.so authfail deny=3 unlock_time=never fail_interval=900 add the following line immediately before the pam_unix.so statement in the ACCOUNT section: account required pam_faillock.so 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_passwords_pam_faillock_unlock_time
+Info: To configure the system to lock out accounts after a number of incorrect login attempts and require an administrator to unlock the account using pam_faillock.so, modify the content of both /etc/pam.d/system-auth and /etc/pam.d/password-auth as follows: add the following line immediately before the pam_unix.so statement in the AUTH section: auth required pam_faillock.so preauth silent deny=3 unlock_time=never fail_interval=900 add the following line immediately after the pam_unix.so statement in the AUTH section: auth [default=die] pam_faillock.so authfail deny=3 unlock_time=never fail_interval=900 add the following line immediately before the pam_unix.so statement in the ACCOUNT section: account required pam_faillock.so 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_passwords_pam_faillock_deny_root
+Info: To configure the system to lock out the root account after a number of incorrect login attempts using pam_faillock.so, modify the content of both /etc/pam.d/system-auth and /etc/pam.d/password-auth as follows: Modify the following line in the AUTH section to add even_deny_root: auth required pam_faillock.so preauth silent even_deny_root deny=3 unlock_time=never fail_interval=900Modify the following line in the AUTH section to add even_deny_root: auth [default=die] pam_faillock.so authfail even_deny_root deny=3 unlock_time=never fail_interval=900 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_passwords_pam_faillock_interval
+Info: Utilizing pam_faillock.so, the fail_interval directive configures the system to lock out an accounts after a number of incorrect login attempts within a specified time period. Modify the content of both /etc/pam.d/system-auth and /etc/pam.d/password-auth as follows: Add the following line immediately before the pam_unix.so statement in the AUTH section: auth required pam_faillock.so preauth silent deny=3 unlock_time=never fail_interval=900Add the following line immediately after the pam_unix.so statement in the AUTH section: auth [default=die] pam_faillock.so authfail deny=3 unlock_time=never fail_interval=900Add the following line immediately before the pam_unix.so statement in the ACCOUNT section: account required pam_faillock.so 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_password_pam_unix_remember
+Info: Do not allow users to reuse recent passwords. This can be accomplished by using the remember option for the pam_unix or pam_pwhistory PAM modules. In the file /etc/pam.d/system-auth, append remember=5 to the line which refers to the pam_unix.so or pam_pwhistory.somodule, as shown below: for the pam_unix.so case: password sufficient pam_unix.so ...existing_options... remember=5 for the pam_pwhistory.so case: password requisite pam_pwhistory.so ...existing_options... remember=5 The DoD STIG requirement is 5 passwords.
+
+Rule	xccdf_org.ssgproject.content_rule_set_password_hashing_algorithm_systemauth
+Info: The PAM system service can be configured to only store encrypted representations of passwords. In /etc/pam.d/system-auth, the password section of the file controls which PAM modules execute during a password change. Set the pam_unix.so module in the password section to include the argument sha512, as shown below: password sufficient pam_unix.so sha512 other arguments... This will help ensure when local users change their passwords, hashes for the new passwords will be generated using the SHA-512 algorithm. This is the default. 
+
+Rule	xccdf_org.ssgproject.content_rule_set_password_hashing_algorithm_logindefs
+Info: In /etc/login.defs, add or correct the following line to ensure the system will use SHA-512 as the hashing algorithm: ENCRYPT_METHOD SHA512 
+
+Rule	xccdf_org.ssgproject.content_rule_set_password_hashing_algorithm_libuserconf
+Info: In /etc/libuser.conf, add or correct the following line in its [defaults] section to ensure the system will use the SHA-512 algorithm for password hashing: crypt_style = sha512 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_have_homedir_login_defs
+Info: All local interactive user accounts, upon creation, should be assigned a home directory. Configure the operating system to assign home directories to all new local interactive users by setting the CREATE_HOME parameter in /etc/login.defs to yes as follows: CREATE_HOME yes 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_tmout
+Info: Setting the TMOUT option in /etc/profile ensures that all user sessions will terminate based on inactivity. The TMOUT setting in /etc/profile should read as follows: TMOUT=600 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_max_concurrent_login_sessions
+Info: Limiting the number of allowed users and sessions per user can limit risks related to Denial of Service attacks. This addresses concurrent sessions for a single account and does not address concurrent sessions by a single user via multiple accounts. To set the number of concurrent sessions per user add the following line in /etc/security/limits.conf: * hard maxlogins 10 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_logon_fail_delay
+Info: To ensure the logon failure delay controlled by /etc/login.defs is set properly, add or correct the FAIL_DELAY setting in /etc/login.defs to read as follows: FAIL_DELAY 4 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_user_dot_no_world_writable_programs
+Info: Set the mode on files being executed by the user initialization files with the following command: $ sudo chmod 0755 FILE 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_user_home_paths_only
+Info: Ensure that all interactive user initialization files executable search path statements do not contain statements that will reference a working directory other than the users home directory. 
+
+Rule	xccdf_org.ssgproject.content_rule_file_permission_user_init_files
+Info: Set the mode of the user initialization files to 0740 with the following command: $ sudo chmod 0740 /home/USER/.INIT_FILE 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_user_dot_group_ownership
+Info: Change the group owner of interactive users files to the group found in /etc/passwd for the user. To change the group owner of a local interactive user home directory, use the following command: $ sudo chgrp USER_GROUP /home/USER/.INIT_FILE 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_user_dot_user_ownership
+Info: Set the owner of the user initialization files for interactive users to the primary owner with the following command: $ sudo chown USER /home/USER/.* 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_user_interactive_home_directory_defined
+Info: Assign home directories to all interactive users that currently do not have a home directory assigned. 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_user_interactive_home_directory_exists
+Info: Create home directories to all interactive users that currently do not have a home directory assigned. Use the following commands to create the user home directory assigned in /etc/passwd: $ sudo mkdir /home/USER 
+
+Rule	xccdf_org.ssgproject.content_rule_file_permissions_home_directories
+Info: Change the mode of interactive users home directories to 0750. To change the mode of interactive users home directory, use the following command: $ sudo chmod 0750 /home/USER 
+
+Rule	xccdf_org.ssgproject.content_rule_file_ownership_home_directories
+Info: Change the owner of interactive users home directories to that correct owner. To change the owner of a interactive users home directory, use the following command: $ sudo chown USER /home/USER 
+
+Rule	xccdf_org.ssgproject.content_rule_file_groupownership_home_directories
+Info: Change the group owner of interactive users home directory to the group found in /etc/passwd. To change the group owner of interactive users home directory, use the following command: $ sudo chgrp USER_GROUP /home/USER 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_users_home_files_ownership
+Info: Change the owner of a interactive users files and directories to that owner. To change the of a local interactive users files and directories, use the following command: $ sudo chown -R USER /home/USER 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_users_home_files_groupownership
+Info: Change the group of a local interactive users files and directories to a group that the interactive user is a member of. To change the group owner of a local interactive users files and directories, use the following command: $ sudo chgrp USER_GROUP /home/USER/FILE_DIR 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_users_home_files_permissions
+Info: Set the mode on files and directories in the local interactive user home directory with the following command: $ sudo chmod 0750 /home/USER/FILE_DIR 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_umask_etc_login_defs
+Info: To ensure the default umask controlled by /etc/login.defs is set properly, add or correct the UMASK setting in /etc/login.defs to read as follows: UMASK 077 
+
+Rule	xccdf_org.ssgproject.content_rule_accounts_umask_interactive_users
+Info: Remove the UMASK environment variable from all interactive users initialization files. 
+
+Rule	xccdf_org.ssgproject.content_rule_bootloader_password
+Info: The grub2 boot loader should have a superuser account and password protection enabled to protect boot-time settings. To do so, select a superuser account and password and add them into the /etc/grub.d/01_users configuration file. Since plaintext passwords are a security risk, generate a hash for the pasword by running the following command: $ grub2-mkpasswd-pbkdf2 When prompted, enter the password that was selected and insert the returned password hash into the /etc/grub.d/01_users configuration file immediately after the superuser account. (Use the output from grub2-mkpasswd-pbkdf2 as the value of password-hash): password_pbkdf2 superusers-account password-hash NOTE: It is recommended not to use common administrator account names like root, admin, or administrator for the grub2 superuser account. To meet FISMA Moderate, the bootloader superuser account and password MUST differ from the root account and password. Once the superuser account and password have been added, update the grub.cfg file by running: grub2-mkconfig -o /boot/grub2/grub.cfg NOTE: Do NOT manually add the superuser account and password to the grub.cfg file as the grub2-mkconfig command overwrites this file. 
+
+Rule	xccdf_org.ssgproject.content_rule_bootloader_uefi_password
+Info: The UEFI grub2 boot loader should have a superuser account and password protection enabled to protect boot-time settings. To do so, select a superuser account and password and add them into the /etc/grub.d/01_users configuration file. Since plaintext passwords are a security risk, generate a hash for the pasword by running the following command: $ grub2-mkpasswd-pbkdf2 When prompted, enter the password that was selected and insert the returned password hash into the /etc/grub.d/01_users configuration file immediately after the superuser account. (Use the output from grub2-mkpasswd-pbkdf2 as the value of password-hash): password_pbkdf2 superusers-account password-hash NOTE: It is recommended not to use common administrator account names like root, admin, or administrator for the grub2 superuser account. To meet FISMA Moderate, the bootloader superuser account and password MUST differ from the root account and password. Once the superuser account and password have been added, update the grub.cfg file by running: grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg NOTE: Do NOT manually add the superuser account and password to the grub.cfg file as the grub2-mkconfig command overwrites this file. 
+
+Rule	xccdf_org.ssgproject.content_rule_bootloader_no_removeable_media
+Info: The system must not allow removable media to be used as the boot loader. Remove alternate methods of booting the system from removable media. usb0, cd, fd0, etc. are some examples of removeable media which should not exist in the line: set root='hd0,msdos1' 
+
+Rule	xccdf_org.ssgproject.content_rule_require_singleuser_auth
+Info: Single-user mode is intended as a system recovery method, providing a single user root access to the system by providing a boot option at startup. By default, no authentication is performed if single-user mode is selected. By default, single-user mode is protected by requiring a password and is set in /usr/lib/systemd/system/rescue.service. 
+
+Rule	xccdf_org.ssgproject.content_rule_disable_ctrlaltdel_reboot
+Info: By default, SystemD will reboot the system if the Ctrl-Alt-Del key sequence is pressed. To configure the system to ignore the Ctrl-Alt-Del key sequence from the command line instead of rebooting the system, do either of the following: ln -sf /dev/null /etc/systemd/system/ctrl-alt-del.target or systemctl mask ctrl-alt-del.target Do not simply delete the /usr/lib/systemd/system/ctrl-alt-del.service file, as this file may be restored during future system updates. 
+
+Rule	xccdf_org.ssgproject.content_rule_package_screen_installed
+Info: To enable console screen locking, install the screen package: $ sudo yum install screen Instruct users to begin new terminal sessions with the following command: $ screen The console can now be locked with the following key combination: ctrl+a x 
+
+Rule	xccdf_org.ssgproject.content_rule_install_smartcard_packages
+Info: Configure the operating system to implement multifactor authentication by installing the required packages with the following command: $ sudo yum install esc pam_pkcs11 authconfig-gtk 
+
+Rule	xccdf_org.ssgproject.content_rule_smartcard_configure_cert_checking
+Info: Configure the operating system to do certificate status checking for PKI authentication. Modify all of the cert_policy lines in /etc/pam_pkcs11/pam_pkcs11.conf to include ocsp_on like so: cert_policy = ca, ocsp_on, signature; 
+
+Rule	xccdf_org.ssgproject.content_rule_smartcard_auth
+Info: To enable smart card authentication, consult the documentation at: https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System-Level_Authentication_Guide/smartcards.html#authconfig-smartcards For guidance on enabling SSH to authenticate against a Common Access Card (CAC), consult documentation at: https://access.redhat.com/solutions/82273 
+
+Rule	xccdf_org.ssgproject.content_rule_banner_etc_issue
+Info: To configure the system login banner edit /etc/issue. Replace the default text with a message compliant with the local site policy or a legal disclaimer. The DoD required text is either: You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. -At any time, the USG may inspect and seize data stored on this IS. -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose. -This IS includes security measures (e.g., authentication and access controls) to protect USG interests -- not for your personal benefit or privacy. -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details. OR: I've read & consent to terms in IS user agreem't. 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_banner_enabled
+Info: In the default graphical environment, displaying a login warning banner in the GNOME Display Manager's login screen can be enabled on the login screen by setting banner-message-enable to true. To enable, add or edit banner-message-enable to /etc/dconf/db/gdm.d/00-security-settings. For example: [org/gnome/login-screen] banner-message-enable=true Once the setting has been added, add a lock to /etc/dconf/db/gdm.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/login-screen/banner-message-enable After the settings have been set, run dconf update. The banner text must also be set. 
+
+Rule	xccdf_org.ssgproject.content_rule_dconf_gnome_login_banner_text
+Info: In the default graphical environment, configuring the login warning banner text in the GNOME Display Manager's login screen can be configured on the login screen by setting banner-message-text to string 'APPROVED_BANNER' where APPROVED_BANNER is the approved banner for your environment. To enable, add or edit banner-message-text to /etc/dconf/db/gdm.d/00-security-settings. For example: [org/gnome/login-screen] banner-message-text=string 'APPROVED_BANNER' Once the setting has been added, add a lock to /etc/dconf/db/gdm.d/locks/00-security-settings-lock to prevent user modification. For example: /org/gnome/login-screen/banner-message-text After the settings have been set, run dconf update. When entering a warning banner that spans several lines, remember to begin and end the string with ' and use \n for new lines. 
+
+Rule	xccdf_org.ssgproject.content_rule_network_configure_name_resolution
+Info: Multiple Domain Name System (DNS) Servers should be configured in /etc/resolv.conf. This provides redundant name resolution services in the event that a domain server crashes. To configure the system to contain as least 2 DNS servers, add a corresponding nameserver ip_address entry in /etc/resolv.conf for each DNS server where ip_address is the IP address of a valid DNS server. For example: search example.com nameserver 192.168.0.1 nameserver 192.168.0.2 
+
+Rule	xccdf_org.ssgproject.content_rule_network_sniffer_disabled
+Info: The system should not be acting as a network sniffer, which can capture all traffic on the network to which it is connected. Run the following to determine if any interface is running in promiscuous mode: $ ip link | grep PROMISC 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_conf_default_send_redirects
+Info: To set the runtime status of the net.ipv4.conf.default.send_redirects kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.conf.default.send_redirects=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.conf.default.send_redirects = 0 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_conf_all_send_redirects
+Info: To set the runtime status of the net.ipv4.conf.all.send_redirects kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.conf.all.send_redirects=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.conf.all.send_redirects = 0 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_ip_forward
+Info: To set the runtime status of the net.ipv4.ip_forward kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.ip_forward=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.ip_forward = 0 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_conf_all_accept_source_route
+Info: To set the runtime status of the net.ipv4.conf.all.accept_source_route kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.conf.all.accept_source_route=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.conf.all.accept_source_route = 0 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_conf_all_accept_redirects
+Info: To set the runtime status of the net.ipv4.conf.all.accept_redirects kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.conf.all.accept_redirects=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.conf.all.accept_redirects = 0
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_conf_default_accept_source_route
+Info: To set the runtime status of the net.ipv4.conf.default.accept_source_route kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.conf.default.accept_source_route=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.conf.default.accept_source_route = 0 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_conf_default_accept_redirects
+Info: To set the runtime status of the net.ipv4.conf.default.accept_redirects kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.conf.default.accept_redirects=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.conf.default.accept_redirects = 0 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv4_icmp_echo_ignore_broadcasts
+Info: To set the runtime status of the net.ipv4.icmp_echo_ignore_broadcasts kernel parameter, run the following command: $ sudo sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv4.icmp_echo_ignore_broadcasts = 1 
+
+Rule	xccdf_org.ssgproject.content_rule_wireless_disable_interfaces
+Info: Deactivating wireless network interfaces should prevent normal usage of the wireless capability. Configure the system to disable all wireless network interfaces with the following command: $ sudo nmcli radio wifi off 
+
+Rule	xccdf_org.ssgproject.content_rule_sysctl_net_ipv6_conf_all_accept_source_route
+Info: To set the runtime status of the net.ipv6.conf.all.accept_source_route kernel parameter, run the following command: $ sudo sysctl -w net.ipv6.conf.all.accept_source_route=0 If this is not the system's default value, add the following line to /etc/sysctl.conf: net.ipv6.conf.all.accept_source_route = 0
+
+Rule	xccdf_org.ssgproject.content_rule_service_firewalld_enabled
+Info: The firewalld service can be enabled with the following command: $ sudo systemctl enable firewalld.service 
+
+Rule	xccdf_org.ssgproject.content_rule_set_firewalld_default_zone
+Info: To set the default zone to drop for the built-in default zone which processes incoming IPv4 and IPv6 packets, modify the following line in /etc/firewalld/firewalld.conf to be: DefaultZone=drop 
+
+Rule	xccdf_org.ssgproject.content_rule_configure_firewalld_rate_limiting
+Info: Create a direct firewall rule to protect against DoS attacks with the following command: $ sudo firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT_direct 0 -p tcp -m limit --limit 25/minute --limit-burst 100 -j ACCEPT 
+
+Rule	xccdf_org.ssgproject.content_rule_configure_firewalld_ports
+Info: Configure the firewalld ports to allow approved services to have access to the system. To configure firewalld to open ports, run the following command: $ sudo firewall-cmd --permanent --add-port=port_number/tcp or $ sudo firewall-cmd --permanent --add-port=service_name Run the command list above for each of the ports listed below: To configure firewalld to allow access, run the following command(s): firewall-cmd --permanent --add-service=ssh 
+
+Rule	xccdf_org.ssgproject.content_rule_kernel_module_dccp_disabled
+Info: The Datagram Congestion Control Protocol (DCCP) is a relatively new transport layer protocol, designed to support streaming media and telephony. To configure the system to prevent the dccp kernel module from being loaded, add the following line to a file in the directory /etc/modprobe.d: install dccp /bin/true 
+
+Rule	xccdf_org.ssgproject.content_rule_libreswan_approved_tunnels
+Info: Libreswan provides an implementation of IPsec and IKE, which permits the creation of secure tunnels over untrusted networks. As such, IPsec can be used to circumvent certain network requirements such as filtering. Verify that if any IPsec connection (conn) configured in /etc/ipsec.conf and /etc/ipsec.d exists is an approved organizational connection. 
+
+Rule	xccdf_org.ssgproject.content_rule_rsyslog_cron_logging
+Info: Cron logging must be implemented to spot intrusions or trace cron job status. If cron is not logging to rsyslog, it can be implemented by adding the following to the RULES section of /etc/rsyslog.conf: cron.* /var/log/cron 
+
+Rule	xccdf_org.ssgproject.content_rule_rsyslog_remote_loghost
+Info: To configure rsyslog to send logs to a remote log server, open /etc/rsyslog.conf and read and understand the last section of the file, which describes the multiple directives necessary to activate remote logging. Along with these other directives, the system can be configured to forward its logs to a particular log server by adding or correcting one of the following lines, substituting loghost.example.com appropriately. The choice of protocol depends on the environment of the system; although TCP and RELP provide more reliable message delivery, they may not be supported in all environments. To use UDP for log message delivery: *.* @loghost.example.com To use TCP for log message delivery: *.* @@loghost.example.com To use RELP for log message delivery: *.* :omrelp:loghost.example.com There must be a resolvable DNS CNAME or Alias record set to "logcollector" for logs to be sent correctly to the centralized logging utility. 
+
+Rule	xccdf_org.ssgproject.content_rule_rsyslog_nolisten
+Info: The rsyslog daemon should not accept remote messages unless the system acts as a log server. To ensure that it is not listening on the network, ensure the following lines are not found in /etc/rsyslog.conf: $ModLoad imtcp $InputTCPServerRun port $ModLoad imudp $UDPServerRun port $ModLoad imrelp $InputRELPServerRun port 
+
+Rule	xccdf_org.ssgproject.content_rule_service_auditd_enabled
+Info: The auditd service is an essential userspace component of the Linux Auditing System, as it is responsible for writing audit records to disk. The auditd service can be enabled with the following command: $ sudo systemctl enable auditd.service 
+
+Rule	xccdf_org.ssgproject.content_rule_auditd_data_retention_space_left_action
+Info: The auditd service can be configured to take an action when disk space starts to run low. Edit the file /etc/audit/auditd.conf. Modify the following line, substituting ACTION appropriately: space_left_action = ACTION Possible values for ACTION are described in the auditd.conf man page. These include: ignoresyslogemailexecsuspendsinglehalt Set this to email (instead of the default, which is suspend) as it is more likely to get prompt attention. Acceptable values also include suspend, single, and halt.  
+
+Rule	xccdf_org.ssgproject.content_rule_auditd_data_retention_space_left
+Info: The auditd service can be configured to take an action when disk space is running low but prior to running out of space completely. Edit the file /etc/audit/auditd.conf. Add or modify the following line, substituting SIZE_in_MB appropriately: space_left = SIZE_in_MB Set this value to the appropriate size in Megabytes cause the system to notify the user of an issue. 
+
+Rule	xccdf_org.ssgproject.content_rule_auditd_data_retention_action_mail_acct
+Info: The auditd service can be configured to send email to a designated account in certain situations. Add or correct the following line in /etc/audit/auditd.conf to ensure that administrators are notified via email for those situations: action_mail_acct = root
+
+Rule	xccdf_org.ssgproject.content_rule_auditd_audispd_network_failure_action
+Info: Configure the action the operating system takes if there is an error sending audit records to a remote system. Edit the file /etc/audisp/audisp-remote.conf. Add or modify the following line, substituting ACTION appropriately: network_failure_action = ACTION Set this value to single to cause the system to switch to single user mode for corrective action. Acceptable values also include syslog and halt. For certain systems, the need for availability outweighs the need to log all actions, and a different setting should be determined. 
+
+Rule	xccdf_org.ssgproject.content_rule_auditd_audispd_disk_full_action
+Info: Configure the action the operating system takes if the disk the audit records are written to becomes full. Edit the file /etc/audisp/audisp-remote.conf. Add or modify the following line, substituting ACTION appropriately: disk_full_action = ACTION Set this value to single to cause the system to switch to single user mode for corrective action. Acceptable values also include syslog and halt. For certain systems, the need for availability outweighs the need to log all actions, and a different setting should be determined.  
+
+Rule	xccdf_org.ssgproject.content_rule_auditd_audispd_encrypt_sent_records
+Info: Configure the operating system to encrypt the transfer of off-loaded audit records onto a different system or media from the system being audited. Uncomment the enable_krb5 option in /etc/audisp/audisp-remote.conf, and set it with the following line: enable_krb5 = yes
+
+Rule	xccdf_org.ssgproject.content_rule_auditd_audispd_configure_remote_server
+Info: Configure the audispd plugin to off-load audit records onto a different system or media from the system being audited. Set the remote_server option in /etc/audisp/audisp-remote.conf with an IP address or hostname of the system that the audispd plugin should send audit records to. For example replacing REMOTE_SYSTEM with an IP address or hostname: remote_server = REMOTE_SYSTEM 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_system_shutdown
+Info: f the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -f 2 If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to the top of the /etc/audit/audit.rules file: -f 2 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_usergroup_modification_group
+Info: If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d, in order to capture events that modify account changes: -w /etc/group -p wa -k audit_rules_usergroup_modification If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file, in order to capture events that modify account changes: -w /etc/group -p wa -k audit_rules_usergroup_modification 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_usergroup_modification_gshadow
+Info: If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d, in order to capture events that modify account changes: -w /etc/gshadow -p wa -k audit_rules_usergroup_modification If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file, in order to capture events that modify account changes: -w /etc/gshadow -p wa -k audit_rules_usergroup_modification 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_usergroup_modification_shadow
+Info: If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d, in order to capture events that modify account changes: -w /etc/shadow -p wa -k audit_rules_usergroup_modification If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file, in order to capture events that modify account changes: -w /etc/shadow -p wa -k audit_rules_usergroup_modification 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_usergroup_modification_passwd
+Info: If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d, in order to capture events that modify account changes: -w /etc/passwd -p wa -k audit_rules_usergroup_modification If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file, in order to capture events that modify account changes: -w /etc/passwd -p wa -k audit_rules_usergroup_modification 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_usergroup_modification_opasswd
+Info: If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d, in order to capture events that modify account changes: -w /etc/security/opasswd -p wa -k audit_rules_usergroup_modification If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file, in order to capture events that modify account changes: -w /etc/security/opasswd -p wa -k audit_rules_usergroup_modification 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_chmod
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S chmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S chmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S chmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S chmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_chown
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S chown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S chown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S chown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S chown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_fchmod
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S fchmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S fchmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchmod -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_fchmodat
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S fchmodat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchmodat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S fchmodat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchmodat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_fchown
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S fchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S fchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_fchownat
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S fchownat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchownat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S fchownat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fchownat -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_fremovexattr
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S fremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S fremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_fsetxattr
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S fsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S fsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S fsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_lchown
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S lchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S lchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S lchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S lchown -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_lremovexattr
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S lremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S lremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S lremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S lremovexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_lsetxattr
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S lsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S lsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S lsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S lsetxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_removexattr
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S removexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S removexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S removexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S removexattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_dac_modification_setxattr
+Info: At a minimum, the audit system should collect file permission changes for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S setxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S setxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S setxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod If the system is 64 bit then also add the following line: -a always,exit -F arch=b64 -S setxattr -F auid>=1000 -F auid!=4294967295 -F key=perm_mod 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_login_events_tallylog
+Info: The audit system already collects login information for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d in order to watch for attempted manual edits of files involved in storing logon events: -w /var/log/tallylog -p wa -k logins If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file in order to watch for unattempted manual edits of files involved in storing logon events: -w /var/log/tallylog -p wa -k logins 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_login_events_faillock
+Info: The audit system already collects login information for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d in order to watch for attempted manual edits of files involved in storing logon events: -w /var/run/faillock/ -p wa -k logins If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file in order to watch for unattempted manual edits of files involved in storing logon events: -w /var/run/faillock/ -p wa -k logins 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_login_events_lastlog
+Info: The audit system already collects login information for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d in order to watch for attempted manual edits of files involved in storing logon events: -w /var/log/lastlog -p wa -k logins If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file in order to watch for unattempted manual edits of files involved in storing logon events: -w /var/log/lastlog -p wa -k logins 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_unsuccessful_file_modification_creat
+Info: At a minimum, the audit system should collect unauthorized file accesses for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S creat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S creat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S creat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S creat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S creat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S creat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S creat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S creat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access  
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_unsuccessful_file_modification_open
+Info: At a minimum, the audit system should collect unauthorized file accesses for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S open -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S open -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S open -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S open -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S open -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S open -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S open -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S open -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_unsuccessful_file_modification_openat
+Info: At a minimum, the audit system should collect unauthorized file accesses for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S openat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S openat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S openat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S openat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S openat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S openat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S openat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S openat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_unsuccessful_file_modification_open_by_handle_at
+Info: At a minimum, the audit system should collect unauthorized file accesses for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S open_by_handle_at,truncate,ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S open_by_handle_at,truncate,ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S open_by_handle_at,truncate,ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S open_by_handle_at,truncate,ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_unsuccessful_file_modification_truncate
+Info: At a minimum, the audit system should collect unauthorized file accesses for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S truncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S truncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S truncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S truncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S truncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S truncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S truncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S truncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_unsuccessful_file_modification_ftruncate
+Info: At a minimum, the audit system should collect unauthorized file accesses for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F arch=b32 -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S ftruncate -F exiu=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F arch=b32 -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b32 -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access If the system is 64 bit then also add the following lines: -a always,exit -F arch=b64 -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -F key=access -a always,exit -F arch=b64 -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -F key=access 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_execution_semanage
+Info: 
+At a minimum, the audit system should collect any execution attempt of the semanage command for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_execution_setsebool
+Info: At a minimum, the audit system should collect any execution attempt of the setsebool command for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/sbin/setsebool -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F path=/usr/sbin/setsebool -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_execution_chcon
+Info: At a minimum, the audit system should collect any execution attempt of the chcon command for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_execution_restorecon
+Info: At a minimum, the audit system should collect any execution attempt of the restorecon command for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following lines to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/sbin/restorecon -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following lines to /etc/audit/audit.rules file: -a always,exit -F path=/usr/sbin/restorecon -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged-priv_change 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. To find the relevant setuid / setgid programs, run the following command for each local partition PART: $ sudo find PART -xdev -type f -perm -4000 -o -type f -perm -2000 2>/dev/null If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d for each setuid / setgid program on the system, replacing the SETUID_PROG_PATH part with the full path of that setuid / setgid program in the list: -a always,exit -F path=SETUID_PROG_PATH -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules for each setuid / setgid program on the system, replacing the SETUID_PROG_PATH part with the full path of that setuid / setgid program in the list: -a always,exit -F path=SETUID_PROG_PATH -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_passwd
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_unix_chkpwd
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_gpasswd
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_chage
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_userhelper
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/userhelper -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/userhelper -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_su
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_sudo
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_sudoedit
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged  
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_newgrp
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_chsh
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_umount
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_postdrop
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/sbin/postdrop -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/sbin/postdrop -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_postqueue
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/sbin/postqueue -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/sbin/postqueue -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_ssh_keysign
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/libexec/openssh/key-sign -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_pt_chown
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/libexec/pt_chown -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/libexec/pt_chown -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_crontab
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_privileged_commands_pam_timestamp_check
+Info: At a minimum, the audit system should collect the execution of privileged commands for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add a line of the following form to a file with suffix .rules in the directory /etc/audit/rules.d: -a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add a line of the following form to /etc/audit/audit.rules: -a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_media_export
+Info: At a minimum, the audit system should collect media exportation events for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S mount -F auid>=1000 -F auid!=4294967295 -F key=export If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S mount -F auid>=1000 -F auid!=4294967295 -F key=export
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_file_deletion_events_rmdir
+Info: At a minimum, the audit system should collect file deletion events for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S rmdir -F auid>=1000 -F auid!=4294967295 -F key=delete If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S rmdir -F auid>=1000 -F auid!=4294967295 -F key=delete 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_file_deletion_events_unlink
+Info: At a minimum, the audit system should collect file deletion events for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S unlink -F auid>=1000 -F auid!=4294967295 -F key=delete If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S unlink -F auid>=1000 -F auid!=4294967295 -F key=delete 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_file_deletion_events_unlinkat
+Info: At a minimum, the audit system should collect file deletion events for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S unlinkat -F auid>=1000 -F auid!=4294967295 -F key=delete If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S unlinkat -F auid>=1000 -F auid!=4294967295 -F key=delete 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_file_deletion_events_rename
+Info: At a minimum, the audit system should collect file deletion events for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S rename -F auid>=1000 -F auid!=4294967295 -F key=delete If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S rename -F auid>=1000 -F auid!=4294967295 -F key=delete 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_file_deletion_events_renameat
+Info: At a minimum, the audit system should collect file deletion events for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S renameat -F auid>=1000 -F auid!=4294967295 -F key=delete If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file, setting ARCH to either b32 or b64 as appropriate for your system: -a always,exit -F arch=ARCH -S renameat -F auid>=1000 -F auid!=4294967295 -F key=delete 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_sysadmin_actions
+Info: At a minimum, the audit system should collect administrator actions for all users and root. If the auditd daemon is configured to use the augenrules program to read audit rules during daemon startup (the default), add the following line to a file with suffix .rules in the directory /etc/audit/rules.d: -w /etc/sudoers -p wa -k actions -w /etc/sudoers.d/ -p wa -k actions If the auditd daemon is configured to use the auditctl utility to read audit rules during daemon startup, add the following line to /etc/audit/audit.rules file: -w /etc/sudoers -p wa -k actions -w /etc/sudoers.d/ -p wa -k actions 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_kernel_module_loading_init
+Info: To capture kernel module loading events, use following line, setting ARCH to either b32 for 32-bit system, or having two lines for both b32 and b64 in case your system is 64-bit: -a always,exit -F arch=ARCH -S init_module -F key=modules Place to add the line depends on a way auditd daemon is configured. If it is configured to use the augenrules program (the default), add the line to a file with suffix .rules in the directory /etc/audit/rules.d. If the auditd daemon is configured to use the auditctl utility, add the line to file /etc/audit/audit.rules. 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_kernel_module_loading_delete
+Info: To capture kernel module unloading events, use following line, setting ARCH to either b32 for 32-bit system, or having two lines for both b32 and b64 in case your system is 64-bit: -a always,exit -F arch=ARCH -S delete_module -F key=modules Place to add the line depends on a way auditd daemon is configured. If it is configured to use the augenrules program (the default), add the line to a file with suffix .rules in the directory /etc/audit/rules.d. If the auditd daemon is configured to use the auditctl utility, add the line to file /etc/audit/audit.rules. 
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_kernel_module_loading_insmod
+Info: To capture invocation of insmod, utility used to insert modules into kernel, use the following line: -w /usr/sbin/insmod -p x -k modules Place to add the line depends on a way auditd daemon is configured. If it is configured to use the augenrules program (the default), add the line to a file with suffix .rules in the directory /etc/audit/rules.d. If the auditd daemon is configured to use the auditctl utility, add the line to file /etc/audit/audit.rules.
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_kernel_module_loading_rmmod
+Info: To capture invocation of rmmod, utility used to remove modules from kernel, add the following line: -w /usr/sbin/rmmod -p x -k modules Place to add the line depends on a way auditd daemon is configured. If it is configured to use the augenrules program (the default), add the line to a file with suffix .rules in the directory /etc/audit/rules.d. If the auditd daemon is configured to use the auditctl utility, add the line to file /etc/audit/audit.rules.
+
+Rule	xccdf_org.ssgproject.content_rule_audit_rules_kernel_module_loading_modprobe
+Info: To capture invocation of modprobe, utility used to insert / remove modules from kernel, add the following line: -w /usr/sbin/modprobe -p x -k modules Place to add the line depends on a way auditd daemon is configured. If it is configured to use the augenrules program (the default), add the line to a file with suffix .rules in the directory /etc/audit/rules.d. If the auditd daemon is configured to use the auditctl utility, add the line to file /etc/audit/audit.rules. 
+
+Rule	xccdf_org.ssgproject.content_rule_package_telnet-server_removed
+Info: The telnet-server package can be uninstalled with the following command: $ sudo yum erase telnet-server
+
+Rule	xccdf_org.ssgproject.content_rule_package_rsh-server_removed
+Info: The rsh-server package can be uninstalled with the following command: $ sudo yum erase rsh-server 
+
+Rule	xccdf_org.ssgproject.content_rule_no_host_based_files
+Info: The /etc/shosts.equiv file list remote hosts and users that are trusted by the local system. To remove these files, run the following command to delete them from any location: $ sudo rm /etc/shosts.equiv 
+
+Rule	xccdf_org.ssgproject.content_rule_no_user_host_based_files
+Info: The ~/.shosts (in each user's home directory) files list remote hosts and users that are trusted by the local system. To remove these files, run the following command to delete them from any location: $ sudo rm ~/.shosts 
+
+Rule	xccdf_org.ssgproject.content_rule_package_ypserv_removed
+Info: The ypserv package can be uninstalled with the following command: $ sudo yum erase ypserv 
+
+Rule	xccdf_org.ssgproject.content_rule_package_tftp-server_removed
+Info: The tftp-server package can be removed with the following command: $ sudo yum erase tftp-server 
+
+Rule	xccdf_org.ssgproject.content_rule_tftpd_uses_secure_mode
+Info: If running the tftp service is necessary, it should be configured to change its root directory at startup. To do so, ensure /etc/xinetd.d/tftp includes -s as a command line argument, as shown in the following example (which is also the default): server_args = -s /var/lib/tftpboot
+
+Rule	xccdf_org.ssgproject.content_rule_service_kdump_disabled
+Info: The kdump service provides a kernel crash dump analyzer. It uses the kexec system call to boot a secondary kernel ("capture" kernel) following a system crash, which can load information from the crashed kernel for analysis. The kdump service can be disabled with the following command: $ sudo systemctl disable kdump.service 
+
+Rule	xccdf_org.ssgproject.content_rule_file_owner_cron_allow
+Info: If /etc/cron.allow exists, it must be owned by root. To properly set the owner of /etc/cron.allow, run the command: $ sudo chown root /etc/cron.allow 
+
+Rule	xccdf_org.ssgproject.content_rule_file_groupowner_cron_allow
+Info: If /etc/cron.allow exists, it must be group-owned by root. To properly set the group owner of /etc/cron.allow, run the command: $ sudo chgrp root /etc/cron.allow 
+
+Rule	xccdf_org.ssgproject.content_rule_package_openssh-server_installed
+Info: The openssh-server package should be installed. The openssh-server package can be installed with the following command: $ sudo yum install openssh-server
+
+Rule	xccdf_org.ssgproject.content_rule_service_sshd_enabled
+Info: The SSH server service, sshd, is commonly needed. The sshd service can be enabled with the following command: $ sudo systemctl enable sshd.service 
+
+Rule	xccdf_org.ssgproject.content_rule_file_permissions_sshd_pub_key
+Info: To properly set the permissions of /etc/ssh/*.pub, run the command: $ sudo chmod 0644 /etc/ssh/*.pub 
+
+Rule	xccdf_org.ssgproject.content_rule_file_permissions_sshd_private_key
+Info: To properly set the permissions of /etc/ssh/*_key, run the command: $ sudo chmod 0640 /etc/ssh/*_key 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_allow_only_protocol2
+Info: Only SSH protocol version 2 connections should be permitted. The default setting in /etc/ssh/sshd_config is correct, and can be verified by ensuring that the following line appears: Protocol 2
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_gssapi_auth
+Info: Unless needed, SSH should not permit extraneous or unnecessary authentication mechanisms like GSSAPI. To disable GSSAPI authentication, add or correct the following line in the /etc/ssh/sshd_config file: GSSAPIAuthentication no 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_kerb_auth
+Info: Unless needed, SSH should not permit extraneous or unnecessary authentication mechanisms like Kerberos. To disable Kerberos authentication, add or correct the following line in the /etc/ssh/sshd_config file: KerberosAuthentication no 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_enable_strictmodes
+Info: SSHs StrictModes option checks file and ownership permissions in the user's home directory .ssh folder before accepting login. If world- writable permissions are found, logon is rejected. To enable StrictModes in SSH, add or correct the following line in the /etc/ssh/sshd_config file: StrictModes yes 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_use_priv_separation
+Info: When enabled, SSH will create an unprivileged child process that has the privilege of the authenticated user. To enable privilege separation in SSH, add or correct the following line in the /etc/ssh/sshd_config file: UsePrivilegeSeparation sandbox 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_compression
+Info: Compression is useful for slow network connections over long distances but can cause performance issues on local LANs. If use of compression is required, it should be enabled only after a user has authenticated; otherwise , it should be disabled. To disable compression or delay compression until after a user has successfully authenticated, add or correct the following line in the /etc/ssh/sshd_config file: Compression no or Compression delayed 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_print_last_log
+Info: When enabled, SSH will display the date and time of the last successful account logon. To enable LastLog in SSH, add or correct the following line in the /etc/ssh/sshd_config file: PrintLastLog yes 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_set_idle_timeout
+Info: SSH allows administrators to set an idle timeout interval. After this interval has passed, the idle user will be automatically logged out. To set an idle timeout interval, edit the following line in /etc/ssh/sshd_config as follows: ClientAliveInterval interval The timeout interval is given in seconds. To have a timeout of 10 minutes, set interval to 600. If a shorter timeout has already been set for the login shell, that value will preempt any SSH setting made here. Keep in mind that some processes may stop SSH from correctly detecting that the user is idle. 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_set_keepalive
+Info: To ensure the SSH idle timeout occurs precisely when the ClientAliveCountMax is set, edit /etc/ssh/sshd_config as follows: ClientAliveCountMax 0 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_rhosts
+Info: SSH can emulate the behavior of the obsolete rsh command in allowing users to enable insecure access to their accounts via .rhosts files. To ensure this behavior is disabled, add or correct the following line in /etc/ssh/sshd_config: IgnoreRhosts yes
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_user_known_hosts
+Info: SSH can allow system users user host-based authentication to connect to systems if a cache of the remote systems public keys are available. This should be disabled. To ensure this behavior is disabled, add or correct the following line in /etc/ssh/sshd_config: IgnoreUserKnownHosts yes
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_rhosts_rsa
+Info: SSH can allow authentication through the obsolete rsh command through the use of the authenticating user's SSH keys. This should be disabled. To ensure this behavior is disabled, add or correct the following line in /etc/ssh/sshd_config: RhostsRSAAuthentication no 
+
+Rule	xccdf_org.ssgproject.content_rule_disable_host_auth
+Info: SSH's cryptographic host-based authentication is more secure than .rhosts authentication. However, it is not recommended that hosts unilaterally trust one another, even within an organization. To disable host-based authentication, add or correct the following line in /etc/ssh/sshd_config: HostbasedAuthentication no 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_enable_x11_forwarding
+Info: By default, remote X11 connections are not encrypted when initiated by users. SSH has the capability to encrypt remote X11 connections when SSH's X11Forwarding option is enabled. To enable X11 Forwarding, add or correct the following line in /etc/ssh/sshd_config: X11Forwarding yes 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_root_login
+Info: The root user should never be allowed to login to a system directly over a network. To disable root login via SSH, add or correct the following line in /etc/ssh/sshd_config: PermitRootLogin no 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_disable_empty_passwords
+Info: To explicitly disallow SSH login from accounts with empty passwords, add or correct the following line in /etc/ssh/sshd_config: PermitEmptyPasswords no Any accounts with empty passwords should be disabled immediately, and PAM configuration should prevent users from being able to assign themselves empty passwords. 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_enable_warning_banner
+Info: To enable the warning banner and ensure it is consistent across the system, add or correct the following line in /etc/ssh/sshd_config: Banner /etc/issue Another section contains information on how to create an appropriate system-wide warning banner. 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_do_not_permit_user_env
+Info: To ensure users are not able to override environment options to the SSH daemon, add or correct the following line in /etc/ssh/sshd_config: PermitUserEnvironment no 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_use_approved_ciphers
+Info: Limit the ciphers to those algorithms which are FIPS-approved. Counter (CTR) mode is also preferred over cipher-block chaining (CBC) mode. The following line in /etc/ssh/sshd_config demonstrates use of FIPS 140-2 validated ciphers: Ciphers aes128-ctr,aes192-ctr,aes256-ctr The following ciphers are FIPS 140-2 certified on RHEL 7: - aes128-ctr - aes192-ctr - aes256-ctr - aes128-cbc - aes192-cbc - aes256-cbc - 3des-cbc - rijndael-cbc@lysator.liu.se Any combination of the above ciphers will pass this check. Official FIPS 140-2 paperwork for RHEL7 can be found at http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/140sp/140sp2630.pdf. 
+
+Rule	xccdf_org.ssgproject.content_rule_sshd_use_approved_macs
+Info: Limit the MACs to those hash algorithms which are FIPS-approved. The following line in /etc/ssh/sshd_config demonstrates use of FIPS-approved MACs: MACs hmac-sha2-512,hmac-sha2-256 Only the following message authentication codes are FIPS 140-2 certified on RHEL 7: - hmac-sha1 - hmac-sha2-256 - hmac-sha2-512 - hmac-sha1-etm@openssh.com - hmac-sha2-256-etm@openssh.com - hmac-sha2-512-etm@openssh.com Any combination of the above MACs will pass this check. Official FIPS 140-2 paperwork for RHEL7 can be found at http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/140sp/140sp2630.pdf. 
+
+Rule	xccdf_org.ssgproject.content_rule_sssd_enable_pam_services
+Info: SSSD should be configured to run SSSD pam services. To configure SSSD to known SSH hosts, add pam to services under the [sssd] section in /etc/sssd/sssd.conf. For example: [sssd] services = sudo, autofs, pam 
+
+Rule	xccdf_org.ssgproject.content_rule_sssd_ldap_configure_tls_ca
+Info: Configure SSSD to implement cryptography to protect the integrity of LDAP remote access sessions. By setting the ldap_tls_cacert option in /etc/sssd/sssd.conf to point to the path for the X.509 certificates used for peer authentication. ldap_tls_cacert /path/to/tls/ca.cert 
+
+Rule	xccdf_org.ssgproject.content_rule_sssd_ldap_configure_tls_ca_dir
+Info: Configure SSSD to implement cryptography to protect the integrity of LDAP remote access sessions. By setting the ldap_tls_cacertdir option in /etc/sssd/sssd.conf to point to the path for the X.509 certificates used for peer authentication. ldap_tls_cacertdir /path/to/tls/cacert 
+
+Rule	xccdf_org.ssgproject.content_rule_package_xorg-x11-server-common_removed
+Info: By removing the xorg-x11-server-common package, the system no longer has X Windows installed. If X Windows is not installed then the system cannot boot into graphical user mode. This prevents the system from being accidentally or maliciously booted into a graphical.target mode. To do so, run the following command: $ sudo yum groupremove "X Window System" $ sudo yum remove xorg-x11-server-common 
+
+Rule	xccdf_org.ssgproject.content_rule_chronyd_or_ntpd_set_maxpoll
+Info: The maxpoll should be configured to 10 in /etc/ntp.conf or /etc/chrony.conf to continuously poll time servers. To configure maxpoll in /etc/ntp.conf or /etc/chrony.conf add the following: maxpoll 10 
+
+Rule	xccdf_org.ssgproject.content_rule_postfix_prevent_unrestricted_relay
+Info: Modify the /etc/postfix/main.cf file to restrict client connections to the local network with the following command: $ sudo postconf -e 'smtpd_client_restrictions = permit_mynetworks,reject' 
+
+Rule	xccdf_org.ssgproject.content_rule_ldap_client_start_tls
+Info: This check verifies that RHEL7 implements cryptography to protect the integrity of remote LDAP authentication sessions. To determine if LDAP is being used for authentication, use the following command: $ sudo grep -i useldapauth /etc/sysconfig/authconfig If USELDAPAUTH=yes, then LDAP is being used. To check if LDAP is configured to use TLS, use the following command: $ sudo grep -i ssl /etc/pam_ldap.conf 
+
+Rule	xccdf_org.ssgproject.content_rule_mount_option_nosuid_remote_filesystems
+Info: Add the nosuid option to the fourth column of /etc/fstab for the line which controls mounting of any NFS mounts. 
+
+Rule	xccdf_org.ssgproject.content_rule_mount_option_noexec_remote_filesystems
+Info: Add the noexec option to the fourth column of /etc/fstab for the line which controls mounting of any NFS mounts. 
+
+Rule	xccdf_org.ssgproject.content_rule_mount_option_krb_sec_remote_filesystems
+Info: Add the sec=krb5:krb5i:krb5p option to the fourth column of /etc/fstab for the line which controls mounting of any NFS mounts.  
+
+Rule	xccdf_org.ssgproject.content_rule_package_vsftpd_removed
+Info: The vsftpd package can be removed with the following command: $ sudo yum erase vsftpd 
+
+Rule	xccdf_org.ssgproject.content_rule_snmpd_not_default_password
+Info: Edit /etc/snmp/snmpd.conf, remove or change the default community strings of public and private. Once the default community strings have been changed, restart the SNMP service: $ sudo service snmpd restart 

@@ -1,0 +1,54 @@
+---
+- hosts: svm
+    
+  tasks:
+    - name: make pclamp dir
+      file: 
+        path: /var/www/html/pclamps 
+        state: directory
+        owner: apache
+        group: apache
+        mode: 0755
+    - name: deploy test crumb.png files
+      copy: 
+        src: files/crumb.png
+        dest: /var/www/html/pclamps/crumb.png
+        owner: apache
+        group: apache
+        mode: 0755
+    - name: copy crumb.png into pclamp1-2.png
+      copy: 
+        src: files/crumb.png
+        dest: /var/www/html/pclamps/pclamp1-2.png
+        owner: apache
+        group: apache
+        mode: 0755
+    - name: copy crumb.png into pclamp1-1.png
+      copy: 
+        src: files/crumb.png
+        dest: /var/www/html/pclamps/pclamp1-1.png
+        owner: apache
+        group: apache
+        mode: 0755
+    - name: copy crumb.png into pclamp2-1.png
+      copy: 
+        src: files/crumb.png
+        dest: /var/www/html/pclamps/pclamp2-1.png
+        owner: apache
+        group: apache
+        mode: 0755
+    - name: copy crumb.png into pclamp3-2.png
+      copy: 
+        src: files/crumb.png
+        dest: /var/www/html/pclamps/pclamp3-2.png
+        owner: apache
+        group: apache
+        mode: 0755
+    - name: copy crumb.png into pclamp3-1.png
+      copy: 
+        src: files/crumb.png
+        dest: /var/www/html/pclamps/pclamp3-1.png
+        owner: apache
+        group: apache
+        mode: 0755
+...

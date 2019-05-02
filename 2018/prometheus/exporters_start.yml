@@ -1,0 +1,331 @@
+---
+- hosts: svm8
+  tasks: 
+  - name: stop firewall
+    shell: systemctl stop firewalld
+
+  - name: Install wget
+    yum:
+      name: wget
+      state: present
+
+  - name: Install curl
+    yum:
+      name: curl
+      state: present
+
+#  - name: ADD USER
+#    command: useradd --no-create-home --shell /bin/false prometheus
+
+  - name: copy service files
+    copy:
+      src: ./service_files/prometheus.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy service files2
+    copy:
+      src: ./service_files/alertmanager.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy service files3
+    copy:
+      src: ./service_files/blackbox_exporter.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root 
+      mode: 0644
+
+  - name: copy service files4
+    copy:
+      src: ./service_files/ipmi_exporter.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy service files5
+    copy:
+      src: ./service_files/node_exporter.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy yml file
+    copy:
+      src: ./service_files/alertmanager.yml
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy ipmi files
+    copy:
+      src: ./ipmi_exporter
+      dest: /etc
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy grafana files
+    copy:
+      src: ./grafana
+      dest: /etc
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: prom directory
+    file:
+      path: /etc/prometheus
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: prom2 directory
+    file:
+      path: /var/lib/prometheus
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: move prometheus files
+    copy:
+      src: ./prometheus/prometheus.yml
+      dest: /etc/prometheus
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: move prometheus files
+    copy:
+      src: ./prometheus/alert.rules.yml
+      dest: /etc/prometheus
+      owner: root
+      group: root
+      mode: 0644
+
+  
+  - name: change owner
+    command: chown root:root /etc/prometheus
+
+  - name: change owner2
+    command: chown root:root /var/lib/prometheus
+
+       
+  - name: get prometheus
+    command: curl -LO https://github.com/prometheus/prometheus/releases/download/v2.3.2/prometheus-2.3.2.linux-amd64.tar.gz
+
+  - name: unpack prometheus
+    command: tar xvfz prometheus-2.3.2.linux-amd64.tar.gz
+
+  - name: copy binaries 1
+    copy:
+      src: /root/prometheus-2.3.2.linux-amd64/prometheus
+      dest: /usr/local/bin
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: copy binaries 2
+    copy:
+      src: /root/prometheus-2.3.2.linux-amd64/promtool
+      dest: /usr/local/bin
+      owner: root
+      group: root
+      mode: 0755
+
+#  - name: copy binaries
+#    command: cp prometheus-2.3.2.linux-amd64/prometheus /usr/local/bin/
+#    command: cp prometheus-2.3.2.linux-amd64/promtool /usr/local/bin/
+
+  - name: change owner2
+    command: chown root:root /usr/local/bin/prometheus
+    command: chown root:root /usr/local/bin/promtool
+
+  - name: copy binaries 2
+    copy:
+      src: /root/prometheus-2.3.2.linux-amd64/consoles
+      dest: /etc/prometheus
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: copy binaries 2
+    copy:
+      src: /root/prometheus-2.3.2.linux-amd64/console_libraries
+      dest: /etc/prometheus
+      owner: root
+      group: root
+      mode: 0755
+
+#  - name: copy consoles
+#    command: cp -r prometheus-2.3.2.linux-amd64/consoles /etc/prometheus
+#    command: cp -r prometheus-2.3.2.linux-amd64/console_libraries /etc/prometheus
+
+  - name: change owner3
+    command: chown -R root:root /etc/prometheus/consoles
+    command: chown -R root:root /etc/prometheus/console_libraries
+
+  - name: remove files
+    command: rm -rf prometheus-2.3.2.linux-amd64.tar.gz prometheus-2.3.2.linux-amd6
+#    command: rm /etc/prometheus/prometheus.yml
+  
+  - name: change owner4
+    command: chown root:root /etc/prometheus/prometheus.yml
+
+  - name: add users
+    command: useradd --no-create-home --shell /bin/false blackbox_exporter
+    command: useradd --no-create-home --shell /bin/false alertmanager
+    command: useradd --no-create-home --shell /bin/false node_exporter
+
+  - name: get alertmanager
+    command: curl -LO https://github.com/prometheus/alertmanager/releases/download/v0.15.1/alertmanager-0.15.1.linux-amd64.tar.gz
+    
+  - name: unpack alertmanager
+    command: tar xvf alertmanager-0.15.1.linux-amd64.tar.gz
+
+  - name: move binary files 1
+    command: mv alertmanager-0.15.1.linux-amd64/alertmanager /usr/local/bin
+   
+  - name: move binary files 2    
+    command: mv alertmanager-0.15.1.linux-amd64/amtool /usr/local/bin
+
+  - name: mkdir alertm
+    file:
+      path: /etc/alertmanager
+      state: directory
+#      owner: alertmanager
+
+  - name: change alert owner
+    command: chown alertmanager:alertmanager /usr/local/bin/alertmanager
+    command: chown alertmanager:alertmanager /etc/alertmanager
+
+  - name: change alert owner
+    command: chown alertmanager:alertmanager /usr/local/bin/amtool
+
+  - name: remove files
+    command: rm -rf alertmanager-0.15.1.linux-amd64 alertmanager-0.15.1.linux-amd64.tar.gz
+ 
+  - name: copy alertmanager files
+    copy:
+      src: ./alertmanager
+      dest: /etc
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: Install grafana
+    command: wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.1-1.x86_64.rpm
+
+  - name: yum grafana
+    command: yum localinstall -y grafana-5.2.1-1.x86_64.rpm
+
+  - name: get Node Exporter
+    command: curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
+
+  - name: unpack node
+    command: tar xvfz node_exporter-0.16.0.linux-amd64.tar.gz
+
+  - name: set user and remove files
+    command: mv node_exporter-0.16.0.linux-amd64/node_exporter /usr/local/bin/
+
+  - name: chown node
+    command: chown node_exporter:node_exporter /usr/local/bin/node_exporter
+    
+  - name: rm node files
+    command: rm -rf node_exporter-0.16.0.linux-amd64.tar.gz node_exporter-0.16.0.linux-amd64
+
+  - name: Get blackbox
+    command: curl -LO https://github.com/prometheus/blackbox_exporter/releases/download/v0.12.0/blackbox_exporter-0.12.0.linux-amd64.tar.gz
+   
+  - name: unpack blackbox 
+    command: tar xvf blackbox_exporter-0.12.0.linux-amd64.tar.gz
+ 
+  - name: move binary
+    command: mv ./blackbox_exporter-0.12.0.linux-amd64/blackbox_exporter /usr/local/bin  
+  
+  - name: change bbowner
+    command: rm -rf ~/blackbox_exporter-0.12.0.linux-amd64.tar.gz ~/blackbox_exporter-0.12.0.linux-amd64
+
+  - name: make directory
+    file: 
+      path: /etc/blackbox_exporter
+      state: directory
+
+  - name: copy blackbox files
+    copy:
+      src: ./blackbox_exporter/blackbox.yml
+      dest: /etc/blackbox_exporter
+      owner: root
+      group: root
+      mode: 0644
+
+#  - name: change bbowner2
+#    command: chown blackbox_exporter:blackbox_exporter /etc/blackbox_exporter
+  
+#  - name: change bbowner bin
+#    command: chown blackbox_exporter:blackbox_exporter /usr/local/bin/blackbox_exporter
+  
+#  - name: change bbowner yml
+#    command: chown blackbox_exporter:blackbox_exporter /etc/blackbox_exporter/blackbox.yml
+ 
+#  - name: pip python install
+#    command: yum install -y python-pip
+
+  - name: pip install 
+    command: curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+  
+  - name: get pip.py
+    command: python get-pip.py
+ 
+  - name: pip install prometheus client
+    command: pip install prometheus_client
+
+  - name: reload daemons
+    shell: systemctl daemon-reload
+  
+  - name: Start prometheus
+    service:
+      name: prometheus
+      state: started
+      enabled: yes
+  
+  - name: Start alertmanager
+    service:
+      name: alertmanager
+      state: started
+      enabled: yes
+
+  - name: Start grafana
+    service:
+      name: grafana-server
+      state: started
+      enabled: yes
+
+  - name: Start blackbox exporter
+    service:
+      name: blackbox_exporter
+      state: started
+      enabled: yes
+
+  - name: Start ipmi exporter
+    service:
+      name: ipmi_exporter
+      state: started
+      enabled: yes
+
+  - name: Start node exporter
+    service:
+      name: node_exporter
+      state: started
+      enabled: yes
+...

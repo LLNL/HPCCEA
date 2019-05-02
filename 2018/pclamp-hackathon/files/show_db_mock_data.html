@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>DB Test with MOCK DATA</title>
+  </head>
+  <body>
+    <h1>Check it Out</h1>
+
+<?php
+
+$conn = new PDO('mysql:host=localhost;dbname=devdb', 'webu', 'Webuser433');
+if (!$conn) {
+  die('Could not connect');
+}
+
+$result = $conn->prepare("SELECT * FROM papers");
+$result->execute();
+
+?>
+
+<table>
+	<tr> <th> Paper ID</th> <th> Pub Med ID </th> <th> Authors </th> <th> Paper Text </th></tr>
+
+<?php
+
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+  echo "<tr> ";
+  echo "<td> " . $row['paperid'] . "</td> "; 
+  echo "<td> " . $row['pubmedid'] . "</td> "; 
+  echo "<td> " . $row['authors'] . "</td> ";
+  echo "<td> " . $row['papertext'] . "</td> ";
+  echo "</tr> \n";
+}
+
+?>
+
+</table>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+[Uint]
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/root/Prometheus-exporters-ansible/ipmi_exporter/ipmi_exporter.py
+
+[Install]
+WantedBy=multi-user.target

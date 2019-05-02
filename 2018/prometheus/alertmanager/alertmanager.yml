@@ -1,0 +1,33 @@
+global:
+  smtp_smarthost: 'localhost:25'
+  smtp_from: 'alertmanager@smtp.llnl.gov'
+  smtp_require_tls: false
+
+route:
+  group_by: ['alertname','instance','severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+  receiver: nickel
+
+  routes:
+    - match:
+        severity: critical
+      receiver: TeslaMan
+
+
+inhibit_rules:
+- source_match:
+    severity: 'critical'
+  target_match:
+    severity: 'page'   
+
+receivers:
+  - name: 'nickel'
+    email_configs:
+      - to: 'bihari2@llnl.gov, davis282@llnl.gov, purcell8@llnlgov'
+
+  - name: 'TeslaMan'
+    email_configs:
+      - to: 'dixon30@llnl.gov'
+

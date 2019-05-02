@@ -1,0 +1,22 @@
+---
+### SECTION 10 ###
+
+# hostname variable: set hosts in masterDeploy.yaml
+- hosts: "{{ hostname }}"
+  tasks:
+
+### INSTALL JAVA ###
+# could not find ibm-java-x86_64-sdk-8.0-5.0.x86_64.rpm
+# installed java-1.8.0
+  - name: install java
+    yum:
+      name: java-1.8.0
+      state: present
+
+# create link to Java - not needed?
+#  - name: create link
+#    file:
+#      src=Java Source
+#      dest=Link Name
+#      state=link
+

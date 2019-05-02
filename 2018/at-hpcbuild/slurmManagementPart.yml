@@ -1,0 +1,38 @@
+- name: scp scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e4:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e4:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e5:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e6:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e7:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e8:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e9:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e10:/etc/
+  command: scp /etc/passwd /etc/group /etc/shadow /etc/gshadow e11:/etc/
+
+- name: manage slurm config file
+  action: template src=files/slurm.conf dest=/etc/slurm/slurm.conf
+
+- name: enable slurmd on management node
+  command: slurmd -D vvv
+
+- name: copy slurm.conf file
+  command: scp e1:/etc/slurm/slurm.conf e4:/etc/slurm
+  command: scp e1:/etc/slurm/slurm.conf e5:/etc/slurm
+  command: scp e1:/etc/slurm/slurm.conf e6:/etc/slurm
+  command: scp e1:/etc/slurm/slurm.conf e7:/etc/slurm
+  command: scp e1:/etc/slurm/slurm.conf e8:/etc/slurm
+  command: scp e1:/etc/slurm/slurm.conf e9:/etc/slurm
+  command: scp e1:/etc/slurm/slurm.conf e10:/etc/slurm
+  command: scp e1:/etc/slurm/slurm.conf e11:/etc/slurm
+
+- name: enable slurmctld
+  systemd:
+    name: slurmctld
+    enabled: yes
+
+- name: start slurmctld
+  systemd:
+    name: slurmctld
+    state: started
+
+
+

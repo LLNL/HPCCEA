@@ -1,0 +1,8 @@
+---
+  - import_playbook: deployHPSS_7.yaml hostname=node10
+  - import_playbook: deployHPSS_8.yaml hostname=node10
+  - import_playbook: deployHPSS_9.yaml hostname=node10 
+  - import_playbook: deployHPSS_10.yaml hostname=node10
+  - import_playbook: deployHPSS_11.yaml hostname=node10
+  - import_playbook: deployHPSS_12.yaml hostname=node10
+  - import_playbook: deployHPSS_13.yaml hostname=node10

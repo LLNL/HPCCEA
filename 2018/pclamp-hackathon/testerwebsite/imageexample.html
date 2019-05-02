@@ -1,0 +1,35 @@
+<html>    
+    </head>
+        <title>PCLamp</title>
+    </head>
+    <body>
+        <h1>Testing the PCLamp table we made</h1>
+        <?php
+            $conn = new PDO('mysql:host=localhost;dbname=devdb', 'webu', 'Webuser433');
+            if (!$conn) {
+                die('Could not connect');
+            }
+
+            $result = $conn->prepare("SELECT * FROM pclamps WHERE fk_paperid=1");
+            $result->execute();
+        ?>
+
+        <table>
+            <tr> <th>Graph</th><th> Figure Number</th> <th> Species </th> <th> sex</th></tr>
+
+            <?php
+                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                echo "<tr> ";
+                echo "<td><img src=\"" . $row['graphpath'] . "\"/></td> ";
+                echo "<td> " . $row['figurenum'] . "</td> ";
+                echo "<td> " . $row['species'] . "</td> ";
+                echo "<td> " . $row['sex'] . "</td> ";
+                echo "</tr> \n";
+                }
+                
+            ?>
+               
+        </table>
+    </body>
+</html>
+

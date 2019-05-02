@@ -1,0 +1,149 @@
+---
+
+# several of the <> fields need to be filled with correct data
+# vars connection for system memory needed as marked in later note
+# however it needs to be applied in a section specifically in a command so the var notation is different then it was in the earlier section
+ 
+- hosts: node10
+
+  tasks:
+
+# the /var/hpss/hpssdb filepath does not exist 
+  - name: set up db2 user enviroment 1/2
+    command: cd /var/hpss/hpssdb/sqllib
+
+# need to create a work around for this and, in consquence, all db2 commands to run
+  - name: set up db2 user enviroment 2/2
+    command: . ./db2profile
+
+  - name: activate the database 1/10
+    command: db2 activate db hcfg
+
+  - name: activate the database 2/10
+    command: db2 activate db hsubsys1
+
+  - name: activate the database 3/10
+    command: db2 get db cfg for hcfg | grep -i log
+
+  - name: activate the database 4/10
+    command: db2 get db cfg for hsubsys1 | grep -i log
+
+  - name: activate the database 5/10
+    command: db2 connect to hcfg
+
+  - name: activate the database 6/10
+    command: db2 grant DBADM on database to user root
+
+  - name: activate the database 7/10
+    command: db2 connect to hsubsys1
+
+  - name: activate the database 8/10
+    command: db2 grant DBADM on database to user root
+
+  - name: activate the database 9/10
+    command: db2 connect to hsubysX
+
+  - name: activate the database 10/10
+    command: db2 grant DBADM on database to user root
+
+  - name: tune DB2 1/12
+    command: db2 update dbm cfg using HEALTH_MON OFF
+
+  - name: tune DB2 2/12
+    command: db2 update dbm cfg using FEDERATED YES
+
+  - name: tune DB2 3/12
+    command: db2 update dbm cfg using NUMDB 32
+
+  - name: tune DB2 hcfg 4/12
+    command: db2 update db cfg for hcfg using AUTO_MAINT off
+
+  - name: tune DB2 hcfg 5/12
+    command: db2 update db cfg for hcfg using AUTO_RUNSTATS off
+
+  - name: tune DB2 hcfg 6/12
+    command: db2 update db cfg for hcfg using AUTO_TBL_MAINT off
+
+  - name: tune DB2 hcfg 7/12
+    command: db2 update db cfg for hcfg using LOGARCHMETH1 DISK:/db2_logarchived1/<dir_name>
+
+  - name: tune DB2 hcfg 8/12
+    command: db2 update db cfg for hcfg using LOGARCHMETH2 DISK:/db2_logarchived2/<dir_name>
+
+  - name: tune DB2 hcfg 9/12
+    command: db2 update db cfg for hcfg using LOGFILSIZ <1000 for hcfg, 25000 for hsubsys1>
+
+  - name: tune DB2 hcfg 10/12
+    command: db2 update db cfg for hcfg using LOGPRIMARY 10
+
+  - name: tune DB2 hcfg 11/12
+    command: db2 update db cfg for hcfg using LOGSECOND -1
+
+  - name: tune DB2 hcfg 12/12
+    command: db2 update db cfg for hcfg using NUM_DB_BACKUPS 100
+    
+  - name: tune DB2 hsubsys1 4/12
+    command: db2 update db cfg for hsubsys1 using AUTO_MAINT off
+
+  - name: tune DB2 hsubsys1 5/12
+    command: db2 update db cfg for hsubsys1 using AUTO_RUNSTATS off
+
+  - name: tune DB2 hsubsys1 6/12
+    command: db2 update db cfg for hsubsys1 using AUTO_TBL_MAINT off
+
+  - name: tune DB2 hsubsys1 7/12
+    command: db2 update db cfg for hsubsys1 using LOGARCHMETH1 DISK:/db2_logarchived1/<dir_name>
+
+  - name: tune DB2 hsubsys1 8/12
+    command: db2 update db cfg for hsubsys1 using LOGARCHMETH2 DISK:/db2_logarchived2/<dir_name>
+
+  - name: tune DB2 hsubsys1 9/12
+    command: db2 update db cfg for hsubsys1 using LOGFILSIZ <1000 for hcfg, 25000 for hsubsys1>
+
+  - name: tune DB2 hsubsys1 10/12
+    command: db2 update db cfg for hsubsys1 using LOGPRIMARY 10
+
+  - name: tune DB2 hsubsys1 11/12
+    command: db2 update db cfg for hsubsys1 using LOGSECOND -1
+
+  - name: tune DB2 hsubsys1 12/12
+    command: db2 update db cfg for hsubsys1 using NUM_DB_BACKUPS 100
+# grep MemTotal /proc/meminfo NEED SYSTEM MEMORY VALUE FROM THIS TO DECIDE WHAT TO INSERT IN <value from table>
+####MAYBE CREATE A VAR FILE FOR THIS PURPOSE?
+####### CURRENT ADDED VALUE IS MACHINE SPECIFIC TO OUR BORON CLUSTER
+
+#  - name: Machine Memory hcfg section 1/2
+#    command: db2 update db cfg for hcfg using LOGBUFSZ <value from table>
+#
+#  - name: Machine Memory hcfg section 2/2
+#    command: db2 update db cfg for hcfg using DFT_QUERYOPT 2
+#
+#  - name: Machine Memory hsubsys1 section 1/2
+#    command: db2 update db cfg for hsubsys1 using LOGBUFSZ <value from table>
+#
+#  - name: Machine Memory hsubsys1 section 2/2
+#    command: db2 update db cfg for hsubsys1 using DFT_QUERYOPT 2
+
+  - name: Machine Memory hcfg section 1/2
+    command: db2 update db cfg for hcfg using LOGBUFSZ 8192
+
+  - name: Machine Memory hcfg section 2/2
+    command: db2 update db cfg for hcfg using DFT_QUERYOPT 2
+
+  - name: Machine Memory hsubsys1 section 1/2
+    command: db2 update db cfg for hsubsys1 using LOGBUFSZ 8192
+
+  - name: Machine Memory hsubsys1 section 2/2
+    command: db2 update db cfg for hsubsys1 using DFT_QUERYOPT 2
+
+  - name: DB2 backup 1/3
+    command: db2 backup db hcfg to /db2_backup/cfg COMPRESS
+
+  - name: DB2 backup 2/3
+    command: db2 backup db hsubsys1 to /db2_backup/subsys1 COMPRESS
+
+# IMPLEMENT BELOW SECTION LATER
+
+#  - name: DB2 backup 3/3
+#    command: db2ckbkp <image name>
+

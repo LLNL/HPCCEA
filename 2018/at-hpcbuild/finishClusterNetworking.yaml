@@ -1,0 +1,66 @@
+---
+- hosts: management
+  tasks:
+    - name: install iptables
+      yum:
+        name: iptables-services
+        state: present
+
+    - name: stop firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+  
+    - name: disable firewalld
+      systemd:
+        name: firewalld
+        state: disabled
+
+    - name: set ip forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        sysctl_set: yes
+
+    - name: add ip forwarding to file
+      blockinfile:
+        path: /etc/sysctl.conf
+        content: |
+          net.ipv4.ip_forward = 1
+
+    # add infiniband to hosts
+    - name: edit /etc/sysconfig/iptables
+      action: template src=/ansible/files/iptables.conf dest=/etc/sysconfig/iptables 
+      
+    - name: start iptables
+      systemd: 
+        name: iptables
+        state: started
+
+    - name: enable iptables
+      systemd:
+        name: iptables.service
+        state: enabled
+
+    - name: iptables
+      command: iptables -L -t nat
+
+    # ping www.google.com on compute nodes 
+      
+    - name: copy files
+      command: scp /etc/hosts e4:/etc/
+      command: scp /etc/resolv.conf e4:/etc/
+      command: scp /etc/hosts e5:/etc/
+      command: scp /etc/resolv.conf e5:/etc/
+      command: scp /etc/hosts e6:/etc/
+      command: scp /etc/resolv.conf e6:/etc/
+      command: scp /etc/hosts e7:/etc/
+      command: scp /etc/resolv.conf e7:/etc/
+      command: scp /etc/hosts e8:/etc/
+      command: scp /etc/resolv.conf e8:/etc/
+      command: scp /etc/hosts e9:/etc/
+      command: scp /etc/resolv.conf e9:/etc/ 
+      command: scp /etc/hosts e10:/etc/
+      command: scp /etc/resolv.conf e10:/etc/
+      command: scp /etc/hosts e11:/etc/
+      command: scp /etc/resolv.conf e11:/etc/

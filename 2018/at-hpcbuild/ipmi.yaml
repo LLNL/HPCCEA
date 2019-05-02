@@ -1,0 +1,115 @@
+- hosts: management
+  tasks: 
+    - name: install freeipmp
+      yum: 
+        name: freeipmi
+        state: present
+
+- hosts: nodes
+  tasks:
+    - name: install freeipmi
+      yum:
+        name: freeipmi
+        state: present
+
+# change BMC on each compute node
+- hosts: node4
+  tasks:
+    - name:
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.4"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: node5
+  tasks:
+    - name: change BMC config on node 5
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.5"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: node6
+  tasks:
+    - name: change BMC config on node 6
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.6"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: node7
+  tasks:
+    - name: change BMC config on node 7
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.7"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: node8
+  tasks:
+    - name: change BMC config on node 8
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.8"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: node9
+  tasks:
+    - name: change BMC config on node 9
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.9"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: node10
+  tasks:
+    - name: change BMC config on node 10
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.10"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: node11
+  tasks:
+    - name: change BMC config on node 11
+      command: bmc-config -c -e "Lan_Conf:IP_Address=192.168.96.11"
+      command: bmc-config -c -e "Lan_Conf:Subnet_Mask=255.255.255.0"
+      command: bmc-config -c -e "Lan_Conf:Default_Gateway_IP_Address=192.168.96.1"
+
+- hosts: management
+  tasks:
+    - name: copy ifcfg-em2 to ifcfg-em2:1
+      copy:
+        src: /etc/sysconfig/network-scripts/ifcfg-em2
+        dest: /etc/sysconfig/network-scripts/ifcfg-em2:1
+        backup: yes
+
+    - name: replace line
+      lineinfile:
+        dest: /etc/sysconfig/network-scripts/ifcfg-em2:1
+        regexp: '^(.*)NAME(.*)$'
+        line: 'NAME=em2:1'
+        backrefs: yes
+        dest: /etc/sysconfig/network-scripts/ifcfg-em2:1
+        regexp: '^(.*)DEVICE(.*)$'
+        line: 'DEVICE=em2:1'
+        backrefs: yes
+        dest: /etc/sysconfig/network-scripts/ifcfg-em2:1
+        regexp: '^(.*)IPADDR(.*)$'
+        line: 'IPADDR=192.168.96.1'
+        backrefs: yes
+        dest: /etc/sysconfig/network-scripts/ifcfg-em2:1
+        regexp: '^(.*)NETMASK(.*)$'
+        line: 'NETMASK=255.255.255.0'
+        backrefs: yes
+        dest: /etc/sysconfig/network-scripts/ifcfg-em2:1
+        regexp: '^(.*)DEFROUTE=yes(.*)$'
+        state=absent
+
+    - name:
+      command: ifup em2:1
+      command: ip a
+
+# ipmiping 192.168.96.4 manually
+
+# update hosts file
+    - name: update hosts file
+      copy:
+        src: /ansible/files/hosts.boron
+        dest: /etc/hosts
+        backup: yes
+
+# ipmiping p4 manually

@@ -1,0 +1,35 @@
+---
+- hosts: svm
+    
+  tasks:
+    - name: deploy php test
+      copy: 
+        src: files/phptest.html
+        dest: /var/www/html/phptest.html
+        owner: apache
+        group: apache
+        mode: 0444
+
+    - name: deploy db test
+      copy: 
+        src: files/dbtest.html
+        dest: /var/www/html/dbtest.html
+        owner: apache
+        group: apache
+        mode: 0444
+
+    - name: deploy mock data test html file
+      copy: 
+        src: files/show_db_mock_data.html
+        dest: /var/www/html/show_db_mock_data.html
+        owner: apache
+        group: apache
+        mode: 0444
+
+    - name: deploy index.html 
+      copy: 
+        src: testerwebsite/home.html
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: 0444

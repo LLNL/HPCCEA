@@ -1,0 +1,108 @@
+---
+- hosts: svm
+  vars:
+    mariadb_root_passwd: MariaR00tp4ss
+    
+  tasks:
+    - name: Install RPMS
+      yum: name={{ item }} state=present
+      with_items:
+        - httpd
+        - mariadb
+        - mariadb-server
+        - MySQL-python
+        - php
+        - php-mysql
+
+
+    - name: start services
+      service: name={{ item }} state=running enabled=yes
+      with_items:
+        - httpd
+        - mariadb
+
+    - name: deploy php-html.conf
+      copy: 
+        src: /root/hackathon/files/php-html.conf
+        dest: /etc/httpd/conf.d
+        owner: root
+        group: root
+        mode: 0444
+      notify: restart apache
+
+    # secure mysql after new install
+    # 'localhost' needs to be the last item for idempotency, see
+    # http://ansible.cc/docs/modules.html#mysql-user
+    - name: update mysql root password for all root accounts
+      mysql_user: name=root host={{ item }} password={{ mariadb_root_passwd }}
+      with_items:
+        - $ansible_hostname
+        - 127.0.0.1
+        - ::1
+        - localhost
+
+    - name: copy .my.cnf file with root password credentials
+      template: src=files/my.cnf.root dest=/root/.my.cnf owner=root mode=0600
+
+    - name: ensure anonymous users are not in the database
+      mysql_user: name='' host={{ item }} state=absent
+      with_items:
+        - localhost
+        - $inventory_hostname 
+
+    - name: remove the test database
+      mysql_db: 
+        name: test
+        state: absent
+
+    # Now create a DB and db users
+    - name: Create devdb database
+      mysql_db:
+        name: devdb
+        state: present
+
+    - name: Create testu mysql user
+      mysql_user:
+        name: testu
+        password: Testup433
+        priv: 'devdb.*:ALL'
+        state: present
+
+    - name: Create webu mysql user
+      mysql_user:
+        name: webu
+        password: Webuser433
+        priv: 'devdb.*:SELECT'
+        state: present
+
+    # Copy database dump file to remote host and restore it to database 'my_db'
+    - name: Copy sql data to server
+      copy: 
+        src: files/devdb.sql
+        dest: /tmp
+
+    - name: Load data file to server
+      mysql_db: 
+        name: devdb
+        state: import
+        target: /tmp/devdb.sql
+
+    - name: Copy sql data to server
+      copy: 
+        src: files/pclampdb.sql
+        dest: /tmp
+
+    - name: Load data file to server
+      mysql_db: 
+        name: devdb
+        state: import
+        target: /tmp/pclampdb.sql
+
+  handlers:
+    - name: restart apache
+      service:
+        name: httpd
+        state: restarted
+
+
+

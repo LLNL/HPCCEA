@@ -1,0 +1,18 @@
+---
+
+# RUN AFTER 13.3.1 IN PLACE OF 13.3.2
+# Re-enable network security
+- hosts: node10
+  tasks:
+  - name: enable nis
+    command: authconfig --enablenis --update
+
+  - name: enable ldap
+    command: authconfig --enableldap --update
+
+  - name: enable krb5
+    command: authconfig --enablekrb5 --update
+
+  - name: authconfig test
+    command: authconfig --test
+

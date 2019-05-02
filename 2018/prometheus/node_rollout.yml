@@ -1,0 +1,52 @@
+---
+- hosts: e5
+  tasks:
+  - name: stop firewall
+    shell: systemctl stop firewalld
+
+  - name: Install wget
+    yum:
+      name: wget
+      state: present
+
+  - name: Install curl
+    yum:
+      name: curl
+      state: present
+
+  - name: copy service files5
+    copy:
+      src: ./service_files/node_exporter.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: add users
+    command: useradd --no-create-home --shell /bin/false node_exporter
+
+  - name: get Node Exporter
+    command: curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
+
+  - name: unpack node
+    command: tar xvfz node_exporter-0.16.0.linux-amd64.tar.gz
+
+  - name: set user and remove files
+    command: mv node_exporter-0.16.0.linux-amd64/node_exporter /usr/local/bin/
+
+  - name: chown node
+    command: chown node_exporter:node_exporter /usr/local/bin/node_exporter
+
+  - name: rm node files
+    command: rm -rf node_exporter-0.16.0.linux-amd64.tar.gz node_exporter-0.16.0.linux-amd64
+
+  - name: reload daemons
+    shell: systemctl daemon-reload
+
+  - name: Start node exporter
+    service:
+      name: node_exporter
+      state: started
+      enabled: yes
+...
+

@@ -1,0 +1,117 @@
+---
+### SECTION 8 ###
+
+# Create directories, mount points and symlinks from section 7 of HPSS
+# deployment guide
+
+# hostname variable: set hosts in masterDeploy.yaml
+- hosts: "{{ hostname }}"
+
+### DIRECTORIES AND SYMLINKS ###
+# Note did not create Volume groups or Logical Volumes
+  tasks:
+    - name: /varhpss dir
+      file:
+        path=/varhpss
+        state=directory
+
+    - name: /var/hpss symlink
+      file:
+        src: /varhpss
+        dest: /var/hpss
+        state: link
+
+    - name: /hpss_src dir
+      file:
+        path=/hpss_src
+        state=directory
+
+    - name: /hpss_src symlink
+      file:
+        src: /hpss_src
+        dest: /opt/hpss
+        state: link
+
+    - name: /opt/ibm
+      file:
+        path=/opt/ibm
+        state=directory
+
+    - name: /opt/db2 dir
+      file:
+        path=/opt/db2
+        state=directory
+
+    - name: /opt/ibm/db2 symlink
+      file:
+        src: /opt/db2
+        dest: /opt/ibm/db2
+        state: link
+
+    - name: /hpss_corefiles dir
+      file:
+        path=/hpss_corefiles
+        state=directory
+
+    - name: /var/hpss/adm dir
+      file:
+        path=/var/hpss/adm
+        state=directory
+
+    - name: /var/hpss/adm/core symlink
+      file:
+        src: /hpss_corefiles
+        dest: /var/hpss/adm/core
+        state: link
+
+### DIRECTORIES ###
+    - name: /db2data
+      file:
+        path=/db2data
+        state=directory
+
+    - name: /db2data/db2_hpssdb
+      file:
+        path=/db2data/db2_hpssdb
+        state=directory
+
+    - name: /db2data/p0000
+      file:
+        path=/db2data/p0000
+        state=directory
+
+    # called out twice typo in document?
+    - name: /db2data/p0000/db2_backup1
+      file:
+        path=/db2data/p0000/db2_backup1
+        state=directory
+
+    - name: /db2data/p0000/db2_backup2
+      file:
+        path=/db2data/p0000/db2_backup2
+        state=directory
+
+    - name: /db2data/p0000/db2_logmirror
+      file:
+        path=/db2data/p0000/db2_logmirror
+        state=directory
+
+    - name: /db2data/p0000/db2_logarchive1
+      file:
+        path=/db2data/p0000/db2_logarchive1
+        state=directory
+
+    - name: /db2data/p0000/db2_logarchive2
+      file:
+        path=/db2data/p0000/db2_logarchive2
+        state=directory
+
+    - name: /db2data/p0000/stg0001
+      file:
+        path=/db2data/p0000/stg0001
+        state=directory
+
+    - name: /db2data/p0000/stg0002
+      file:
+        path=/db2data/p0000/stg0002
+        state=directory

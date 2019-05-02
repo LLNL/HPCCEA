@@ -1,0 +1,67 @@
+---
+- hosts: management
+  tasks: 
+    - name: install conman
+      yum:
+        name: conman
+        state: present
+
+    - name: edit conman config file
+      action: template src=files/conman.conf dest=/etc/conman.conf
+
+    - name: enable conman
+      systemd:
+        name: conman
+        state: enabled
+
+    - name: start conman
+      systemd:
+        name: conman
+        state: started
+
+- hosts: node4
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node4conman.conf dest=/etc/default/grub
+  
+- hosts: node5
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node5conman.conf dest=/etc/default/grub
+
+- hosts: node6
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node6conman.conf dest=/etc/default/grub
+
+- hosts: node7
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node7conman.conf dest=/etc/default/grub
+
+- hosts: node8
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node8conman.conf dest=/etc/default/grub
+
+- hosts: node9
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node9conman.conf dest=/etc/default/grub
+
+- hosts: node10
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node10conman.conf dest=/etc/default/grub
+
+- hosts: node11
+  tasks:
+    - name: /etc/default/grub
+      action: template src=files/node11conman.conf dest=/etc/default/grub
+
+- hosts: nodes
+    - update grub config
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
+
+    - name: reboot node
+      command: reboot    

@@ -1,0 +1,32 @@
+---
+### SECTION 11 ###
+
+# hostname variable: set hosts in masterDeploy.yaml
+- hosts: "{{ hostname }}"
+
+### POST DB2 CONFIGURATION TASKS ###
+  
+# Create symlinks in db2
+  tasks:
+  - name: create symlink
+    file:
+
+      src: /opt/ibm/db2/V10.5
+      dest: /opt/hpss/db2
+      state: link
+
+  - name: create DB2 default symlink
+    file:
+     src: /opt/ibm/db2/V10.5
+     dest: /opt/ibm/db2/default
+     state: link
+     force: true
+      
+# Disable fault monitoring
+  - name: disable fault monitoring
+    command: /opt/ibm/db2/V10.5/bin/db2fmcu -d
+
+# (Not applying due to our lack of necessity) Bind the helper program to the database
+#  - name: bind the helper program to the database
+#    command: ./hpssShared/hpss_test_area/tmp/730/tools/metadata/db2/hpss_db2_bindall.ksh
+

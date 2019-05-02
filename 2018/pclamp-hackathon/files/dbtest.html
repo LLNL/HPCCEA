@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>DB Table Demo</title>
+  </head>
+  <body>
+    <h1>DB Table Demo</h1>
+
+<?php
+
+$conn = new PDO('mysql:host=localhost;dbname=devdb', 'webu', 'webuser433');
+if (!$conn) {
+  die('Could not connect');
+}
+
+$result = $conn->prepare("SELECT * FROM limbs");
+$result->execute();
+
+?>
+
+<table>
+<tr> <th> Thing </th> <th> Number of Legs </th> <th> Number of Arms </th></tr>
+
+<?php
+
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+  echo "<tr> ";
+  echo "<td> " . $row['thing'] . "</td> "; 
+  echo "<td> " . $row['legs'] . "</td> "; 
+  echo "<td> " . $row['arms'] . "</td> ";
+  echo "</tr> \n";
+}
+
+?>
+
+</table>
+  </body>
+</html>

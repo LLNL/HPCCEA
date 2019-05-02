@@ -1,0 +1,56 @@
+### PREREQS ###
+- Installation of centOS is necessary
+
+- Running the ansiblePostConfig.yaml file is needed to update all the nodes and make sure that each target node has a copy of the /etc/hosts file so that ansible can communicate with the target nodes.
+
+-Install ansible on the management or central control node. This is where the playbooks will be run from. To install ansible, do yum install ansible.
+
+- Once ansible is installed, you will need to make sure that you can SSH into all of the target nodes from the control node without a password. Otherwise ansible will not be able to access the target nodes and not run the playbooks.
+
+- The /etc/ansible/hosts file will need to be configured. This is where all of the hosts ansible will use will be specified. This is also where the naming of the hosts will be inputted. 
+
+### ANSIBLE HOST EXAMPLE ###
+
+[host/server name]
+ip address here
+
+###
+- Once the HPSS tar file is recieved from the HPSS team, it will need to be untarred. 
+
+- The apache webserver needs to be installed on the control node. To install, do yum install httpd
+
+- The hpss-repo points to files untarred from the source file
+
+### PROCESS ###
+- These ansible playbooks follow the HPSS cookbook documentation. 
+
+- In order to run section 7, the variable file (memVars.yml) first need to be altered to correctly reflect the amount of total memory available on the system. To do this, follow the instructions in section 7 regarding the necessary calculations.
+
+- Before running the masterDeploy.yaml file, first run the hpss-repo.yaml file on the control node. This will enable the installing of any necessary RPMs
+
+- Run the master deploy playbook (masterDeploy.yaml) on the control node. 
+
+- The masterDeploy playbook will work up until section 13.1, which is up to the GUI
+
+- If applicable, run post GUI playbooks 
+
+### ANSIBLE FORMAT ##
+---
+- hosts: SPECIFY HOST NAME HERE
+  tasks:
+   - name: NAME OF TASK
+     yum: # TYPE OF COMMAND
+       name: # NAME OF WHAT COMMAND IS DOING, i.e. RPM NAME 
+   
+#####################
+
+
+### NOTES ###
+
+- Typos in section 7 in repsect to names in paths opt/db2
+
+- default DB2 link in section 11 not correct
+
+- The command
+  for f in `find hpss-7.5.1.2-20180530.u5.el7/ -maxdepth 1`; do ln -s $f; done
+  is required before the GUI due to the directory in /opt/hpss being up one more layer than it should 

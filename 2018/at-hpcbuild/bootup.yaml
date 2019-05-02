@@ -1,0 +1,318 @@
+---
+-hosts: cbuild
+  tasks:
+
+#  - parted:
+#      device: /dev/sdb
+#      name: wget https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz, https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+#      state: present
+
+  - name: Install syslinux
+    yum:
+      name: syslinux
+      state: present
+
+  - name: Install tftp-server
+    yum:
+      name: tftp-server
+      state: present
+
+  - name: make pxelinux directory
+    file:
+      path=/tftpboot/pxelinux.cfg
+      state=directory
+
+  - name: append file vi /tftpboot/pxelinux.cfg/default
+    blockinfile:
+      path: /var/www/html/hello.html
+      content: |
+        DEFAULT menu.c32
+        PROMPT 0
+        MENU TITLE ########## PXE Boot Menu ##########
+        TIMEOUT 150
+        TOTALTIMEOUT 6000
+        ONTIMEOUT 1 # go to this label after timeout expires
+
+        LABEL 1
+                MENU LABEL ^1) Install CentOS 7 x64 over the network with Kickstart
+                MENU DEFAULT
+                KERNEL centos7/vmlinuz
+                APPEND initrd=centos7/initrd.img inst.ks=ftp://ftp:ftp@192.168.95.1/pub/anaconda-ks.cfg inst.cmdline inst.gpt
+
+        LABEL local
+                MENU LABEL ^2) local boot
+                COM32 chain.c32
+                APPEND hd0
+
+  - name: Install
+    wget:
+      name: wget https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz, https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+      state: present
+
+  - name: make centos7 directory
+    file:
+      path=/tftpboot/centos7
+      state=directory
+
+  - name: Install
+    wget:
+      name: wget https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz, https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+      state: present
+
+  - name: Install
+    wget:
+      name: wget https://github.com/dun/munge/releases/download/munge-0.5.12/munge-0.5.12.tar.xz, https://download.schedmd.com/slurm/slurm-17.02.11.tar.bz2
+      state: present
+
+  - name: Install vsftpd
+    yum:
+      name: vsftpd
+      state: present
+
+  - name: Install tftp
+    yum:
+      name: tftp
+      state: present
+
+  - name: Enable vsftpd
+    systemd:
+      name: vsftpd
+      enabled: yes
+
+  - name: Start vsftpd
+    systemd:
+      name: vsftpd
+      state: started
+
+  - name: Bring up the em2 interface
+    ifup:
+       name: em2
+
+  - name: Install dhcp
+    yum:
+      name: dhcp
+      state: installed
+      update_cache: true
+
+  - name: Enable dhcp
+    systemd:
+      name: dhcp
+      enabled: yes
+
+  - name: Start dhcp
+    systemd:
+      name: dhcp
+      state: started
+
+  - name: Install xinetd
+    yum:
+      name: xinetd
+      state: installed
+      update_cache: true
+
+  - name: Enable xinetd
+    systemd:
+      name: xinetd
+      enabled: yes
+
+  - name: Start xinetd
+    systemd:
+      name: xinetd
+      state: started
+
+  - name: Stop firewalld
+    systemctl:
+      name: firewalld
+      state: stopped
+
+  - name: Install ftp
+    yum:
+      name: ftp
+      state: installed
+
+  - name: Restart daemons
+    systemctl:
+      name: tftp, xinetd, vsftpd
+      state: restarted
+
+  - name: Install pykickstart
+    yum:
+      name: pykickstart
+      state: installed
+      update_cache: true
+
+  - name: Enable pykickstart
+    systemd:
+      name: pykickstart
+      enabled: yes
+
+  - name: Start pykickstart
+    systemd:
+      name: pykickstart
+      state: started
+
+  - name: Restart dhcpd
+    systemctl:
+      name: dhcpd
+      state: restarted
+
+#  - name: Partition data on Computing Nodes
+#    parted:
+#      device: /dev/sdb
+#      label: gpt
+
+#  - name: Partition data on Computing Nodes pt. 2
+#    parted:
+#      device: /dev/sdb
+#      part_type: primary
+
+#  - name: make a new filesystem
+#    filesystem:
+#      dev: /dev/sdb1
+#      fstype: xfs
+#      force: yes
+
+#  - name: make /tftpboot directory
+#    file:
+#      path: /tftpboot
+#      mode: 755
+#      state: directory
+
+#  - name: Insert a line at the end of a file.
+#    command: "echo '/dev/sdb1           /tftpboot       xfs    defaults        0 0'>> /etc/fstab"
+
+#  - name: Mount the file system
+#    mount:
+#      path: "/tftpboot"
+#      state: unmounted
+
+#  - name: Install ntp
+#    yum:
+#      name: ntpdate
+#      state: present
+#    tags: ntp
+
+#  - name: Enable ntp
+#    systemd:
+#      name: ntpd
+#      enabled: yes
+#    tags: ntp
+
+#  - name: Start ntp
+#    systemd:
+#      name: ntpd
+#      state: started
+#    tags: ntp
+
+- hosts: management
+  tasks:
+
+#  - name: Install syslinux
+#    yum:
+#      name: syslinux
+#      state: present
+
+#  - name: Install tftp-server
+#    yum:
+#      name: tftp-server
+#      state: present
+
+#  - name: copy contents of /usr/share/syslinux/* to /tftpboot
+#    copy:
+#      dest: /tftpboot
+#      src: /etc/ansible/syslinuxstuff
+#      remote_src: no
+
+  - name: Create pxelinux.cfg and default tftpboot file
+    file:
+      path: /tftpboot/pxelinux.cfg
+      state: directory
+
+  - name: copy default file
+    copy:
+      dest: /tftpboot/pxelinux.cfg/default
+      src: /etc/ansible/playbooks/default
+
+  - name: mount the usb in /mnt
+    mount:
+      path: /mnt
+      src: /dev/sdb1
+      opts: loop
+      state: unmounted
+
+  - file:
+      path: /tftpboot/centos7
+      state: directory
+
+ - copy:
+      dest: /tftpboot/centos7
+      src: /etc/ansible/initrd.img
+      remote_src: yes
+
+  - copy:
+      dest: /tftpboot/centos7
+      src: /etc/ansible/vmlinuz
+      remote_src: yes
+
+  - name: Install vsftpd and tftp
+    yum:
+      name: vsftpd, tftp
+      state: present
+      update_cache: true
+
+  - name: change the location where vsftpd will look for files and update listen directives
+    blockinfile:
+      dest: /etc/vsftpd/vsftpd.conf
+      backup: yes
+      content: "listen=YES
+              listen_ipv6=NO
+              anon_root=/tftpboot/ftp"
+
+  - name: i dont know what im doing
+    file:
+      path: /tftpboot/ftp/pub
+      state: directory
+#  - copy:
+#      src: /mnt/*
+#      dest: /tftpboot/ftp/pub/
+#      remote_src: yes
+#  - command: "chmod -R 755 /tftpboot/ftp/pub"
+#  - systemd:
+#      enabled: yes
+#      name: vsftpd
+#  - systemd:
+#      state: started
+#      name: vsftpd
+
+  - name: include IP address, netmask, and gateway info in ifcfg-em2
+    command: "cp /etc/ansible/ifcfg-em2 /etc/sysconfig/network-scripts/"
+
+ - name: bring up em2 interface
+    command: "ifup em2"
+
+  - name: Install dhcp
+    yum:
+      name: dhcp
+      state: present
+
+  - name: copy dhcpd.conf
+    copy:
+      src: /etc/ansible/dhcpd.conf
+      dest: /etc/dhcp/
+
+  - systemd:
+      enabled: yes
+      name: dhcpd
+  - systemd:
+      state: started
+      name: dhcpd
+
+  - name: Install xinetd
+    yum:
+      name: xinetd
+      state: present
+
+  - copy:
+      src: /etc/ansible/tftp
+      dest: /etc/xinetd.d/tftp
+

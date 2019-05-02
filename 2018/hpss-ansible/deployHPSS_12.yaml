@@ -1,0 +1,34 @@
+---
+### SECTION 11 ###
+
+# hostname: set hosts in masterDeploy.yaml
+- hosts: "{{ hostname }}"
+
+# Install HPSS using RPMs
+  vars:
+    repodir: /etc/yum.repos.d/
+
+  tasks:
+  - name: Copy HPSS Repo File
+    copy:
+      src:  hpss.repo
+      dest: "{{ repodir }}"
+
+# Extra pacakges to make sure are installed for HPSS
+  - name: install HPSS Perl pre-reqs.
+    yum:
+      name: perl, perl-XML-Parser, perl-Socket6, perl-Data-Dumper
+      state: present
+
+# These are the files you will need for the HPSS core server
+  - name: install HPSS core server files
+    yum:
+      name: hpss-clnt-devel, hpss-doc, hpss-lib, hpss-clnt, hpss-core-debuginfo, hpss-lib-devel, hpss-lib-debuginfo, hpss-core, hpss-core-devel
+      state: present
+
+# These are the files you will need for the HPSS mover
+  - name: install HPSS mover files
+    yum:
+      name: hpss-lib-devel, hpss-mvr, hpss-mvr-debuginfo, hpss-doc, hpss-clnt, hpss-clnt-debuginfo, hpss-lib, hpss-clnt-devel, hpss-lib-debuginfo
+      state: present
+

@@ -1,0 +1,38 @@
+---
+### SECTION 7 ###
+# hostname variable to set hosts: change in masterDeploy.yaml
+
+- hosts: "{{ hostname }}"
+
+### SEMAPHORE VARIABLE FILE ### 
+# calls file containing semaphore values
+
+  vars_files:
+    - memVars.yml
+
+### SETTIN SEMAPHORE VALUES ###
+# updates /etc/sysctl.conf with correct semaphore values
+# change values in memVars.yml
+
+  tasks:
+    - name: append kernel variable to core sysctl.conf
+      blockinfile:
+        dest: /etc/sysctl.conf
+        content: |
+          # Controls the maximum shared segment size, in bytes
+          kernel.shmmax = {{ core_Memory_in_Bytes }}
+
+          # Controls the maximum number of shared memory segments, in pages
+          kernel.shmall = {{ core_shmall }}
+          kernel.shmmni = {{ core_shmmni }}
+          kernel.sem = {{ core_sem }}
+          kernel.msgmni = {{ core_msgmni }}
+          kernel.msgmnb = 65536
+          kernel.msgmax = 65536
+          kernel.randomize_va_space = 0
+
+### COMMIT CHANGES ###
+# Commit the changes to sysctl.conf to the current environment
+    - name: commit changes
+      command: /usr/sbin/sysctl -p
+

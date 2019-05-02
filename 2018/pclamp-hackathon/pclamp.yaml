@@ -1,0 +1,32 @@
+---
+- hosts: svm
+    
+  tasks:
+
+    # Copy database dump file to remote host and restore it to database 'my_db'
+    - name: Copy pclamp data to server
+      copy: 
+        src: files/pclampdb.sql
+        dest: /tmp
+
+    - name: Load pclamp data to server
+      mysql_db: 
+        name: devdb
+        state: import
+        target: /tmp/pclampdb.sql
+
+    # Copy db insert code
+    - name: Copy dbinsert code
+      copy: 
+        src:  "{{ item }}"
+        dest: /var/www/html
+        owner: apache
+        group: apache
+        mode: 0755
+      with_items:
+        - dbinsert.php
+        - inspaper.php
+        - inspclamp.php
+        - pclampinput.php
+
+

@@ -1,0 +1,45 @@
+global:
+  scrape_interval: 15s
+
+rule_files:
+  - alert.rules.yml
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    scrape_interval: 60s
+    scrape_timeout: 30s
+    static_configs:
+      - targets: ['localhost:8000','e1:9100','e4:9100','e5:9100','e6:9100','e7:9100','e8:9100','e9:9100','e10:9100','e11:9100']
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx,icmp]
+    static_configs:
+      - targets:
+        - https://www.google.com
+        - https://hpc.llnl.gov
+        - https://lc.llnl.gov
+        - e1
+        - e4
+        - e5
+        - e6
+        - e7
+        - e8
+        - e9
+        - e10
+        - e11 
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115

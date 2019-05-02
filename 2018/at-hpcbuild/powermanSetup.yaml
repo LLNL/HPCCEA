@@ -1,0 +1,27 @@
+---
+- hosts: management
+  tasks:
+    - name: install powerman
+      yum:
+        name: powerman
+        state: present
+
+    - name: powerman config file
+      action: template src=/etc/ansible/files/powerman.conf dest=/etc/powerman/powerman.conf
+
+    - name: make powerman directory and set permission to daemon
+      file: 
+        path=/var/run/powerman/
+        state: directory
+        owner: daemon
+        group: daemon
+
+    - name: enable powerman
+      systemd:
+        name: powerman
+        state: enabled
+
+    - name: start powerman
+      systemd: 
+        name: powerman
+        state: started

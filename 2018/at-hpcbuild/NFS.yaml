@@ -1,0 +1,136 @@
+--- 
+- hosts: management
+  tasks: 
+    - name: install nfs
+      yum: 
+        name: nfs-utils,nfs-utils-lib
+        state: present
+ 
+    - name: enable nfs
+      systemd:
+        name: nfs
+        state: enabled
+
+    - name: start nfs
+      systemd: 
+        name: nfs
+        state: started
+
+    - name: edit file
+      blockinfile:
+        path: /var/www/html/hello.html
+        content: |
+          /home        192.168.127.1/255.255.224.0(rw,sync,no_root_squash)
+
+    - name: restart nfs
+      systemd:
+        name: nfs
+        state: restarted
+
+
+- hosts: node4
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+- hosts: node5
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+- hosts: node6
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+- hosts: node7
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+- hosts: node8
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+- hosts: node9
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+- hosts: node10
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+- hosts: node11
+  tasks:
+    - name: edit /etc/fstab
+      action: template src=files/nodefstab.conf dest=/etc/fstab
+
+    - name: mount home
+      command: mount /home
+
+    - name: touch foo
+      command: touch /home/foo
+
+# Fix SSH issues
+- hosts: management
+  tasks: 
+    - name: copy ssh id and set permission to 600
+      command: scp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
+
+    - name: set permissions to 600
+      file:
+        path: ~/.ssh/authorized_keys
+        mode: 600
+      
+    - name: fix selinux issue
+      command: setsebool -P use_nfs_home_dirs 1
+
+    - name: restart sshd
+      systemd:
+        name: sshd
+        state: restarted

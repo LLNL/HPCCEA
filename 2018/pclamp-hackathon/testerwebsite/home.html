@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LLNL HPC Medical Research </title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+
+<?php
+
+$conn = new PDO('mysql:host=localhost;dbname=devdb', 'webu', 'Webuser433');
+if (!$conn) {
+  die('Could not connect');
+  }
+#$result = $conn->prepare("SELECT * FROM pclamps");
+$result = $conn->prepare("select * from papers, pclamps where pclamps.fk_paperid = papers.paperid");
+$result->execute();
+
+?>
+
+<header class="container">
+  <div class="row">
+    <h1 class="col-sm-6">LLNL Med Science Journal</h1>
+    <nav class="col-sm-4 text-left">
+
+    <nav class="col-sm-8 text-right">
+      <p>about</p>
+      <p>upload</p>
+      <p>contact</p>
+    </nav>
+  </div>
+  </header>
+<section class="jumbotron">
+    <div class="container">
+        <div class="row text-center">
+        <h2>What's New</h2>
+        <h3>Dr. John Michaels</h3>
+	    <button id='btnseeall' type="button" class="btn btn-primary" onclick="getElementById('btn_seeall').innerHTML=SeeAll()">See All Entries</button>
+        </div>
+    </div>
+</section>
+
+<div class="container text-center">
+    <div class="row content">
+            <div class="col-sm-8 text-left">
+
+                <h1>Welcome</h1>
+                <p>
+                    As Lawrence Livermore enters its sixth decade, its focus remains as clear as it was on the first day the Laboratory opened its doors in 1952 — ensuring the nation’s security through scientific research and engineering development, responding to new threats in an ever-changing world, and developing new technologies that will benefit people everywhere.
+                </p>
+
+            </div>
+    </div>
+</div>
+
+<p id="btn_seeall"></p>
+
+<div class="container text-center">
+    <h2> At a Glance </h2>
+        <table class="table">
+
+<thead>
+    <tr> <th> Paper ID </th> <th> Pub Med </th> <th> Authors </th> <th> Figure Number </th> <th> Species </th> <th> Sex </th> <th> Graph Path </th></tr>
+
+</thead>
+<tbody>
+<?php
+
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+  echo "<tr> ";
+  echo "<td> " . $row['paperid'] . "</td> ";
+  echo "<td> " . $row['pubmedid'] . "</td> ";
+  echo "<td> " . $row['authors'] . "</td> ";
+  echo "<td> " . $row['figurenum'] . "</td> ";
+  echo "<td> " . $row['species'] . "</td> ";
+  echo "<td> " . $row['sex'] . "</td> ";
+  echo "<td><img src=\"" . $row['graphpath'] . "\"/></td> ";
+  echo "</tr> \n";
+}
+?>
+</tbody>
+</table>
+
+</div>
+
+<footer class="container">
+    <div class="row">
+        <p class="col-sm-4">&copy;Lawrence Livermore National Laboratory
+        <ul class="col-sm-8">
+            <li class="col-sm-1"><img src="https://s3.amazonaws.com/codecademy-content/projects/make-a-website/lesson-4/twitter.svg"></li>
+            <li class="col-sm-1"><img src="https://s3.amazonaws.com/codecademy-content/projects/make-a-website/lesson-4/facebook.svg"></li>
+            <li class="col-sm-1"><img src="https://s3.amazonaws.com/codecademy-content/projects/make-a-website/lesson-4/instagram.svg"></li>
+            <li class="col-sm-1"><img src="https://s3.amazonaws.com/codecademy-content/projects/make-a-website/lesson-4/medium.svg"></li>
+        </ul>
+    </div>
+</footer>
+</body>
+</html>

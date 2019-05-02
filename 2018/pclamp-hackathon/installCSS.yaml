@@ -1,0 +1,12 @@
+---
+- hosts: svm
+    
+  tasks:
+    - name: deploy main.css
+      copy: 
+        src: testerwebsite/main.css
+        dest: /var/www/html/main.css
+        owner: apache
+        group: apache
+        mode: 0444
+...

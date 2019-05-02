@@ -1,0 +1,114 @@
+---
+### SECTION 9 ###
+# hostname variable: set hosts in masterDeploy.yaml
+- hosts: "{{ hostname }}"
+
+# DB2 Installation
+  vars:
+    db2srcdir: /home/alicja/HPSS-deploy/Db2_10.5
+    db2destdir: /tmp/db2
+
+# rsync needed fro copy db2 directory
+  tasks:
+    - name: install rsync
+      yum:
+        name: rsync
+        state: latest
+
+### YUM UPDATE ###
+#    - name: update to latest version
+#      yum:
+#        name: *
+#        state: latest
+#        update_cache: yes
+##################
+
+### INSTALL PREREQS FOR HPSS ###
+    - name: install prereqs for HPSS
+      yum:
+        name: pam.i686,libstdc++.i686
+        state: present
+
+### DB2 INSTALL ###
+    - name: copy db2 directory
+      synchronize:
+        src: "{{ db2srcdir }}"
+        dest: "{{ db2destdir }}"
+
+### DO IN BEGINNING ###
+# do in beginning, once file is untarred this command is not needed
+#    - name: tar
+#      unarchive:
+#        src: /hpssShared/hpss_prereq/all/db2_10.5_patch/v10.5fp8_linuxppc64_universal_fixpack.tar.gz
+#        dest: /tmp/db2
+#        remote_src: yes
+#######################
+
+    - name: install DB2
+      command: /tmp/db2/Db2_10.5/10_5fp9/universal/db2_install -b /opt/ibm/db2/V10.5 -p SERVER -f NOTSAMP
+
+### START: DO IF NEED TO UPDATE ###
+#    - name: make directory
+#      file:
+#        path: /db2_backup1/db2_10.5_patch
+#
+#    - name: tar file
+#      unarchive:
+#        src: /home/alicja/HPSS-deploy/Db2_10.5 # tarball path
+#        dest: /db2_backup1/db2_10.5_patch
+#        remote_src: yes
+#
+#    # cd into universal
+#    - name: linux fix pack
+#      command: ./installFixPack -b /opt/ibm/db2/V10.5
+### END ###########################
+
+### DB2 License ###
+#     # only do if file is not already unzipped
+#    - name: unzip
+#      command: unzip /home/alicja/HPSS-deploy/Db2_10.5/10_5fp9/universal/db2/license -d /tmp
+#
+#    - name: check license is appplied
+#      command: ./db2licm -l
+#
+#    - name: verify DB2 install MANUAL COMMAND
+#      command: /opt/ibm/db2/V10.5/install/db2ls -a
+#
+#    - name: db2 license
+#      command: /opt/ibm/db2/V10.5/adm/db2licm -a /tmp/db2/Db2_10.5/DB2_V10.5_License/aese_c/db2/license/db2aese_c.lic
+###################
+
+### CHECK IF python 2.7.5 is installed ###
+        # if not, put flag for installing python here
+
+### DB2 PYTHON EGG ###
+#    - name: make python directory
+#      file:
+#        path=/tmp/db2python
+#        state=directory
+######################
+
+### SETUP TOOLS ####
+#    - name: install DB2 python egg
+#      unarchive:
+#        src: /lab_support/Python/setuptools-12.0.5.tar.gz
+#        dest: /tmp/db2python
+#        remote_src: yes
+#
+#    # cd into /tmp/db2python/setuptools-12.0.5
+#    - name: python build and install
+#      command: python /tmp/db2python/setuptools-12.0.5/setup.py build
+#      command: python /tmp/db2python/setuptools-12.0.5/setup.py install
+####################
+
+### IBM TAR FILE ####
+#    - name: tar
+#      unarchive:
+#        src: /lab_support/Python/ibm_db-2.0.5.1.tar.gz
+#        dest: /tmp/db2python
+#        remote_src: yes
+#      # cd into /tmp/db2python/ibm_db-2.0.5.1
+#      command: export IBM_DB_HOME=~hpssdb/sqllib
+#      command: python setup.py build
+#      command: python setup.py install
+#####################

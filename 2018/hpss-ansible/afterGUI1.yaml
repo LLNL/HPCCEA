@@ -1,0 +1,93 @@
+---
+
+# RUN AFTER CONFIGURING DB2 IN mkhpss
+# Create DB2 subdirectories after first GUI in section 13
+- hosts: node10
+
+  tasks:
+  - name: directory /db2_log/overflow/cfg
+    file:
+      path=/db2_log/overflow/cfg
+      state=directory
+
+  - name: directory /db2_log/overflow/subsys1
+    file:
+      path=/db2_log/overflow/subsys1
+      state=directory
+
+  - name: directory /db2_logarchived1/cfg
+    file:
+      path=/db2_logarchived1/cfg
+      state=directory
+
+  - name: directory /db2_logarchived1/subsys1
+    file:
+      path=/db2_logarchived1/subsys1
+      state=directory
+
+  - name: directory /db2_logarchived2/cfg
+    file:
+      path=/db2_logarchived2/cfg
+      state=directory
+
+  - name: directory /db2_logarchived2/subsys1
+    file:
+      path=/db2_logarchived2/subsys1
+      state=directory
+
+# both /db2_log and /db2_backup have * after their name for their chown in the commands
+# what does the * stand for? There aren't any other files under the same name with different numbers for /db2_log but I did find /db2_backup1 and /db2_backup2
+# I created multiple chowns for /db2_backup* manually  
+
+  - name: chown hpssdb for /db2_log
+    file:
+      path: /db2_log
+      owner: hpssdb
+      group: hpssdb
+
+  - name: directory /db2_backup1/hcfg
+    file:
+      path=/db2_backup1/hcfg
+      state=directory
+
+  - name: directory /db2_backup1/hsubsys1
+    file:
+      path=/db2_backup1/hsubsys1
+      state=directory
+
+  - name: directory /db2_backup1/offline/hcfg
+    file:
+      path=/db2_backup1/offline/hcfg
+      state=directory
+
+  - name: directory /db2_backup1/offline/hsubsys1
+    file:
+      path=/db2_backup1/offline/hsubsys1
+      state=directory
+
+  - name: directory /db2_backup2/hcfg
+    file:
+      path=/db2_backup2/hcfg
+      state=directory
+
+  - name: directory /db2_backup2/hsubsys1
+    file:
+      path=/db2_backup2/hsubsys1
+      state=directory
+
+  - name: directory /db2_backup2/offline/hsubsys1
+    file:
+      path=/db2_backup2/offline/hsubsys1
+      state=directory
+
+  - name: chown hpssdb for /db2_backup1
+    file:
+      path: /db2_backup1
+      owner: hpssdb
+      group: hpssdb
+
+  - name: chown hpssdb for /db2_backup2
+    file:
+      path: /db2_backup2
+      owner: hpssdb
+      group: hpssdb
