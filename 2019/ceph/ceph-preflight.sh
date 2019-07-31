@@ -7,7 +7,7 @@
 #install epel
 for i in {1..5}
 do
-ssh e$i -l root "yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+ ssh e$i -l root "yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 done
 
 #update yum packages
@@ -60,8 +60,8 @@ chmod 0440 /etc/sudoers.d/$unamein
 #odes
 for i in {2..5}
 do
-scp /etc/shadow/ e$i:/etc/shadow
-scp /etc/gshadow e$i:/etc/gshadow
-scp /etc/group e$i:/etc/group
-scp /etc/passwd e$i:/etc/passwd
+ scp /etc/shadow/ e$i:/etc/shadow
+ scp /etc/gshadow e$i:/etc/gshadow
+ scp /etc/group e$i:/etc/group
+ scp /etc/passwd e$i:/etc/passwd
 done
