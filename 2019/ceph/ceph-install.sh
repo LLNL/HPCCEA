@@ -8,6 +8,8 @@
 echo "Enter the number of nodes and then press [ENTER]"
 read numnodes
 
+nodes=$(($numnodes+1))
+
 #make sure ceph-deploy is installed
 if ! [[ $(rpm -qa ceph-deploy ) =~ $ceph-deploy ]]; then
   sudo yum install -y ceph-deploy
@@ -33,8 +35,7 @@ if [[ "${hostname: -1}" == i ]]; then
 fi
 
 #install ceph on all nodes except management node
-for i in {2..$numnodes}
-do
+for i in $( seq 2 $nodes ); do
   sudo ceph-deploy install $hostname$i
 done
 
@@ -42,8 +43,7 @@ done
 sudo ceph-deploy mon create-initial
 
 #copy the configuration file from the admin/management node to all other nodes
-for i in {2..$numnodes}
-do
+for i in {2..$numnodes}; do
   sudo ceph-deploy admin $hostname$i
 done
 
@@ -57,11 +57,4 @@ read osd1 osd2
 
 #install the manager daemon on the OSD nodes
 sudo ceph-deploy mgr create $osd1 $osd2
-
-
-
-
-
-
-
 
