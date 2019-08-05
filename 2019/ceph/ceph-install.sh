@@ -43,7 +43,7 @@ done
 sudo ceph-deploy mon create-initial
 
 #copy the configuration file from the admin/management node to all other nodes
-for i in {2..$numnodes}; do
+for i in $( seq 2 $nodes ); do
   sudo ceph-deploy admin $hostname$i
 done
 
