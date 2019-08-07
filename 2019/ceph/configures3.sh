@@ -72,7 +72,8 @@ for u in $rmusers; do
 				if [[ $line == *bucket* && $line != *bucket_quota* ]]; then
 					buck_name=$( echo $line | cut -d '"' -f 4 )
 				fi
-
+				
+				#allow for multiple buckets per user to be transferred to the admin
 				if [[ $line == "}," && $prevline == "}" ]]; then	
 					radosgw-admin bucket unlink --bucket-id=$buck_id --bucket=$buck_name --uid=$u
     			radosgw-admin bucket link --bucket-id=$buck_id --bucket=$buck_name --uid=admin-ceph	
