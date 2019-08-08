@@ -11,6 +11,6 @@ exec { 'delete_guest':
   path => '/sbin:/bin:/usr/sbin:/usr/bin',
 }
 package { 'celery':
-  ensure   => '4.3.0',
+  ensure   => 'installed',
   provider => 'pip',
 }
