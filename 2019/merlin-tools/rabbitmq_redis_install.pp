@@ -26,5 +26,5 @@ file { '/etc/rabbitmq/rabbitmq.config':
   #selrole  => 'object_r',
   seltype  => 'usr_t',
   seluser  => 'unconfined_u',
-  #source   => './rabbitmq.config',
+  source   => '/tmp/rabbitmq.config',
 }
