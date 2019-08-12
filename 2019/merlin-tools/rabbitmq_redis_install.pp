@@ -7,7 +7,7 @@ service { ['redis', 'rabbitmq-server']:
   enable => true,
 }
 exec { 'delete_guest':
-  command => "cd /opt/puppetlabs/puppet/manifests ; sh add_user.sh",
+  command => "sh add_user.sh",
   path => '/sbin:/bin:/usr/sbin:/usr/bin',
 }
 package { 'celery':
