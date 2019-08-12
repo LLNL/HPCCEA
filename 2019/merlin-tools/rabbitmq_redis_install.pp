@@ -10,7 +10,11 @@ exec { 'delete_guest':
   command => "sh add_user.sh",
   path => '/sbin:/bin:/usr/sbin:/usr/bin',
 }
-package { 'celery':
+exec { 'install_pip':
+  command => "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py; python get-pip.py",
+  path => '/sbin:/bin:/usr/sbin:/usr/bin',
+}
+package { 'Celery':
   ensure   => 'installed',
   provider => 'pip',
 }
