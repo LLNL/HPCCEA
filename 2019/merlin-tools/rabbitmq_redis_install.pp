@@ -2,10 +2,6 @@ package { ['puppet', 'socat', 'erlang', 'rabbitmq-server', 'redis']:
   ensure   => 'installed',
   provider => 'yum',
 }
-service { ['redis', 'rabbitmq-server']:
-  ensure => running,
-  enable => true,
-}
 exec { 'delete_guest':
   command => "sh add_user.sh",
   path => '/sbin:/bin:/usr/sbin:/usr/bin',
@@ -21,6 +17,10 @@ package { 'Celery':
 exec { 'certs':
   command => "sh ssl.sh",
   path => '/sbin:/bin:/usr/sbin:/usr/bin',
+}
+service { ['redis', 'rabbitmq-server']:
+  ensure => running,
+  enable => true,
 }
 file { '/etc/rabbitmq/rabbitmq.config':
   ensure   => 'file',
