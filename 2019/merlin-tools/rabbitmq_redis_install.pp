@@ -23,7 +23,6 @@ file { '/etc/rabbitmq/rabbitmq.config':
   group    => 0,
   mode     => '0777',
   owner    => 0,
-  #selrole  => 'object_r',
   seltype  => 'usr_t',
   seluser  => 'unconfined_u',
   source   => '/tmp/rabbitmq.config',
