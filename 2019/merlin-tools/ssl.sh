@@ -5,6 +5,6 @@ mkdir -p /etc/ssl/rabbitmq
 cd result
 mv * /etc/ssl/rabbitmq
 chmod 777  /etc/rabbitmq/rabbitmq.config
-cd ../..
+cd ../../..
 mv rabbitmq.config /tmp/
 rm -fr ./tls-gen/
