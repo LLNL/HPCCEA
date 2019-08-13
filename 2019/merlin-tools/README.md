@@ -1,5 +1,5 @@
 # Merlin Workflow Tools
-Merlin is a LLNL job submission tool that uses the message brokers RabbitMQ and Redis on the backend, and Celery as a task worker. This assists with the installation and securing of those tools. RabbitMQ messaging will be protected wtih SSL. 
+Merlin is a LLNL job submission tool that uses the message brokers RabbitMQ and Redis on the backend, and Celery as a task worker. This assists with the installation and securing of those tools. RabbitMQ messaging will be protected with SSL. 
 Be sure to have all of the scripts, the Puppet manifest, and rabbitmq.config file in the same directory prior to starting the installation process.
 
 # Installation
