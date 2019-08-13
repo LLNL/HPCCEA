@@ -25,9 +25,9 @@ service { ['redis', 'rabbitmq-server']:
 file { '/etc/rabbitmq/rabbitmq.config':
   ensure   => 'file',
   group    => 0,
-  mode     => '0777',
+  mode     => '0644',
   owner    => 0,
   seltype  => 'usr_t',
-  seluser  => 'unconfined_u',
+  seluser  => 'system_u',
   source   => '/tmp/rabbitmq.config',
 }
