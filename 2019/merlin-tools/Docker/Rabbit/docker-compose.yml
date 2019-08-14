@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+ my-rabbit:
+  hostname: my-rabbit
+  image: rabbitmq:3
+  ports:
+    - 5671:5671
+  environment:
+    - SSL="true"
+    - RABBITMQ_SSL_CERTFILE=/tmp/ssl/server_certificate.pem
+    - RABBITMQ_SSL_KEYFILE=/tmp/ssl/server_key.pem
+    - RABBITMQ_SSL_CACERTFILE=/tmp/ssl/ca_certificate.pem
+    - RABBITMQ_DEFAULT_USER=Rabbit
+    - RABBITMQ_DEFAULT_PASS=passw0rd
+    - RABBITMQ_DEFAULT_VHOST=/Rabbit
+  volumes:
+    - /tmp/ssl:/tmp/s
