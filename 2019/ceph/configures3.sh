@@ -12,8 +12,7 @@ declare -a sysusers #users on the computer
 sysusers="$(awk -F':' '{ if ( $3 >= 1000 && $3 < 65000 ) print $1 }' /etc/passwd)"
 
 #read all of the current ceph user accounts
-while read user
-do
+while read user; do
 	#cut out the extra characters and store the usernames in an array
 	if [[ "$user" != "["  &&  "$user" != "]" ]]; then
 		curuser=$(echo $user | cut -d '"' -f 2)
