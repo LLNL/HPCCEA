@@ -95,8 +95,8 @@ done
 #grab the access and secret keys for all the users on the system
 for u in $sysusers; do
 
-  #if the user is new ie. doesn't have a current ceph account
-  #create the user and grab the keys
+	#if the user is new ie. doesn't have a current ceph account
+	#create the user and grab the keys
 	if [[ !( "${cephusers[*]}" =~ "$u" ) ]]; then
 		while read key; do
 			if [[ $key == *access_key* ]]; then
@@ -107,7 +107,7 @@ for u in $sysusers; do
 			fi
 		done < <(radosgw-admin user create --uid=$u --display-name=$u)
   
-  #if the is returning get their info
+	#if the is returning get their info
 	else
 		#grab the users old access and secret keys
 		while read key; do
