@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+ some-redis:
+  image: redis
+  command: redis-server --requirepass foobared
+  ports:
+    - '6379:6379'
