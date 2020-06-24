@@ -4,5 +4,5 @@
 - N.P. @nishap1225
 - M.B. @martinbaltezore
 - C.P. <github username>
-- M.U. <github username>
+- M.U. @meghaut1
 - V.Y. @ValenYamamoto
