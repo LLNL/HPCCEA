@@ -1,8 +1,8 @@
 - Rigo M.D. @morenodelgad1
-- B.R. <github username>
-- S.B. <github username>
-- M.B. <github username>
-- N.P. <github username>
-- C.P. cpalomo7
-- M.U. <github username>
-- V.Y. <github username>
+- S.B. @sbalingit211
+- B.R. @bpryan99
+- N.P. @nishap1225
+- M.B. @martinbaltezore
+- C.P. @cpalomo7
+- M.U. @meghaut1
+- V.Y. @ValenYamamoto
