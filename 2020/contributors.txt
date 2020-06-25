@@ -3,6 +3,6 @@
 - S.B. <github username>
 - M.B. <github username>
 - N.P. <github username>
-- C.P. Cristian Palomo-Ramirez
+- C.P. cpalomo7
 - M.U. <github username>
 - V.Y. <github username>
