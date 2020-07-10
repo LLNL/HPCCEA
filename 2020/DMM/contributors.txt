@@ -1,1 +1,5 @@
-- S.B. @sbalingit211
+<<<<<<< HEAD
+- S.B. @sbalingit211	<sbalingit21@gmail.com>
+=======
+Valen Yamamoto     <valenryamamoto@gmail.com>
+>>>>>>> 5feecd51d0c63eed43bd238dd32c6db0d39bb8dd
