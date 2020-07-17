@@ -11,7 +11,7 @@ try:
 
 	mydb = mysql.connector.connect( host="localhost",
   	user="root",
-  	password="Puffyf15" )
+  	password="Puffyf15", database="gender")
 	
 	if mydb.is_connected():
         	print('Connected to MySQL database')
@@ -22,4 +22,23 @@ except Error as e:
 	print(e)
 	mydb = mysql.connector.connect( host="localhost", user="root", password="Puffyf15" )
 	cursor = mydb.cursor(buffered=True , dictionary=True)
-	cursor.execute("CREATE DATABASE gender")
+	# Open and read the file as a single buffer
+	fd = open('createALL.sql', 'r')
+	sqlFile = fd.read()
+	fd.close()
+
+	# all SQL commands (split on ';')
+	sqlCommands = sqlFile.split(';')
+	# Execute every command from the input file
+	for command in sqlCommands:
+   	# This will skip and report errors
+    	# For example, if the tables do not yet exist, this will skip over
+    	# the DROP TABLE commands
+		try:
+        		cursor.execute(command)
+    		except Error as e:
+        		print "Command skipped: ", e
+#	cursor = mydb.cursor(buffered=True , dictionary=True)
+#	cursor.execute("CREATE DATABASE gender")
+#sql = "DROP DATABASE gender"
+#cursor.execute(sql)
