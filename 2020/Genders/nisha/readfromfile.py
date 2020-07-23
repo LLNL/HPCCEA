@@ -6,6 +6,8 @@
 #os.environ['PYTHONPATH'] = '/usr/local/lib64/python3.6/site-packages'
 #os.environ['LD_LIBRARY_PATH'] = '/usr/local/lib'
 
+# Reads data from a genders file at /etc/genders and inserts it into the "gender" database
+
 import genders
 gen = genders.Genders(filename="/etc/genders")
 
@@ -18,7 +20,7 @@ import mysql.connector
 
 config = {
   'user': 'root',
-  'password': , # eDIT WITH YOUR PASSWORD
+  'password': , # EDIT WITH YOUR PASSWORD
   'host': 'localhost',
   'database': 'gender'
 }
