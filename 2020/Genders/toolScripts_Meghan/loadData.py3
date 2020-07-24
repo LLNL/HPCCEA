@@ -7,6 +7,7 @@ import os;
 import genders;
 import mysql.connector 
 from mysql.connector import Error
+import argparse;
 
 #sets up connection to genders database
 def connectDatabase():
@@ -67,27 +68,40 @@ def print_all(mydb):
     for row in records:
         print(row)
 
+
 def insertNode(node_name,mydb):
     cluster = node_name[:-1]
     node_num = node_name[-1:]
-    sql = "INSERT INTO NODE (cluster, node_num, node_name) VALUES (%s, %s, %s)"
+    sql = "INSERT IGNORE INTO NODE (cluster, node_num, node_name) VALUES (%s, %s, %s)"
     val = (cluster, node_num, node_name)
     cursor = mydb.cursor(buffered=True , dictionary=True)
-    cursor.execute(sql, val)
-    print("inserting")
+    try:
+        cursor.execute(sql, val)
+        mydb.commit()
+    except mysql.connector.ProgrammingError as err:
+        print(err.errno)
+   # print("inserting")
+
 def insertGender(gender_name,mydb):
-    sql = "INSERT INTO GENDER(gender_name,descrip) VALUES (%s,%s)"
+    sql = "INSERT IGNORE INTO GENDER(gender_name,descrip) VALUES (%s,%s)"
     val = (gender_name,'none')
     cur = mydb.cursor(buffered=True, dictionary=True)
-    cur.execute(sql,val)
-	
+    try:
+        cur.execute(sql,val)
+        mydb.commit()
+    except mysql.connector.ProgrammingError as err:
+        print(err.errno)
 
 def insertConfig(val, node_name, gender_name, mydb):
     config_id = node_name + gender_name
-    sql = "INSERT INTO CONFIGURATION(config_id,val,node_name,gender_name) VALUES (%s,%s,%s,%s)"
+    sql = "INSERT IGNORE INTO CONFIGURATION(config_id,val,node_name,gender_name) VALUES (%s,%s,%s,%s)"
     val = (config_id,val,node_name,gender_name)
     cur = mydb.cursor(buffered=True, dictionary=True)
-    cur.execute(sql,val)
+    try:
+        cur.execute(sql,val)
+        mydb.commit()
+    except mysql.connector.ProgrammingError as err:
+        print(err.errno)
 
 #show all genders in database
 def allGenders(mydb):
@@ -135,26 +149,24 @@ def parse_pathfi(filename,mydb):
     
 
 def main():
-
     mydb = connectDatabase()
     #insertNode("practice1",mydb)
     #insertGender("pretend_name","description",mydb)
    # insertConfig("val", "practice1", "pretend_name", mydb) 
     #parse_file("gentestfi.txt",mydb)
-    #print_all(mydb)
+    print_all(mydb)
    # allGenders(mydb)
    # findNodes(mydb,"center")
    # findGenders(mydb,"lgw1")
+   # ex1 = open("pypath.sh")
+   # subprocess.call(ex1,shell=True)
+   # ex2 = open("libpath.sh",shell=True)
+   # subprocess.call(ex2,shell=True)
     fi = open("get_genders_file.sh")
-    #.readlines()
-    #s.rstrip('\n') for s in fi
-    #with io.open("get_genders_file.sh", "r", newline=None) as fd:
-        #for line in fd:
-            #line = line.replace("\n", "")
-            #line.rstrip('\n')
     subprocess.call(fi,shell=True)
-    #fi.close()    
+    fi.close()    
     parse_pathfi("pathfile.txt",mydb)
+   # print_all(mydb)
 #execute qureies 
 if __name__ == "__main__":
     main()
