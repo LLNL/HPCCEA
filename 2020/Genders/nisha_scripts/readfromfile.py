@@ -20,7 +20,7 @@ import mysql.connector
 
 config = {
   'user': 'root',
-  'password': , # EDIT WITH YOUR PASSWORD
+  'password': 'nishappw', # EDIT WITH YOUR PASSWORD
   'host': 'localhost',
   'database': 'gender'
 }
@@ -35,7 +35,7 @@ for node_name in gen.getnodes():
 	result = cursor.fetchall()
 	if len(result) == 0:
 		node_num, cluster = parseName(node_name)
-		add_node = ("INSERT INTO NODE (node_name, node_num, cluster) VALUES (%s, %s, %s)")
+		add_node = ("INSERT IGNORE INTO NODE (node_name, node_num, cluster) VALUES (%s, %s, %s)")
 		cursor.execute(add_node, (node_name, node_num, cluster))
 		mydb.commit()
 
@@ -46,7 +46,7 @@ for attr in gen.getattr_all():
 	result = cursor.fetchall()
 	if len(result) == 0:
 		descrip = None 
-		add_gender = ("INSERT INTO GENDER (gender_name, descrip) VALUES (%s, %s)")
+		add_gender = ("INSERT IGNORE INTO GENDER (gender_name, descrip) VALUES (%s, %s)")
 		cursor.execute(add_gender, (attr, descrip))
 		mydb.commit()	
 
@@ -59,7 +59,7 @@ for node in gen.getnodes():
 		cursor.execute(config_query, (config_id,))
 		if cursor.rowcount == 0:
 			result = cursor.fetchall()
-			add_config = ("INSERT INTO CONFIGURATION (config_id, val, node_name, gender_name) VALUES (%s, %s, %s, %s)")
+			add_config = ("INSERT IGNORE INTO CONFIGURATION (config_id, val, node_name, gender_name) VALUES (%s, %s, %s, %s)")
 			cursor.execute(add_config, (config_id, value, node, attribute))
 			mydb.commit()
 			continue
