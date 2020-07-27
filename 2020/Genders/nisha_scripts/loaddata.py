@@ -6,10 +6,12 @@ import os
 os.environ['PYTHONPATH'] = '/usr/local/lib64/python3.6/site-packages'
 os.environ['LD_LIBRARY_PATH'] = '/usr/local/lib'
 
+
+
 # Reads data from a genders file at /etc/genders and inserts it into the "gender" database
 
 import genders
-gen = genders.Genders(filename="/etc/genders")
+#gen = genders.Genders(filename="/etc/genders")
 
 def parseName(node_name): 
 	node_num = node_name[-1]
@@ -20,7 +22,7 @@ import mysql.connector
 
 config = {
   'user': 'root',
-  'password': # EDIT WITH YOUR PASSWORD
+  'password': 'nishappw', # EDIT WITH YOUR PASSWORD
   'host': 'localhost',
   'database': 'gender'
 }
@@ -29,7 +31,8 @@ mydb = mysql.connector.connect(**config)
 cursor = mydb.cursor()
 
 # NODE 
-def node():
+def node(dest):
+	gen = genders.Genders(filename=dest)
 	for node_name in gen.getnodes():
 		node_name_query = ("SELECT node_name FROM NODE WHERE node_name=%s")
 		cursor.execute(node_name_query, (node_name,))
@@ -41,7 +44,8 @@ def node():
 			mydb.commit()
 
 # GENDER
-def gender():
+def gender(dest):
+	gen = genders.Genders(filename=dest)
 	for attr in gen.getattr_all():
 		gender_query = ("SELECT gender_name from GENDER where gender_name=%s")
 		cursor.execute(gender_query, (attr,))
@@ -53,7 +57,8 @@ def gender():
 			mydb.commit()	
 
 # CONFIGURATION 
-def configuration():
+def configuration(dest):
+	gen = genders.Genders(filename=dest)
 	for node in gen.getnodes(): 
 		for attribute in gen.getattr(node):
 			config_id = node + attribute
@@ -73,26 +78,23 @@ def configuration():
 				cursor.execute(update_config, (value, config_id))
 				mydb.commit()
 
-#def delete():
-#	#Node 
-#	node_query = ("SELECT node_name FROM NODE")
-#	cursor.execute(node_query)
-#	for (node_name) in cursor:
-		i
+def __main__(dest):
+	node(dest)
+	gender(dest)
+	configuration(dest)
 
-def __main__():
-	node()
-	gender()
-	configuration()
+import shutil
 
-rootDir = "~/cfengine/clusters"
-for dirName, subdirList, fileList in os.walk(rootDir):
-	
+os.system("ls -d ~/cfengine/clusters/*/genders > pathfile.txt")
 
+with open("pathfile.txt", "r") as pathfile:
+	for line in pathfile:
+		line = line.strip() #Takes out the new line
+		dest = "tempfile.txt"
+		shutil.copyfile(line, dest)
+		__main__(dest)
 
-
-
-__main__()
-
+os.remove("pathfile.txt")
+os.remove("tempfile.txt")
 cursor.close()
 mydb.close()
