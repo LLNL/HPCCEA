@@ -13,7 +13,7 @@ import hostlist
 
 config = {
   'user': 'root',
-  'password': 'nishappw', # EDIT WITH YOUR PASSWORD
+  'password':  # EDIT WITH YOUR PASSWORD
   'host': 'localhost',
   'database': 'gender'
 }
