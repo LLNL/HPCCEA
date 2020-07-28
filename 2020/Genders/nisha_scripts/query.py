@@ -17,6 +17,7 @@ config = {
   'host': 'localhost',
   'database': 'gender'
 }
+import numpy as np
 
 def parsequery(results):
 	list = []
@@ -55,8 +56,10 @@ group.add_argument('-v', nargs='+', metavar=('node', 'attr'), help="returns any 
 
 group.add_argument('-Q', nargs='+', metavar=('node', 'attr'), help="returns 0 to the environment if the conditions are met; 1 otherwise") 
 
-group.add_argument('-V', metavar='attr', help="prints all the values that exist for a specific attribute")
-#parser.add_argument('-U', 
+vgroup = parser.add_argument_group("vgroup")
+vgroup.add_argument('-V', metavar='attr', help="prints all the values that exist for a specific attribute")
+
+vgroup.add_argument('-U', help="prints out only unique values for a particular attribute", action="store_true")
 
 group.add_argument('-l', nargs='*', metavar='node', help='prints all the attributes/values associated with the node. if no node is specified, all of the attributes are listed.')
 
@@ -131,8 +134,10 @@ elif args.V != None:
 	results = cursor.fetchall()
 	results = parsequery(results)
 	if len(results) != 0:
+		if (args.U == True):
+			x = np.array(results) 
+			results = (np.unique(x)).tolist()
 		print(hostlist.delimiter(results, '\n'))
-# Implement -U
 elif args.l != None:
 	if len(args.l) > 1:
 		parser.error("too many arguments")
