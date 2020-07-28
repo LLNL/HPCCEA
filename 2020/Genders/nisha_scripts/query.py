@@ -26,6 +26,13 @@ def parsequery(results):
 				list.append(e)
 	return list
 
+def regex(cluster):
+	regex = '' 
+	for char in cluster:
+		regex += '[' + char + ']'
+	regex += '[0-9]'
+	return regex
+
 mydb = mysql.connector.connect(**config)
 cursor = mydb.cursor()
 group = parser.add_mutually_exclusive_group(required=False)
@@ -38,7 +45,7 @@ group.add_argument('-V', metavar='attr', help="Prints all the values that exist 
 #parser.add_argument('-U', 
 args = parser.parse_args()
 
-def q_c_n_s_query(attr):
+def c_n_s_query(attr):
 	query = ("SELECT node_name FROM CONFIGURATION WHERE gender_name=%s")
 	cursor.execute(query, (attr,))
 	results = cursor.fetchall()
@@ -46,19 +53,28 @@ def q_c_n_s_query(attr):
 
 if args.q != None:
 	attr = args.q
-	results = q_c_n_s_query(attr)
-	if len(results) != 0:
-		print(hostlist.compress_range(results))
+	nodes  = c_n_s_query(attr)
+	if len(nodes) != 0:	
+		clusters = []
+		for node in nodes:
+			clust = node[0:len(node)-1]
+			clust += '%'
+			if not (clust in clusters):
+				clusters.append(clust)
+				query = ('SELECT node_name FROM CONFIGURATION  WHERE node_name LIKE %s && gender_name=%s')
+				cursor.execute(query, (clust, attr))
+				results = parsequery(cursor.fetchall())
+				print(hostlist.compress_range(results))
 elif args.c != None:
-	results = q_c_n_s_query(args.c)
+	results = c_n_s_query(args.c)
 	if (len(results) != 0):
 		print(hostlist.delimiter(results, ','))
 elif args.n != None:
-	results = q_c_n_s_query(args.n)
+	results = c_n_s_query(args.n)
 	if (len(results) != 0):
 		print(hostlist.delimiter(results, '\n'))
 elif args.s != None:
-	results = q_c_n_s_query(args.s)
+	results = c_n_s_query(args.s)
 	if (len(results) != 0):
 		print(hostlist.delimiter(results, ' '))
 elif args.v != None:
