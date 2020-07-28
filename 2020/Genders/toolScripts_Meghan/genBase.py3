@@ -113,6 +113,16 @@ def allGenders(mydb):
     for row in records:
         print(row['gender_name'])
 
+def getVals(mydb,gender_name):
+    gender_name = str(gender_name)
+    sql = "SELECT val,node_name FROM CONFIGURATION WHERE gender_name = %s"
+    cur = mydb.cursor(buffered=True,dictionary=True)
+    val = (gender_name,)
+    #print(gender_name)
+    cur.execute(sql,val)
+    records = cur.fetchall()
+    return records    
+
 #all nodes that have particular gender
 def findNodes(mydb,gender_namei):
     sql = "SELECT DISTINCT n.node_name FROM NODE n JOIN CONFIGURATION c WHERE (n.node_name = c.node_name AND c.gender_name = %s )"
@@ -125,17 +135,19 @@ def findNodes(mydb,gender_namei):
    # for row in records:i
    #     print(row['node_name'])
     return records
-#all genders in a particular node
+
 def findGenders(mydb,node_namei):
     sql = "SELECT DISTINCT g.gender_name FROM GENDER g JOIN CONFIGURATION c WHERE (g.gender_name = c.gender_name AND c.node_name = %s)"
     val = (node_namei,)
     cur = mydb.cursor(buffered=True, dictionary=True)
     cur.execute(sql,val)
     records = cur.fetchall()
-    print("All genders of the node: ",node_namei)
+   # print("All genders of the node: ",node_namei)
     for row in records:
         print(row['gender_name'])
 
+#all genders in database
+ 
 #opens file containing paths to genders file in cluster
 #copies each file into temp file and sends that to be parsed into database
 def parse_pathfi(filename,mydb):
@@ -169,6 +181,19 @@ def main():
 
     parser.add_argument('-q', nargs=1,help='prints list of nodes having the specified attribute in host range',action='store', dest='hostNode')
   
+    parser.add_argument('-c',nargs=1,help='prints list of nodes having specified attribute in coma seperated format',action='store',dest='comaNode')
+    #results = parser.parse_args()
+
+    parser.add_argument('-n',nargs=1,help='prints list of nodes having specified attribute in newline separated list',action='store',dest='newNode')
+
+    parser.add_argument('-s',nargs=1,help='prints list of nodes having specified attribute in space separated list',action='store',dest='spaceNode')
+
+    parser.add_argument('-v',nargs=1,help='outputs values associated with gender',action='store',dest='vals')
+
+    parser.add_argument('-vv',nargs=1,help='outputs values associated with gender and with node listed',action='store',dest='valv')
+
+    parser.add_argument('-l',nargs='*',help='list of attributes for a particular node, if no node all attributes in database')
+
     results = parser.parse_args()
 
 #run based on input
@@ -180,7 +205,8 @@ def main():
         os.system("ls -d ~/cfengine/clusters/*/genders > pathfile.txt")
         fi.close()
         parse_pathfi("pathfile.txt",mydb)
-#finds nodes w specified gender 
+
+#finds nodes w specified gender in hostlist format
     if results.hostNode != None:
         finLi = []
         prev = False
@@ -190,44 +216,65 @@ def main():
         cluster0 = records[0]
         cluster0 = cluster0['node_name']
         cluster0 = cluster0[:-1]
-       # print(clusterN)
+
         for row in records:
-        #    print(row['node_name'])
             clusterT = row['node_name']
             clusterT = clusterT[:-1]
            # print("debug: ",clusterT)
             if cluster0 == clusterT:
-            #    print("debug2 ",row['node_name'])
                 hosts += ( row['node_name'] + ',')
                 prev = True
-            elif cluster0 != clusterT and prev == True:
-             #   print("debug3 ",row['node_name'])                
+            elif cluster0 != clusterT and prev == True:                
                 finLi.append(hosts)
                 hosts = ''
                 hosts += ( row['node_name'] + ',')
                 prev = False
             elif cluster0 != clusterT and prev == False:
-              #  print("debug4 ",row['node_name'])
                 hosts = ''
                 hosts += ( row['node_name'] + ',')
                 prev = True
             cluster0 = clusterT
         finLi.append(hosts)
-    #    finLi.pop(0)
-      #  print("start")
-       # print(finLi[0])
         for y in finLi:
             y = y[:-1] 
             y = hostlist.compress_range(y)
-            print(y)
-      #      else
-       #         hosts = ""
-        #        hosts += ( row['node_name'] + ',')
-          #cluster0 = clusterT
-           # clusterN = clusterN[-1:]
-     #   print(hostlist.compress_range(hosts[:-1]))
-     #   findGenders(mydb,"boron2")
-    #print_all(mydb)
-#execute qureies 
+            print(y, end=" ")
+    if results.comaNode != None:
+        finLi = []
+        records = findNodes(mydb,str(results.comaNode[0]))
+         
+        for row in records:
+            finLi.append(row['node_name'])
+    
+        print(*finLi,sep=", ")
+    if results.newNode != None:
+        records = findNodes(mydb,str(results.newNode[0]))
+        
+        for row in records:
+            print(row['node_name'])
+    if results.spaceNode != None:
+       records = findNodes(mydb,str(results.spaceNode[0]))
+       
+       for row in records:
+           print(row['node_name'],end=" ")
+
+    if results.vals != None:
+        records = getVals(mydb,*results.vals)
+        for row in records:
+            print(row['val'])
+    
+    if results.valv != None:
+        records = getVals(mydb,*results.valv)
+        for row in records:
+            print(row['node_name']," ",row['val'])
+
+    if results.l != None:
+        print("debug1")
+        if len(results.l) > 0:
+            findGenders(mydb,results.l)
+        else:
+            print("here")
+            allGenders(mydb)
+
 if __name__ == "__main__":
     main()
