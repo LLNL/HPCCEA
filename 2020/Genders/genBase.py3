@@ -169,7 +169,13 @@ def main():
 
     parser.add_argument('-q', nargs=1,help='prints list of nodes having the specified attribute in host range',action='store', dest='hostNode')
   
-    parser.add_argument('-c',nargs=1,help='prints lists of nodes having specified attribute in coma seperated format',action='store',dest='comaNode')
+    parser.add_argument('-c',nargs=1,help='prints list of nodes having specified attribute in coma seperated format',action='store',dest='comaNode')
+    #results = parser.parse_args()
+
+    parser.add_argument('-n',nargs=1,help='prints list of nodes having specified attribute in newline separated list',action='store',dest='newNode')
+
+    parser.add_argument('-s',nargs=1,help='prints list of nodes having specified attribute in space separated list',action='store',dest='spaceNode')
+
     results = parser.parse_args()
 
 #run based on input
@@ -216,13 +222,23 @@ def main():
             y = hostlist.compress_range(y)
             print(y, end=" ")
     if results.comaNode != None:
-         finLi = []
-         records = findNodes(mydb,str(results.comaNode[0]))
+        finLi = []
+        records = findNodes(mydb,str(results.comaNode[0]))
          
-         for row in records:
-             finLi.append(row['node_name'])
+        for row in records:
+            finLi.append(row['node_name'])
     
-         print(*finLi,sep=", ")
+        print(*finLi,sep=", ")
+    if results.newNode != None:
+        records = findNodes(mydb,str(results.newNode[0]))
+        
+        for row in records:
+            print(row['node_name'])
+    if results.spaceNode != None:
+       records = findNodes(mydb,str(results.spaceNode[0]))
+       
+       for row in records:
+           print(row['node_name'],end=" ")
           
 if __name__ == "__main__":
     main()
