@@ -63,13 +63,18 @@ def parse_file(filename,mydb):
             #print("needs to be inserted")
             insertNode(y,mydb)
     #check if deletion is needed
-    there = False
-    for rec in records:
-        for y in nod:
-            if y == rec['node_name']:
-                there = True
-                nod.remove(y)
-       # print("items left on list? ",len(nod))                 
+    #there = False
+    #for rec in records:
+    #    for y in nod:
+    #        if y == rec['node_name']:
+    #            there = True
+    #            nod.remove(y)
+    #print(len(nod))
+    #for det in nod:
+    #    print("deleting node", det)
+    #    deleteNode(det,mydb)
+#put through node delete
+                 
         #if there == False:
          #   print("needs to be deleted",rec)   
     #print("items left on list? ",len(nod))
@@ -78,7 +83,7 @@ def parse_file(filename,mydb):
         spnod = gens.getnodes(attr=x)
         for k in spnod:
              insertConfig(gens.getattrval(attr=x,node=k),k,x,mydb)
-
+    return nod
 #debugging function. prints all nodes and genders on nodes
 def print_all(mydb):
     sel = "SELECT * FROM CONFIGURATION"
@@ -108,6 +113,13 @@ def insertNode(node_name,mydb):
         mydb.commit()
     except mysql.connector.ProgrammingError as err:
         print(err.errno)
+
+def deleteNode(node_name,mydb):
+    sql = "DELETE FROM NODE WHERE node_name = %s"
+    val = (node_name,)
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql,val)
+    mydb.commit()
 
 
 def insertGender(gender_name,mydb):
@@ -151,12 +163,15 @@ def allGenders(mydb):
 
 #Pulls all of the nodes in database
 def allNodes(mydb):
+#    print("why")
     sql = "SELECT DISTINCT node_name FROM NODE"
     cur = mydb.cursor(buffered=True,dictionary=True)
     cur.execute(sql)
     records = cur.fetchall()
+    #return records
+  #  for row in records:
+   #     print("from all node query",row['node_name'])
     return records
-
 def getVals(mydb,gender_name):
     gender_name = str(gender_name)
     sql = "SELECT val,node_name FROM CONFIGURATION WHERE gender_name = %s"
@@ -195,17 +210,53 @@ def findGenders(mydb,node_namei):
 #opens file containing paths to genders file in cluster
 #copies each file into temp file and sends that to be parsed into database
 def parse_pathfi(filename,mydb):
+    fileNode = []
+    adjLi = []
     with open(filename) as f:
         mylist = [line.rstrip('\n') for line in f]
 
         for y in mylist:
             dest = "tempfile.txt"
             copyfile(y, dest)
-            parse_file(dest,mydb)
-    
+            fileNode.append(parse_file(dest,mydb))
+    for n in fileNode:
+        for x in n:
+            adjLi.append(x)
+    #for u in adjLi:
+    #    print(u)
+    #print(len(adjLi))
+    #print("huh")
+    records = allNodes(mydb)
+    realLi = []
+    for r in records:
+        realLi.append(r['node_name'])
+    #    print("realif appena", r['node_name'])
+    #print(len(realLi))
+    #print(len(adjLi))
+    for rec in records:
+     #   print("in base ",rec)
+        for u in adjLi:
+      #      print("in base ",rec, "in file", u)
+            if rec['node_name'] == u:
+               #  print("removing ",u)
+                 realLi.remove(u)
+    #print(len(realLi))
+    for det in realLi:
+       # print("deleting node", det)
+        deleteNode(det,mydb)
+ #for rec in records:
+    #    for y in nod:
+    #        if y == rec['node_name']:
+    #            there = True
+    #            nod.remove(y)
+    #print(len(nod))
+    #for det in nod:
+    #    print("deleting node", det)
+    #    deleteNode(det,mydb)
 
 def main():
     mydb = connectDatabase()
+    print("has connnected")
     #insertNode("practice1",mydb)
     #insertGender("pretend_name","description",mydb)
    # insertConfig("val", "practice1", "pretend_name", mydb) 
