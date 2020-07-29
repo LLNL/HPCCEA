@@ -52,8 +52,27 @@ def parse_file(filename,mydb):
     gens = genders.Genders(filename)
     all = gens.getattr_all()
     nod = gens.getnodes()
+    records = allNodes(mydb)    
+    flag = False
     for y in nod:
-        insertNode(y,mydb)
+        for rec in records:
+            if rec['node_name'] == y:
+                #check update
+                flag = True
+        if flag == False:
+            #print("needs to be inserted")
+            insertNode(y,mydb)
+    #check if deletion is needed
+    there = False
+    for rec in records:
+        for y in nod:
+            if y == rec['node_name']:
+                there = True
+                nod.remove(y)
+       # print("items left on list? ",len(nod))                 
+        #if there == False:
+         #   print("needs to be deleted",rec)   
+    #print("items left on list? ",len(nod))
     for x in all:
         insertGender(x,mydb)
         spnod = gens.getnodes(attr=x)
@@ -69,7 +88,15 @@ def print_all(mydb):
     for row in records:
         print(row)
 
-
+def checkE(node_name,mydb):
+    sql = "EXISTS (SELECT DISTINCT node_name FROM GENDER WHERE node_name = %s)"
+    val = (node_name,)
+    cursor = mydb.cursor(buffered=True , dictionary=True)
+    cursor.execute(sql,val)
+    records = cur.fetchall()
+    for row in records:
+        print(row)
+   
 def insertNode(node_name,mydb):
     cluster = node_name[:-1]
     node_num = node_name[-1:]
@@ -81,6 +108,7 @@ def insertNode(node_name,mydb):
         mydb.commit()
     except mysql.connector.ProgrammingError as err:
         print(err.errno)
+
 
 def insertGender(gender_name,mydb):
     sql = "INSERT IGNORE INTO GENDER(gender_name,descrip) VALUES (%s,%s)"
@@ -103,6 +131,14 @@ def insertConfig(val, node_name, gender_name, mydb):
     except mysql.connector.ProgrammingError as err:
         print(err.errno)
 
+def deleteConfig(config_idi,mydb):
+    sql = "DELETE FROM CONFIGURATION WHERE config_id = %s"
+    val = (config_ifi,)
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql,val)
+    mydb.commit()
+
+
 #show all genders in database
 def allGenders(mydb):
     sql = "SELECT DISTINCT gender_name FROM GENDER"
@@ -112,6 +148,14 @@ def allGenders(mydb):
     print("All genders in database: \n")
     for row in records:
         print(row['gender_name'])
+
+#Pulls all of the nodes in database
+def allNodes(mydb):
+    sql = "SELECT DISTINCT node_name FROM NODE"
+    cur = mydb.cursor(buffered=True,dictionary=True)
+    cur.execute(sql)
+    records = cur.fetchall()
+    return records
 
 def getVals(mydb,gender_name):
     gender_name = str(gender_name)
@@ -179,6 +223,8 @@ def main():
     parser = argparse.ArgumentParser(description='Gender quereies from central database.')
     parser.add_argument('--comb',help='pulls genders file from cfengine and inserts into database',action='store_true',dest='comb')
 
+    parser.add_argument('-dd',help='drops entire database',action='store_true',dest='dd')
+
     parser.add_argument('-q', nargs=1,help='prints list of nodes having the specified attribute in host range',action='store', dest='hostNode')
   
     parser.add_argument('-c',nargs=1,help='prints list of nodes having specified attribute in coma seperated format',action='store',dest='comaNode')
@@ -194,6 +240,7 @@ def main():
 
     parser.add_argument('-l',nargs='*',help='list of attributes for a particular node, if no node all attributes in database')
 
+    
     results = parser.parse_args()
 
 #run based on input
@@ -206,6 +253,10 @@ def main():
         fi.close()
         parse_pathfi("pathfile.txt",mydb)
 
+    if results.dd:
+        sql = "DROP DATABASE gender"
+        cur = mydb.cursor(buffered=True, dictionary=True)
+        cur.execute(sql)
 #finds nodes w specified gender in hostlist format
     if results.hostNode != None:
         finLi = []
@@ -269,11 +320,11 @@ def main():
             print(row['node_name']," ",row['val'])
 
     if results.l != None:
-        print("debug1")
+        #print("debug1")
         if len(results.l) > 0:
             findGenders(mydb,results.l)
         else:
-            print("here")
+         #   print("here")
             allGenders(mydb)
 
 if __name__ == "__main__":
