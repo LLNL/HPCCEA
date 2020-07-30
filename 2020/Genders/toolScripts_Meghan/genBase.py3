@@ -55,35 +55,16 @@ def parse_file(filename,mydb):
     records = allNodes(mydb)    
     flag = False
     for y in nod:
-        for rec in records:
-            if rec['node_name'] == y:
-                #check update
-                flag = True
-        if flag == False:
-            #print("needs to be inserted")
-            insertNode(y,mydb)
-    #check if deletion is needed
-    #there = False
-    #for rec in records:
-    #    for y in nod:
-    #        if y == rec['node_name']:
-    #            there = True
-    #            nod.remove(y)
-    #print(len(nod))
-    #for det in nod:
-    #    print("deleting node", det)
-    #    deleteNode(det,mydb)
-#put through node delete
-                 
-        #if there == False:
-         #   print("needs to be deleted",rec)   
-    #print("items left on list? ",len(nod))
+        insertNode(y,mydb)
+    conIDs = []
     for x in all:
+    #    print("the attrs are ",x)
         insertGender(x,mydb)
         spnod = gens.getnodes(attr=x)
         for k in spnod:
              insertConfig(gens.getattrval(attr=x,node=k),k,x,mydb)
-    return nod
+             conIDs.append(k+x)
+    return nod,all,conIDs
 #debugging function. prints all nodes and genders on nodes
 def print_all(mydb):
     sel = "SELECT * FROM CONFIGURATION"
@@ -132,6 +113,14 @@ def insertGender(gender_name,mydb):
     except mysql.connector.ProgrammingError as err:
         print(err.errno)
 
+def deleteGender(gender_name,mydb):
+    sql = "DELETE FROM GENDER WHERE gender_name = %s"
+    val = (gender_name,)
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql,val)
+    mydb.commit()
+
+
 def insertConfig(val, node_name, gender_name, mydb):
     config_id = node_name + gender_name
     sql = "INSERT IGNORE INTO CONFIGURATION(config_id,val,node_name,gender_name) VALUES (%s,%s,%s,%s)"
@@ -150,17 +139,24 @@ def deleteConfig(config_idi,mydb):
     cur.execute(sql,val)
     mydb.commit()
 
-
+#return list of all confis
+def allConfigs(mydb):
+    sql = "SELECT DISTINCT config_id FROM CONFIGURATION"
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql)
+    records = cur.fetchall()
+    return records 
 #show all genders in database
 def allGenders(mydb):
+    #print("inall")
     sql = "SELECT DISTINCT gender_name FROM GENDER"
     cur = mydb.cursor(buffered=True, dictionary=True)
     cur.execute(sql)
     records = cur.fetchall()
-    print("All genders in database: \n")
-    for row in records:
-        print(row['gender_name'])
-
+    #print("All genders in database: \n")
+    #for row in records:
+    #    print(row['gender_name'])
+    return records
 #Pulls all of the nodes in database
 def allNodes(mydb):
 #    print("why")
@@ -212,39 +208,62 @@ def findGenders(mydb,node_namei):
 def parse_pathfi(filename,mydb):
     fileNode = []
     adjLi = []
+    genderFile = []
+    configs = []
     with open(filename) as f:
         mylist = [line.rstrip('\n') for line in f]
 
         for y in mylist:
             dest = "tempfile.txt"
             copyfile(y, dest)
-            fileNode.append(parse_file(dest,mydb))
+            nod,all,conf = parse_file(dest,mydb)
+            fileNode.append(nod)
+            genderFile.append(all)
+            configs.append(conf)
+    cid = []
+    for c in configs:
+        for cc in c:
+            cid.append(cc)
+    #for id in cid:
+    #    print(id)
+
+    fileGender = []
+    for x in genderFile:
+        for n in x:
+            fileGender.append(n)
+      
     for n in fileNode:
-        for x in n:
-            adjLi.append(x)
-    #for u in adjLi:
-    #    print(u)
-    #print(len(adjLi))
-    #print("huh")
+        for jj in n:
+            adjLi.append(jj)
+    
+    idRec = allConfigs(mydb)
+    genRecords = allGenders(mydb)
+    genDel = []
+    for g in genRecords:
+         genDel.append(g['gender_name'])
     records = allNodes(mydb)
     realLi = []
+    
+    for k in genRecords:
+        for f in fileGender:
+            #print("f is ",f)
+            if k['gender_name'] == f:
+                #print("removing gender ",f)
+                if f in genDel: genDel.remove(f)
     for r in records:
         realLi.append(r['node_name'])
-    #    print("realif appena", r['node_name'])
-    #print(len(realLi))
-    #print(len(adjLi))
+    
     for rec in records:
-     #   print("in base ",rec)
         for u in adjLi:
-      #      print("in base ",rec, "in file", u)
             if rec['node_name'] == u:
                #  print("removing ",u)
                  realLi.remove(u)
-    #print(len(realLi))
+   
     for det in realLi:
-       # print("deleting node", det)
         deleteNode(det,mydb)
- #for rec in records:
+
+    for tt in genDel:
+        deleteGender(tt,mydb)
     #    for y in nod:
     #        if y == rec['node_name']:
     #            there = True
@@ -256,7 +275,6 @@ def parse_pathfi(filename,mydb):
 
 def main():
     mydb = connectDatabase()
-    print("has connnected")
     #insertNode("practice1",mydb)
     #insertGender("pretend_name","description",mydb)
    # insertConfig("val", "practice1", "pretend_name", mydb) 
