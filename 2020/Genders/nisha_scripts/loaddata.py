@@ -1,17 +1,12 @@
 #!/usr/bin/python3
-
-# UPDATE -------
-# Don't need this, will be done in the driver script.
+import pdb
 import os
 os.environ['PYTHONPATH'] = '/usr/local/lib64/python3.6/site-packages'
 os.environ['LD_LIBRARY_PATH'] = '/usr/local/lib'
 
-
-
 # Reads data from a genders file at /etc/genders and inserts it into the "gender" database
 
 import genders
-#gen = genders.Genders(filename="/etc/genders")
 
 def parseName(node_name): 
 	node_num = node_name[-1]
@@ -78,6 +73,34 @@ def configuration(dest):
 				cursor.execute(update_config, (value, config_id))
 				mydb.commit()
 
+def deletenodes(dest, present, absent):
+	gen = genders.Genders(filename=dest)
+	node_query = ("SELECT node_name FROM NODE")
+	cursor.execute(node_query)
+	for (node_name,) in cursor: 
+		if gen.isnode(node_name) == 1:
+			if not node_name in present:
+				present.append(node_name)
+			if node_name in absent:
+				absent.remove(node_name)
+		elif (not node_name in present) and (not node_name in absent):
+			absent.append(node_name)
+
+def deleteattrs(dest, present, absent):
+        gen = genders.Genders(filename=dest)
+        node_query = ("SELECT gender_name FROM GENDER")
+        cursor.execute(node_query)
+        for (gender_name,) in cursor:
+                if gen.isattr(gender_name) == 1:
+                        if not gender_name in present:
+                                present.append(gender_name)
+                        if gender_name in absent:
+                                absent.remove(gender_name)
+                elif (not gender_name in present) and (not gender_name in absent):
+                        absent.append(gender_name)
+
+# other idea - create set of nodes that exist currently, take difference with all items in database, delete the difference 
+
 def __main__(dest):
 	node(dest)
 	gender(dest)
@@ -86,13 +109,28 @@ def __main__(dest):
 import shutil
 
 os.system("ls -d ~/cfengine/clusters/*/genders > pathfile.txt")
+file_object = open('pathfile.txt', 'a')
+file_object.write('/etc/genders')
+file_object.close()
 
 with open("pathfile.txt", "r") as pathfile:
+	nodes, deletenodeslist = [], []
+	genderslist, deletegenders = [], []
 	for line in pathfile:
 		line = line.strip() #Takes out the new line
 		dest = "tempfile.txt"
 		shutil.copyfile(line, dest)
 		__main__(dest)
+		deletenodes(dest, nodes, deletenodeslist)
+		deleteattrs(dest, genderslist, deletegenders) 
+	query = ("DELETE FROM NODE WHERE node_name=%s")
+	for node in deletenodeslist:
+		cursor.execute(query, (node,))
+		mydb.commit()
+	query = ("DELETE FROM GENDER WHERE gender_name=%s")
+	for gender in deletegenders:
+		cursor.execute(query, (gender,))
+		mydb.commit()
 
 os.remove("pathfile.txt")
 os.remove("tempfile.txt")
