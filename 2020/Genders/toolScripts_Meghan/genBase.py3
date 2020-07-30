@@ -237,6 +237,18 @@ def parse_pathfi(filename,mydb):
             adjLi.append(jj)
     
     idRec = allConfigs(mydb)
+    idDel = []
+    for rec in idRec:
+        idDel.append(rec['config_id'])
+
+#    idDel = []
+
+    for ll in idRec:
+        for lll in cid:
+            if ll['config_id'] == lll:
+                if lll in idDel: idDel.remove(lll)
+    for rem in idDel:
+        print("deleting ",rem)
     genRecords = allGenders(mydb)
     genDel = []
     for g in genRecords:
