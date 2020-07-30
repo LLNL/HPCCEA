@@ -1,0 +1,37 @@
+---
+# assumes slurm and munge were downloaded and compiled with rpmbuild
+# Copies a set of RPMs that are in srdir to dstdir, then creates a
+# yum repo with these RPMS
+- hosts: management
+  vars: 
+    srcdir: /root/rpmbuild/RPMS/x86_64/
+    dstdir: /var/www/html/slurm-munge/
+
+  tasks:
+  - name: Install rsync and httpd
+    yum:
+       name: rsync, httpd
+
+  - name: Copy rpm files
+    synchronize:
+      src:  "{{ srcdir }}"
+      dest: "{{ dstdir }}" 
+
+  - name: Install createrepo
+    yum:
+       name: createrepo
+
+  - name: Create slurm-munge repo
+    command: /usr/bin/createrepo "{{ dstdir }}"
+
+
+  - name: enable/start httpd
+    systemd:
+       enabled: yes
+       name: httpd
+           
+  - name: Start NFS server
+    systemd:
+       state: started
+       name: httpd
+

@@ -1,0 +1,23 @@
+---
+# installs and configures path for OpenMPI
+- hosts: all
+  tasks:
+    - name: install OpenMPI packages
+      yum:
+        name:
+          - openmpi
+          - openmpi-devel
+          - mpitests-openmpi
+          - atlas-devel
+          -  https://kojipkgs.fedoraproject.org//packages/libfabric/1.4.1/1.fc25/x86_64/libfabric-1.4.1-1.fc25.x86_64.rpm
+
+    - name: create mpi.sh with correct permissions
+      copy:
+        dest: /etc/profile.d/mpi.sh
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+

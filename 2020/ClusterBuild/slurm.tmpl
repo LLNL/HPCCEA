@@ -1,0 +1,53 @@
+#this should be the name you want slurm to show
+ControlMachine=${control_name}
+# This should be the actual hostname of your management node
+ControlAddr=${actual_name}
+#
+#MailProg=/bin/mail
+MpiDefault=none
+#MpiParams=ports=#-#
+#ProctrackType=proctrack/cgroup
+ReturnToService=1
+SlurmctldPidFile=/var/run/slurmctld.pid
+#SlurmctldPort=6817
+SlurmdPidFile=/var/run/slurmd.pid
+#SlurmdPort=6818
+SlurmdSpoolDir=/var/spool/slurm/slurmd
+SlurmUser=slurm
+#SlurmdUser=root
+StateSaveLocation=/var/spool/slurm
+SwitchType=switch/none
+TaskPlugin=task/none
+#
+#
+# TIMERS
+#KillWait=30
+#MinJobAge=300
+#SlurmctldTimeout=120
+#SlurmdTimeout=300
+#
+#
+# SCHEDULING
+FastSchedule=1
+SchedulerType=sched/backfill
+SelectType=select/linear
+#SelectTypeParameters=
+#
+#
+# LOGGING AND ACCOUNTING
+#AccountingStorageType=accounting_storage/mysql
+ClusterName=${cluster_name}
+#JobAcctGatherFrequency=30
+JobAcctGatherType=jobacct_gather/linux
+#SlurmctldDebug=3
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+#SlurmdDebug=3
+SlurmdLogFile=/var/log/slurm/slurmd.log
+#
+#
+#### IMPORTANT!!!! Make sure you change this section based on the hardware information you gathered earlier ####
+## Note that NodeName is the name slurm will show and NodeAddr is the actual hostname of the compute node
+# COMPUTE NODES
+NodeName=${cluster_name}[2-5] NodeAddr=e${cluster_name}[2-5] CPUs=32 RealMemory=50000 Sockets=2 CoresPerSocket=8 ThreadsPerCore=2 State=UNKNOWN
+PartitionName=all Nodes=${cluster_name}[2-5] Default=YES MaxTime=20160 State=UP
+

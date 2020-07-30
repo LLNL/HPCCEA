@@ -1,0 +1,10 @@
+---
+- name: create ib0 for specific node
+  hosts: all
+  vars:
+    ip_address: "{{ ip_addr }}"
+  tasks:
+    - template:
+        src: ./ib0.tmpl
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        #add error handling: continue to all other nodes but note which failed

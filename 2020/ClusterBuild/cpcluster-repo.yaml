@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+    - name: "copy slurm-munge repo"
+      copy:
+        src: ./slurm-munge.repo
+        dest: /etc/yum.repos.d/slurm-munge.repo

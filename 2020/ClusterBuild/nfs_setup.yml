@@ -1,0 +1,78 @@
+- name: Install NFS packages
+  hosts: all
+  tasks:
+    - name: Install NFS relevant packages
+      yum:
+        name:
+          - nfs-utils
+          - libnfs-utils
+        state: present
+
+
+- name: Setup mgmt node
+  hosts: management
+  tasks:
+    - name: Set up NFS server on management node
+      systemd:
+        enabled: yes
+        name: nfs
+     
+    - name: Start NFS server
+      systemd:
+        state: started
+        name: nfs 
+
+    - name: Test for line in /etc/exports
+      shell: grep -c "/home        192.168.95.0/255.255.255.0(rw,sync,no_root_squash)" /etc/exports || true
+      register: test_line_grep
+
+    - name: Add to /etc/exports
+      lineinfile:
+        path: /etc/exports
+        line: /home        192.168.95.0/255.255.255.0(rw,sync,no_root_squash)
+      when: test_line_grep.stdout == "0"
+
+    - name: Restart NFS server
+      systemd:
+        state: restarted
+        name: nfs
+
+
+- name: Setup compute node
+  hosts: all
+  tasks:
+    - name: Test for predefined /home in /etc/fstab
+      shell: grep -c "/dev/mapper/centos_{{ inventory_hostname [1:] }}-home /home                   xfs     defaults        0 0" /etc/fstab || true
+      register: test_dupl_home
+
+    - name: Comment duplicate /home out in /etc/fstab
+      replace:
+        path: /etc/fstab
+        regexp: "/dev/mapper/centos_{{ inventory_hostname [1:] }}-home /home                   xfs     defaults        0 0"
+        replace: "# /dev/mapper/centos_{{ inventory_hostname [1:] }}-home /home                   xfs     defaults        0 0"
+      when: test_dupl_home.stdout == "1"
+
+
+    - name: Test for line in /etc/fstab
+      shell: grep -c "e{{ domain }}1:/home  /home    nfs    defaults    0 0" /etc/fstab || true  # 'domain' must be passed in.
+      register: test_line_fstab
+        # This might be a problem when doing on all nodes, as they might not all yield the same result.
+
+    - name: Add to /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "e{{ domain }}1:/home  /home    nfs    defaults    0 0"
+      when: test_line_fstab.stdout == "0"
+
+
+- name: Tell selinux to allow NFS home dirs
+  hosts: all
+  tasks:
+    - name: set sebool use_nfs_home_dirs
+      command: setsebool -P use_nfs_home_dirs 1
+    
+    - name: Restart sshd server
+      systemd:
+        state: restarted
+        name: sshd
+

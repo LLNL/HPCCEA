@@ -1,0 +1,128 @@
+- name: Slurm setup
+  hosts: all
+  tasks:
+    - name: install slurm pre-reqs
+      yum:
+        name:
+          - wget
+          - rpm-build
+          - bzip2-devel
+          - perl-ExtUtils-MakeMaker
+          - perl-Switch
+          - openssl
+          - openssl-devel
+          - pam-devel
+          - readline-devel
+          - mariadb-server
+          - mariadb-devel
+
+    - name: install munge and slurm
+      yum:
+        name:
+          - munge
+          - munge-libs
+          - munge-devel
+          - slurm-libpmi
+          - slurm-slurmd
+          - slurm-perlapi
+          - slurm-devel
+          - slurm-contribs
+          - slurm-pam_slurm
+          - slurm-example-configs
+          - slurm
+
+    - name: Create new group for slurm
+      group:
+        name: slurm
+        gid: 995
+
+    - name: Create new user for slurm
+      user:
+        name: slurm
+        # password:
+        system: yes
+        create_home: no
+        shell: /sbin/nologin
+        group: slurm
+        uid: 997
+
+
+    - name: Make new directory for slurm spool and assign permissions
+      file:
+        path: /var/spool/slurm
+        state: directory
+        mode: "0755"
+        owner: "slurm"
+        group: "slurm"
+
+    - name: Make new directory for slurm logs and assign permissions
+      file:
+        path: /var/log/slurm
+        state: directory
+        mode: "0755"
+        owner: "slurm"
+        group: "slurm"
+
+- name: "Copy munge key from mgmt node"
+  hosts: all
+  tasks:
+    - name: "send munge key"
+      copy:
+        src: /etc/munge/munge.key
+        dest: /etc/munge/munge.key
+        owner: munge
+        group: munge
+        mode: '0400'
+
+
+- name: "start munge"
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: "enable munge"
+      systemd:
+        enabled: yes
+        name: munge
+    - name: "start munge"
+      systemd:
+        state: started
+        name: munge
+
+- name: "start slurm on mgmt"
+  hosts: management
+  gather_facts: no
+  tasks:
+    - name: "enable slurmctld"
+      systemd:
+        enabled: yes
+        name: slurmctld
+    - name: "start slurmctld"
+      systemd:
+        state: started
+        name: slurmctld
+
+- name: "start slurm"
+  hosts: compute
+  gather_facts: no
+  tasks:
+    - name: "enable slurmd"
+      systemd:
+        enabled: yes
+        name: slurmd
+    - name: "start slurmd"
+      systemd:
+        state: started
+        name: slurmd
+
+
+- name: "copy slurm files"
+  hosts: all
+  tasks:
+    - name: "copy slurm.conf"
+      copy:
+        src: ./slurm.conf
+        dest: /etc/slurm/slurm.conf
+    - name: "copy cgroup.conf"
+      copy:
+        src: /etc/slurm/cgroup.conf.example
+        dest: /etc/slurm/cgroup.conf

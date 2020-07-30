@@ -1,0 +1,52 @@
+---
+# Example command line prompt
+# ansible-playbook user_setup_mgmt.yml --extra-vars "username=exampleusername pass=examplepassword"
+
+- name: "create .ssh dir"
+  hosts: management
+  become: yes
+  become_user: "{{username}}"
+  tasks:
+    - file:
+        path: ~/.ssh
+        state: directory
+        mode: "0700"
+
+- name: "create key for user"
+  hosts: management
+  become: yes
+  become_user: "{{username}}"
+  tasks:
+    - name: "create key for user"
+      openssh_keypair:
+        path: ~/.ssh/id_rsa
+        size: 4096
+        type: rsa
+
+- name: "install dependencies" 
+  hosts: management, {{node}}
+  tasks: 
+    - name: "install pip"
+      yum: 
+        name: python-pip
+    - name: "install pexpect"
+      pip: 
+        name: pexpect 
+        version: '3.3'
+
+
+- name: "copy public key to authorized key file for user on management node" #Don't have to worry about copying to other nodes - NFS will take care of that 
+  hosts: management
+  become: yes
+  become_user: "{{username}}"
+  vars:
+    pubkey: "{{lookup('file', '/home/{{username}}/.ssh/id_rsa.pub')}}"
+  tasks:
+    - name: "concatenate public key to the end of the authorized keys file"
+      blockinfile:
+        block: "{{pubkey}}"
+        path: "~/.ssh/authorized_keys"
+        create: yes
+        state: present
+...
+

@@ -1,0 +1,30 @@
+---
+# installs packages for infiniband
+- hosts: all
+  tasks:
+    - name: install epel-release and pdsh on nodes
+      yum:
+        name:
+          - epel-release
+          - pdsh
+        state: present
+
+- hosts: all
+  tasks:
+    - name: install infiniband packages
+      yum:
+        name:
+          - libibverbs-utils
+          - infiniband-diags
+          - ibutils
+          - libibverbs
+          - perftest
+          - libmlx4
+          - opensm
+        state: present
+
+    - name: install network tools
+      yum:
+        name: net-tools
+        state: present
+

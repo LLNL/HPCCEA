@@ -1,0 +1,15 @@
+---
+- hosts: all
+  tasks:
+    - name: read file and check
+      shell: cat /etc/security/limits.conf
+      register: security
+
+    - name: Insert at the end of the file
+      when: security.stdout.find('* soft memlock unlimited') == -1 or security.stdout.find('* hard memlock unlimited') == -1
+      blockinfile:
+         path: /etc/security/limits.conf
+         marker: "# added file using block!"
+         block: |
+           * soft memlock unlimited
+           * hard memlock unlimited

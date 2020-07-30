@@ -1,0 +1,25 @@
+---
+# installs and starts ntp service on all nodes
+- hosts: all
+  tasks:
+    - name: install epel-release repo
+      yum:
+        name: epel-release
+        state: present
+
+    - name: install ntp
+      yum:
+        name:
+          - ntp
+          - ntpdate
+        state: present
+
+    - name: enable and start ntpd
+      systemd:
+        name: ntpd
+        state: started
+        enabled: yes
+
+    - name: command for debugging purpose i think, might use output for something
+      command: /usr/sbin/ntpq -c pe
+      register: ntpq_query_result #who knows what to do with this
