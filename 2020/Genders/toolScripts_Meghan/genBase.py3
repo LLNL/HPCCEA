@@ -134,7 +134,7 @@ def insertConfig(val, node_name, gender_name, mydb):
 
 def deleteConfig(config_idi,mydb):
     sql = "DELETE FROM CONFIGURATION WHERE config_id = %s"
-    val = (config_ifi,)
+    val = (config_idi,)
     cur = mydb.cursor(buffered=True, dictionary=True)
     cur.execute(sql,val)
     mydb.commit()
@@ -248,7 +248,9 @@ def parse_pathfi(filename,mydb):
             if ll['config_id'] == lll:
                 if lll in idDel: idDel.remove(lll)
     for rem in idDel:
-        print("deleting ",rem)
+        #print("deleting ",rem)
+        deleteConfig(rem,mydb)
+        
     genRecords = allGenders(mydb)
     genDel = []
     for g in genRecords:
@@ -403,10 +405,13 @@ def main():
     if results.l != None:
         #print("debug1")
         if len(results.l) > 0:
-            findGenders(mydb,results.l)
+            #print(results.l)
+            findGenders(mydb,*results.l)
         else:
          #   print("here")
-            allGenders(mydb)
+            records = allGenders(mydb)
+            for row in records:
+                print(row['gender_name'])
 
 if __name__ == "__main__":
     main()
