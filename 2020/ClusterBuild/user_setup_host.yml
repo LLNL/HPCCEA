@@ -1,0 +1,31 @@
+---
+# Example command line prompt
+# ansible-playbook user_setup_host.yml --extra-vars "username=exampleusername pass=examplepassword groupid=somenumber userid=someothernumber"
+
+- name: "set up users on the management node and all compute nodes" 
+  hosts: all 
+  vars: 
+    passwd: "{{pass}}" 
+  tasks:
+    - name: Make wheel group passwordless
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+    - name: "Create user with name username and password pass."
+      user:
+        name: "{{username}}"
+        password: "{{ passwd | password_hash('sha512') }}"
+        state: present
+        group: wheel 
+        uid: "{{userid}}"
+
+- name: "give the user sudo priviledges on the node"
+  hosts: all
+  tasks:
+    - name: "Give sudo permissions to the user."
+      lineinfile:
+        path: "/etc/sudoers"
+        line: "{{username}}    ALL=(ALL)       ALL"

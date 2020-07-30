@@ -1,0 +1,19 @@
+# Can limit what nodes you reboot if necessary
+# ansible-playbook reboot.yml --limit=$node
+
+---
+- name: reboot compute nodes
+  hosts: all
+  tasks:
+    - reboot:
+        msg: "Rebooting after configuring computer"
+        reboot_timeout: 900 
+    - name: "test that reboot was successful"
+      shell: "hostname"
+      register: hostnameoutput
+      until: hostnameoutput.stdout != ""
+      retries: 5
+      delay: 10
+    - debug:
+        var: hostnameoutput.stdout
+... 
