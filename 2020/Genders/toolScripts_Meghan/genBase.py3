@@ -58,7 +58,6 @@ def parse_file(filename,mydb):
         insertNode(y,mydb)
     conIDs = []
     for x in all:
-    #    print("the attrs are ",x)
         insertGender(x,mydb)
         spnod = gens.getnodes(attr=x)
         for k in spnod:
@@ -122,9 +121,11 @@ def deleteGender(gender_name,mydb):
 
 
 def insertConfig(val, node_name, gender_name, mydb):
+    #check if exists if yes, compare vals if dif update
+    #print("inserting config")
     config_id = node_name + gender_name
-    sql = "INSERT IGNORE INTO CONFIGURATION(config_id,val,node_name,gender_name) VALUES (%s,%s,%s,%s)"
-    val = (config_id,val,node_name,gender_name)
+    sql = "INSERT IGNORE INTO CONFIGURATION(config_id,val,node_name,gender_name) VALUES (%s,%s,%s,%s) ON DUPLICATE KEY UPDATE val = %s"
+    val = (config_id,val,node_name,gender_name,val)
     cur = mydb.cursor(buffered=True, dictionary=True)
     try:
         cur.execute(sql,val)
