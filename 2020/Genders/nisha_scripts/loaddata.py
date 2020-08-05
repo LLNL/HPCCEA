@@ -53,8 +53,6 @@ def gender(dest):
 def configuration(dest):
 	gen = genders.Genders(filename=dest)
 	for node in gen.getnodes(): 
-		if node == 'nisha4':
-			pdb.set_trace()
 		for attribute in gen.getattr(node):
 			config_id = node + attribute
 			value = gen.getattrval(attribute, node)
@@ -63,9 +61,8 @@ def configuration(dest):
 			result = cursor.fetchall()
 			if len(result) == 0: #This doesn't seem to be working properly
 				add_config = ("INSERT IGNORE INTO CONFIGURATION (config_id, val, node_name, gender_name) VALUES (%s, %s, %s, %s)")
-				for (config_id, val) in result: 
-					cursor.execute(add_config, (config_id, value, node, attribute))
-					mydb.commit()
+				cursor.execute(add_config, (config_id, value, node, attribute))
+				mydb.commit()
 			else: 
 				for (config_id, val) in result:
 					if  val == value: 
@@ -108,8 +105,6 @@ def deleteconfig(dest):
 		cursor.execute(query, (node,))
 		results = cursor.fetchall() 
 		for (gender_name, val) in results: 
-			#if gender_name == 'mytestgender':
-			#	pdb.set_trace()
 			if (val == None) and gen.testattr(gender_name, node) == 0: 
 				query = ("DELETE FROM CONFIGURATION WHERE config_id=%s")
 				cursor.execute(query, (node + gender_name,))
@@ -136,13 +131,13 @@ def deleteconfignode(nodes):
 			cursor.execute(query, (node,))
 	
 def deleteconfiggender(attrs):
-	for node in nodes:
-		query = ("SELECT node_name FROM CONFIGURATION WHERE node_name=%s")
-		cursor.execute(query, (node,))
+	for attr in attrs: # CHANGED FROM NODES TO ATTRS
+		query = ("SELECT gender_name FROM CONFIGURATION WHERE gender_name=%s")
+		cursor.execute(query, (attr,))
 		results = cursor.fetchall()
 		if len(results) != 0:
-			query = ("DELETE FROM CONFIGURATION WHERE node_name=%s")
-			cursor.execute(query, (node,))
+			query = ("DELETE FROM CONFIGURATION WHERE gender_name=%s")
+			cursor.execute(query, (attr,))
 
 import shutil
 
