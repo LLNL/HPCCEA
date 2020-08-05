@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import sys
 import hostlist
 import io
 from shutil import copyfile
@@ -47,19 +48,22 @@ def connectDatabase():
     return mydb
 
 #looks through given genders file and parses node information.
-#if gender already exists on the node it does not insert
 def parse_file(filename,mydb):
     gens = genders.Genders(filename)
     all = gens.getattr_all()
     nod = gens.getnodes()
+    records = allNodes(mydb)    
+    flag = False
     for y in nod:
         insertNode(y,mydb)
+    conIDs = []
     for x in all:
         insertGender(x,mydb)
         spnod = gens.getnodes(attr=x)
         for k in spnod:
              insertConfig(gens.getattrval(attr=x,node=k),k,x,mydb)
-
+             conIDs.append(k+x)
+    return nod,all,conIDs
 #debugging function. prints all nodes and genders on nodes
 def print_all(mydb):
     sel = "SELECT * FROM CONFIGURATION"
@@ -69,7 +73,15 @@ def print_all(mydb):
     for row in records:
         print(row)
 
-
+def checkE(node_name,mydb):
+    sql = "EXISTS (SELECT DISTINCT node_name FROM GENDER WHERE node_name = %s)"
+    val = (node_name,)
+    cursor = mydb.cursor(buffered=True , dictionary=True)
+    cursor.execute(sql,val)
+    records = cur.fetchall()
+    for row in records:
+        print(row)
+   
 def insertNode(node_name,mydb):
     cluster = node_name[:-1]
     node_num = node_name[-1:]
@@ -82,6 +94,14 @@ def insertNode(node_name,mydb):
     except mysql.connector.ProgrammingError as err:
         print(err.errno)
 
+def deleteNode(node_name,mydb):
+    sql = "DELETE FROM NODE WHERE node_name = %s"
+    val = (node_name,)
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql,val)
+    mydb.commit()
+
+
 def insertGender(gender_name,mydb):
     sql = "INSERT IGNORE INTO GENDER(gender_name,descrip) VALUES (%s,%s)"
     val = (gender_name,'none')
@@ -92,10 +112,20 @@ def insertGender(gender_name,mydb):
     except mysql.connector.ProgrammingError as err:
         print(err.errno)
 
+def deleteGender(gender_name,mydb):
+    sql = "DELETE FROM GENDER WHERE gender_name = %s"
+    val = (gender_name,)
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql,val)
+    mydb.commit()
+
+
 def insertConfig(val, node_name, gender_name, mydb):
+    #check if exists if yes, compare vals if dif update
+    #print("inserting config")
     config_id = node_name + gender_name
-    sql = "INSERT IGNORE INTO CONFIGURATION(config_id,val,node_name,gender_name) VALUES (%s,%s,%s,%s)"
-    val = (config_id,val,node_name,gender_name)
+    sql = "INSERT IGNORE INTO CONFIGURATION(config_id,val,node_name,gender_name) VALUES (%s,%s,%s,%s) ON DUPLICATE KEY UPDATE val = %s"
+    val = (config_id,val,node_name,gender_name,val)
     cur = mydb.cursor(buffered=True, dictionary=True)
     try:
         cur.execute(sql,val)
@@ -103,16 +133,69 @@ def insertConfig(val, node_name, gender_name, mydb):
     except mysql.connector.ProgrammingError as err:
         print(err.errno)
 
+def deleteConfig(config_idi,mydb):
+    sql = "DELETE FROM CONFIGURATION WHERE config_id = %s"
+    val = (config_idi,)
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql,val)
+    mydb.commit()
+
+#return list of all confis
+def allConfigs(mydb):
+    sql = "SELECT DISTINCT config_id FROM CONFIGURATION"
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql)
+    records = cur.fetchall()
+    return records 
 #show all genders in database
 def allGenders(mydb):
+    #print("inall")
     sql = "SELECT DISTINCT gender_name FROM GENDER"
     cur = mydb.cursor(buffered=True, dictionary=True)
     cur.execute(sql)
     records = cur.fetchall()
-    print("All genders in database: \n")
-    for row in records:
-        print(row['gender_name'])
+    #print("All genders in database: \n")
+    #for row in records:
+    #    print(row['gender_name'])
+    return records
+#Pulls all of the nodes in database
+def allNodes(mydb):
+#    print("why")
+    sql = "SELECT DISTINCT node_name FROM NODE"
+    cur = mydb.cursor(buffered=True,dictionary=True)
+    cur.execute(sql)
+    records = cur.fetchall()
+    #return records
+  #  for row in records:
+   #     print("from all node query",row['node_name'])
+    return records
+def getVals(mydb,gender_name):
+    gender_name = str(gender_name)
+    sql = "SELECT val,node_name FROM CONFIGURATION WHERE gender_name = %s"
+    cur = mydb.cursor(buffered=True,dictionary=True)
+    val = (gender_name,)
+    #print(gender_name)
+    cur.execute(sql,val)
+    records = cur.fetchall()
+    return records    
+def getUVals(mydb,gender_name):
+    gender_name = str(gender_name)
+    sql = "SELECT DISTINCT val FROM CONFIGURATION WHERE gender_name = %s"
+    cur = mydb.cursor(buffered=True,dictionary=True)
+    val = (gender_name,)
+    #print(gender_name)
+    cur.execute(sql,val)
+    records = cur.fetchall()
+    return records
 
+
+def getValinNode(mydb,gender_name,node_name):
+    sql = "SELECT val FROM CONFIGURATION WHERE gender_name = %s AND node_name = %s"
+    val = (gender_name,node_name)
+    cur = mydb.cursor(buffered=True,dictionary=True)
+    cur.execute(sql,val,)
+    records = cur.fetchall()
+    return records
 #all nodes that have particular gender
 def findNodes(mydb,gender_namei):
     sql = "SELECT DISTINCT n.node_name FROM NODE n JOIN CONFIGURATION c WHERE (n.node_name = c.node_name AND c.gender_name = %s )"
@@ -125,28 +208,112 @@ def findNodes(mydb,gender_namei):
    # for row in records:i
    #     print(row['node_name'])
     return records
-#all genders in a particular node
+
+def genE(mydb,gender_name,node_name):
+    sql = "SELECT n.node_name FROM NONE n JOIN CONFIGURATION c WHERE (n.node_name = c.node_name AND c.node_name = %s AND c.gender_name = %s )"
+    val = (node_name, gender_name)
+    print("nodename",node_name)
+    print("gendername",gender_name)
+    cur = mydb.cursor(buffered=True, dictionary=True)
+    cur.execute(sql,val)
+    records = cur.fetchall()
+    return records
+
 def findGenders(mydb,node_namei):
     sql = "SELECT DISTINCT g.gender_name FROM GENDER g JOIN CONFIGURATION c WHERE (g.gender_name = c.gender_name AND c.node_name = %s)"
     val = (node_namei,)
     cur = mydb.cursor(buffered=True, dictionary=True)
     cur.execute(sql,val)
     records = cur.fetchall()
-    print("All genders of the node: ",node_namei)
+   # print("All genders of the node: ",node_namei)
     for row in records:
         print(row['gender_name'])
 
+#all genders in database
+ 
 #opens file containing paths to genders file in cluster
 #copies each file into temp file and sends that to be parsed into database
 def parse_pathfi(filename,mydb):
+    fileNode = []
+    adjLi = []
+    genderFile = []
+    configs = []
     with open(filename) as f:
         mylist = [line.rstrip('\n') for line in f]
 
         for y in mylist:
             dest = "tempfile.txt"
             copyfile(y, dest)
-            parse_file(dest,mydb)
+            nod,all,conf = parse_file(dest,mydb)
+            fileNode.append(nod)
+            genderFile.append(all)
+            configs.append(conf)
+    cid = []
+    for c in configs:
+        for cc in c:
+            cid.append(cc)
+    #for id in cid:
+    #    print(id)
+
+    fileGender = []
+    for x in genderFile:
+        for n in x:
+            fileGender.append(n)
+      
+    for n in fileNode:
+        for jj in n:
+            adjLi.append(jj)
     
+    idRec = allConfigs(mydb)
+    idDel = []
+    for rec in idRec:
+        idDel.append(rec['config_id'])
+
+#    idDel = []
+
+    for ll in idRec:
+        for lll in cid:
+            if ll['config_id'] == lll:
+                if lll in idDel: idDel.remove(lll)
+    for rem in idDel:
+        #print("deleting ",rem)
+        deleteConfig(rem,mydb)
+        
+    genRecords = allGenders(mydb)
+    genDel = []
+    for g in genRecords:
+         genDel.append(g['gender_name'])
+    records = allNodes(mydb)
+    realLi = []
+    
+    for k in genRecords:
+        for f in fileGender:
+            #print("f is ",f)
+            if k['gender_name'] == f:
+                #print("removing gender ",f)
+                if f in genDel: genDel.remove(f)
+    for r in records:
+        realLi.append(r['node_name'])
+    
+    for rec in records:
+        for u in adjLi:
+            if rec['node_name'] == u:
+               #  print("removing ",u)
+                 realLi.remove(u)
+   
+    for det in realLi:
+        deleteNode(det,mydb)
+
+    for tt in genDel:
+        deleteGender(tt,mydb)
+    #    for y in nod:
+    #        if y == rec['node_name']:
+    #            there = True
+    #            nod.remove(y)
+    #print(len(nod))
+    #for det in nod:
+    #    print("deleting node", det)
+    #    deleteNode(det,mydb)
 
 def main():
     mydb = connectDatabase()
@@ -167,17 +334,34 @@ def main():
     parser = argparse.ArgumentParser(description='Gender quereies from central database.')
     parser.add_argument('--comb',help='pulls genders file from cfengine and inserts into database',action='store_true',dest='comb')
 
-    parser.add_argument('-q', nargs=1,help='prints list of nodes having the specified attribute in host range',action='store', dest='hostNode')
-  
-    parser.add_argument('-c',nargs=1,help='prints list of nodes having specified attribute in coma seperated format',action='store',dest='comaNode')
+    parser.add_argument('-dd',help='drops entire database',action='store_true',dest='dd')
+
+    parser.add_argument('-q', nargs=1,help='prints list of nodes having the specified attribute in host range',action='store', dest='hostlist')
+ 
+    parser.add_argument('-Q',nargs='*',help='returns 0 if attribute exists in nide else 1, if no node specified checks entire database',action='store')
+ 
+    parser.add_argument('-c',nargs=1,help='prints list of nodes having specified attribute in comma seperated format',action='store',dest='comma')
     #results = parser.parse_args()
 
-    parser.add_argument('-n',nargs=1,help='prints list of nodes having specified attribute in newline separated list',action='store',dest='newNode')
+    parser.add_argument('-n',nargs=1,help='prints list of nodes having specified attribute in newline separated list',action='store',dest='newline')
 
-    parser.add_argument('-s',nargs=1,help='prints list of nodes having specified attribute in space separated list',action='store',dest='spaceNode')
+    parser.add_argument('-s',nargs=1,help='prints list of nodes having specified attribute in space separated list',action='store',dest='space')
+
+    parser.add_argument('-v',nargs=1,help='outputs values associated with gender on a particular node',action='store')
+
+    parser.add_argument('-vv',nargs=1,help='outputs values associated with gender and with node listed',action='store',dest='valuesWnodes')
+
+    parser.add_argument('-l',nargs='*',help='list of attributes for a particular node, if no node all attributes in database')
+
+    parser.add_argument('-V',nargs='*', help='outputs all values associated with gender, if U is specified only unqiue values')
+    
+    parser.add_argument('-U',help='V will only output unique values')
+
+    parser.add_argument('-X',nargs='*',help='exlcude node from query')
 
     results = parser.parse_args()
-
+     
+    
 #run based on input
 
 #pull files from cfengine 
@@ -188,57 +372,131 @@ def main():
         fi.close()
         parse_pathfi("pathfile.txt",mydb)
 
+    if results.dd:
+        sql = "DROP DATABASE gender"
+        cur = mydb.cursor(buffered=True, dictionary=True)
+        cur.execute(sql)
 #finds nodes w specified gender in hostlist format
-    if results.hostNode != None:
+    if results.hostlist != None:
         finLi = []
+        records = []
         prev = False
         hosts = ''
         clusterN = ""
-        records = findNodes(mydb,str(results.hostNode[0]))
-        cluster0 = records[0]
-        cluster0 = cluster0['node_name']
-        cluster0 = cluster0[:-1]
+        if results.X != None:
+            record = findNodes(mydb,str(results.hostlist[0]))
+            for row in record:
+                if row['node_name'] != results.X[0]:
+                    records.append(row)
+        else:
+             records = findNodes(mydb,str(results.hostlist[0]))
+        if (len(records)) > 0:
+            cluster0 = records[0]
+            cluster0 = cluster0['node_name']
+            cluster0 = cluster0[:-1]
 
-        for row in records:
-            clusterT = row['node_name']
-            clusterT = clusterT[:-1]
+            for row in records:
+                clusterT = row['node_name']
+                clusterT = clusterT[:-1]
            # print("debug: ",clusterT)
-            if cluster0 == clusterT:
-                hosts += ( row['node_name'] + ',')
-                prev = True
-            elif cluster0 != clusterT and prev == True:                
-                finLi.append(hosts)
-                hosts = ''
-                hosts += ( row['node_name'] + ',')
-                prev = False
-            elif cluster0 != clusterT and prev == False:
-                hosts = ''
-                hosts += ( row['node_name'] + ',')
-                prev = True
-            cluster0 = clusterT
-        finLi.append(hosts)
-        for y in finLi:
-            y = y[:-1] 
-            y = hostlist.compress_range(y)
-            print(y, end=" ")
-    if results.comaNode != None:
+                if cluster0 == clusterT:
+                    hosts += ( row['node_name'] + ',')
+                    prev = True
+                elif cluster0 != clusterT and prev == True:                
+                    finLi.append(hosts)
+                    hosts = ''
+                    hosts += ( row['node_name'] + ',')
+                    prev = False
+                elif cluster0 != clusterT and prev == False:
+                    hosts = ''
+                    hosts += ( row['node_name'] + ',')
+                    prev = True
+                cluster0 = clusterT
+            finLi.append(hosts)
+            for y in finLi:
+                y = y[:-1] 
+                y = hostlist.compress_range(y)
+                print(y, end=" ")
+    if results.comma != None:
         finLi = []
-        records = findNodes(mydb,str(results.comaNode[0]))
-         
-        for row in records:
-            finLi.append(row['node_name'])
+        records = findNodes(mydb,str(results.comma[0]))
+        if results.X != None: 
+            for row in records:
+                if row['node_name'] != results.X[0]:
+                    finLi.append(row['node_name'])
+        else:
+            for row in records:
+                finLi.append(row['node_name'])
     
         print(*finLi,sep=", ")
-    if results.newNode != None:
-        records = findNodes(mydb,str(results.newNode[0]))
+    if results.newline != None:
+        records = findNodes(mydb,str(results.newline[0]))
+        if results.X != None:
+            for row in records:
+                if row['node_name'] != results.X[0]:
+                   print(row['node_name'])
+     
+        else:
+            for row in records:
+                print(row['node_name'])
+
+    if results.space != None:
+       records = findNodes(mydb,str(results.space[0]))
+       if results.X != None:
+            for row in records:
+                if row['node_name'] != results.X[0]:
+                   print(row['node_name'],end=" ")
+       else:    
+           for row in records:
+               print(row['node_name'],end=" ")
+
+    if results.V != None:
         
+        if len(results.V) == 0:
+            if results.U != None:
+                records = getUVals(mydb,results.U)
+                for row in records:
+                    print(row['val'])
+
+        if len(results.V) == 1:
+            records = getVals(mydb,results.V[0])
+            for row in records:
+                print(row['val'])
+    
+    if results.v != None:
+         records = getValinNode(mydb,results.v[1],results.v[0])
+         for row in records:
+             print(row['val'])
+
+    if results.Q != None:
+        if len(results.Q) == 1:
+            records = findNodes(mydb,str(results.Q[0]))
+            if len(records) > 0:
+                sys.exit(0)
+            else:
+                sys.exit(1)
+        if len(results.Q) == 2:
+            
+            records =  findNodes(mydb,results.Q[1])
+            for rec in records:
+                
+                if rec['node_name'] == results.Q[0]:
+                    
+                    sys.exit(0)
+            sys.exit(1)
+    if results.valuesWnodes != None:
+        records = getVals(mydb,*results.valuesWnodes)
         for row in records:
-            print(row['node_name'])
-    if results.spaceNode != None:
-       records = findNodes(mydb,str(results.spaceNode[0]))
-       
-       for row in records:
-           print(row['node_name'],end=" ")
-          
+            print(row['node_name']," ",row['val'])
+
+    if results.l != None:
+        if len(results.l) > 0:
+            findGenders(mydb,*results.l)
+        else:
+         #   print("here")
+            records = allGenders(mydb)
+            for row in records:
+                print(row['gender_name'])
+
 if __name__ == "__main__":
     main()
