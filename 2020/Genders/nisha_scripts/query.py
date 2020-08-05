@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import pdb
 import sys
 import os 
 os.environ['PYTHONPATH'] = '/usr/local/lib64/python3.6/site-packages'
@@ -19,13 +20,13 @@ config = {
 }
 import numpy as np
 
-def parsequery(results):
-	list = []
-	for element in results:
-		for e in element:
-			if (e != None):
-				list.append(e)
-	return list
+#def parsequery(results):
+#	list = []
+#	for element in results:
+#		for e in element:
+#			if (e != None):
+#				list.append(e)
+#	return list
 
 def printquery(results):
         for element in results:
@@ -33,37 +34,44 @@ def printquery(results):
                         if (e != None):
                                 print(e)
 
-def regex(cluster):
-	regex = '' 
-	for char in cluster:
-		regex += '[' + char + ']'
-	regex += '[0-9]'
-	return regex
-
 mydb = mysql.connector.connect(**config)
 cursor = mydb.cursor()
-group = parser.add_mutually_exclusive_group(required=False)
 
-group.add_argument('-q', metavar='attr', help="displays a hostrange of nodes that have the specified attribute.")
+mgroup = parser.add_mutually_exclusive_group()
+qgroup = parser.add_mutually_exclusive_group()
 
-group.add_argument('-c', metavar='attr', help="displays a comma separated list of nodes that have the specified attribute.")
+mgroup.add_argument('-q', nargs='*', metavar='attr', help="displays a hostrange of nodes that have the specified attribute.")
 
-group.add_argument('-n', metavar='attr', help="displays a newline separated list  of nodes that have the specified attribute.")
+qgroup.add_argument('-A', help="Prints out all nodes in the database.", action="store_true")
 
-group.add_argument('-s', metavar='attr', help="displays a space separated list of nodes that have the specified attribute.")
+qgroup.add_argument('-X', metavar='exclude query', help='Excludes the results of the given query.')
 
-group.add_argument('-v', nargs='+', metavar=('node', 'attr'), help="returns any value associated with the attribute and the node.") 
+mgroup.add_argument('-c',nargs = '*',metavar='attr', help="displays a comma separated list of nodes that have the specified attribute.")
 
-group.add_argument('-Q', nargs='+', metavar=('node', 'attr'), help="returns 0 to the environment if the conditions are met; 1 otherwise") 
+mgroup.add_argument('-n',nargs='*', metavar='attr', help="displays a newline separated list  of nodes that have the specified attribute.")
+
+mgroup.add_argument('-s',nargs='*',metavar='attr', help="displays a space separated list of nodes that have the specified attribute.")
+
+parser.add_argument('-v', nargs='+', metavar=('node', 'attr'), help="returns any value associated with the attribute and the node.") 
+
+parser.add_argument('-Q', nargs='+', metavar=('node', 'attr'), help="returns 0 to the environment if the conditions are met; 1 otherwise") 
 
 vgroup = parser.add_argument_group("vgroup")
 vgroup.add_argument('-V', metavar='attr', help="prints all the values that exist for a specific attribute")
 
 vgroup.add_argument('-U', help="prints out only unique values for a particular attribute", action="store_true")
 
-group.add_argument('-l', nargs='*', metavar='node', help='prints all the attributes/values associated with the node. if no node is specified, all of the attributes are listed.')
+parser.add_argument('-l', nargs='*', metavar='node', help='prints all the attributes/values associated with the node. if no node is specified, all of the attributes are listed.')
 
 args = parser.parse_args()
+
+def parsequery(results):
+        list = []
+        for element in results:
+                for e in element:
+                        if (e != None):
+                                list.append(e)
+        return list
 
 def c_n_s_query(attr):
 	query = ("SELECT node_name FROM CONFIGURATION WHERE gender_name=%s")
@@ -82,30 +90,73 @@ def parsedefault(inp):
 		parser.error("Too many arguments.")
 	return node, attr
 
-if args.q != None:
-	attr = args.q
-	nodes  = c_n_s_query(attr)
-	if len(nodes) != 0:	
-		clusters = []
-		for node in nodes:
-			clust = node[0:len(node)-1]
-			clust += '%'
-			if not (clust in clusters):
-				clusters.append(clust)
+def formatnodes(nodes, attr=None): 
+	toprint = "";
+	clusters = []
+	for node in nodes:
+		clust = node[0:len(node)-1]	
+		if not clust in clusters:
+			clusters.append(clust)
+			if attr == None:
+				query = ('SELECT node_name FROM NODE WHERE cluster=%s')
+				cursor.execute(query, (clust,))
+			else:	
 				query = ('SELECT node_name FROM CONFIGURATION  WHERE node_name LIKE %s && gender_name=%s')
-				cursor.execute(query, (clust, attr))
-				results = parsequery(cursor.fetchall())
-				print(hostlist.compress_range(results))
+				cursor.execute(query, (clust+'%' ,attr))
+			results = parsequery(cursor.fetchall())
+			#print(hostlist.compress_range(results))
+			toprint += hostlist.compress_range(results)
+			toprint+= ','
+	print(toprint[:len(toprint)-1])
+
+def A():
+	query = ("SELECT node_name FROM NODE")
+	cursor.execute(query)
+	results = parsequery(cursor.fetchall())
+	return results 
+
+def X(attr, excludeattr): 
+#	pdb.set_trace()
+	query = ("SELECT node_name FROM CONFIGURATION WHERE gender_name=%s AND gender_name!=%s")
+	cursor.execute(query, (attr, excludeattr))
+	results = cursor.fetchall()
+	return parsequery(results)
+
+if args.q != None:
+	attr = args.q[0]
+	if args.A: 
+		nodes = A()
+	elif args.X != None: 
+		nodes = X(attr, args.X)
+	else: 
+		nodes  = c_n_s_query(attr)
+	if len(nodes) != 0:	
+		formatnodes(nodes, attr)
 elif args.c != None:
-	results = c_n_s_query(args.c)
+	if args.A: 
+		results = A()
+	elif args.X != None:
+		results = X(args.c[0], args.X) 
+	else:	
+		results = c_n_s_query(args.c[0])
 	if (len(results) != 0):
 		print(hostlist.delimiter(results, ','))
 elif args.n != None:
-	results = c_n_s_query(args.n)
+	if args.A:
+		results = A()
+	elif args.X != None:
+		results = X(args.n[0], args.X)
+	else:
+		results = c_n_s_query(args.n[0])
 	if (len(results) != 0):
 		print(hostlist.delimiter(results, '\n'))
 elif args.s != None:
-	results = c_n_s_query(args.s)
+	if args.A:
+		results = A()
+	elif args.X != None:
+		results = X(args.s[0], args.X)
+	else:
+		results = c_n_s_query(args.s[0])
 	if (len(results) != 0):
 		print(hostlist.delimiter(results, ' '))
 elif args.v != None:
@@ -116,7 +167,8 @@ elif args.v != None:
 	if len(results) == 0:
 		parser.error("node or attribute not found")
 	else:
-		print(results[0][0])		
+		if results[0][0] != None:
+			print(results[0][0])		
 elif args.Q != None:
 	node, attr = parsedefault(args.Q)
 	query = ("SELECT node_name FROM CONFIGURATION WHERE node_name=%s && gender_name=%s")
