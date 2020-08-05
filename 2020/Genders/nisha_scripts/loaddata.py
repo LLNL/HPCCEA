@@ -2,9 +2,9 @@
 import pdb
 import os
 os.environ['PYTHONPATH'] = '/usr/local/lib64/python3.6/site-packages'
-os.environ['LD_LIBRARY_PATH'] = '/usr/local/lib'
 
-# Reads data from a genders file at /etc/genders and inserts it into the "gender" database
+#LD_LIBRARY_PATH needs to be set outside the python shell
+os.environ['LD_LIBRARY_PATH'] = '/usr/local/lib'
 
 import genders
 
@@ -25,7 +25,6 @@ config = {
 mydb = mysql.connector.connect(**config)
 cursor = mydb.cursor()
 
-# NODE 
 def node(dest):
 	gen = genders.Genders(filename=dest)
 	for node_name in gen.getnodes():
@@ -38,7 +37,6 @@ def node(dest):
 			cursor.execute(add_node, (node_name, node_num, cluster))
 			mydb.commit()
 
-# GENDER
 def gender(dest):
 	gen = genders.Genders(filename=dest)
 	for attr in gen.getattr_all():
@@ -55,23 +53,26 @@ def gender(dest):
 def configuration(dest):
 	gen = genders.Genders(filename=dest)
 	for node in gen.getnodes(): 
+		if node == 'nisha4':
+			pdb.set_trace()
 		for attribute in gen.getattr(node):
 			config_id = node + attribute
 			value = gen.getattrval(attribute, node)
 			config_query = ("SELECT config_id, val FROM CONFIGURATION WHERE config_id=%s")
 			cursor.execute(config_query, (config_id,))
-			if cursor.rowcount == 0:
-				result = cursor.fetchall()
+			result = cursor.fetchall()
+			if len(result) == 0: #This doesn't seem to be working properly
 				add_config = ("INSERT IGNORE INTO CONFIGURATION (config_id, val, node_name, gender_name) VALUES (%s, %s, %s, %s)")
-				cursor.execute(add_config, (config_id, value, node, attribute))
-				mydb.commit()
-				continue
-			for (config_id, val) in cursor:
-				if  val == value: 
-					break;
-				update_config = ("UPDATE CONFIGURATION SET val=%s WHERE config_id=%s")
-				cursor.execute(update_config, (value, config_id))
-				mydb.commit()
+				for (config_id, val) in result: 
+					cursor.execute(add_config, (config_id, value, node, attribute))
+					mydb.commit()
+			else: 
+				for (config_id, val) in result:
+					if  val == value: 
+						break;
+					update_config = ("UPDATE CONFIGURATION SET val=%s WHERE config_id=%s")
+					cursor.execute(update_config, (value, config_id))
+					mydb.commit()
 
 def deletenodes(dest, present, absent):
 	gen = genders.Genders(filename=dest)
@@ -100,11 +101,48 @@ def deleteattrs(dest, present, absent):
                         absent.append(gender_name)
 
 # other idea - create set of nodes that exist currently, take difference with all items in database, delete the difference 
+def deleteconfig(dest):
+	gen = genders.Genders(filename=dest)
+	for node in gen.getnodes():
+		query = ("SELECT gender_name, val FROM CONFIGURATION WHERE node_name=%s")
+		cursor.execute(query, (node,))
+		results = cursor.fetchall() 
+		for (gender_name, val) in results: 
+			#if gender_name == 'mytestgender':
+			#	pdb.set_trace()
+			if (val == None) and gen.testattr(gender_name, node) == 0: 
+				query = ("DELETE FROM CONFIGURATION WHERE config_id=%s")
+				cursor.execute(query, (node + gender_name,))
+				mydb.commit()
+			elif not (val == None) and gen.testattrval(gender_name, val, node) == 0:
+				if gen.testattr(gender_name, node) == 0: 
+					query = ("DELETE FROM CONFIGURATION WHERE config_id=%s")
+					cursor.execute(query, (node + gender_name,))
+					mydb.commit()
 
 def __main__(dest):
 	node(dest)
 	gender(dest)
 	configuration(dest)
+	deleteconfig(dest)
+
+def deleteconfignode(nodes): 
+	for node in nodes:
+		query = ("SELECT node_name FROM CONFIGURATION WHERE node_name=%s") 
+		cursor.execute(query, (node,))
+		results = cursor.fetchall()
+		if len(results) != 0: 
+			query = ("DELETE FROM CONFIGURATION WHERE node_name=%s")
+			cursor.execute(query, (node,))
+	
+def deleteconfiggender(attrs):
+	for node in nodes:
+		query = ("SELECT node_name FROM CONFIGURATION WHERE node_name=%s")
+		cursor.execute(query, (node,))
+		results = cursor.fetchall()
+		if len(results) != 0:
+			query = ("DELETE FROM CONFIGURATION WHERE node_name=%s")
+			cursor.execute(query, (node,))
 
 import shutil
 
@@ -123,10 +161,12 @@ with open("pathfile.txt", "r") as pathfile:
 		__main__(dest)
 		deletenodes(dest, nodes, deletenodeslist)
 		deleteattrs(dest, genderslist, deletegenders) 
+	deleteconfignode(deletenodeslist)
 	query = ("DELETE FROM NODE WHERE node_name=%s")
 	for node in deletenodeslist:
 		cursor.execute(query, (node,))
 		mydb.commit()
+	deleteconfiggender(deletegenders)
 	query = ("DELETE FROM GENDER WHERE gender_name=%s")
 	for gender in deletegenders:
 		cursor.execute(query, (gender,))
