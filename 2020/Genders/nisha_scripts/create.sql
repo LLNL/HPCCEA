@@ -9,8 +9,8 @@ PRIMARY KEY (node_name)
 );
 
 create table GENDER(
-gender_name varchar(30) unique not null,
-descrip varchar(30),
+gender_name varchar(100) unique not null, 
+descrip varchar(255),
 PRIMARY KEY (gender_name)
 );
 
@@ -18,7 +18,7 @@ create table CONFIGURATION(
 config_id varchar(30) unique not null,
 val varchar(30),
 node_name varchar(30),
-gender_name varchar(30),
+gender_name varchar(100),
 PRIMARY KEY(config_id),
 FOREIGN KEY (node_name)
 REFERENCES NODE (node_name)
