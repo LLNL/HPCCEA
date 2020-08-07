@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: central-genders-database
-Version: 0.0.1
-Summary: centralized notde attribute database
+Version: 0.0.2
+Summary: centralized node attribute database
 Home-page: https://github.com/LLNL/HPCCEA/tree/gendersteam/2020/Genders
 Author: Meghan Utter and Nisha Prabhakar
 Author-email: utter2@llnl.gov, nisha.p@berkeley.edu

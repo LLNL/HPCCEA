@@ -5,3 +5,4 @@ central_genders_database.egg-info/SOURCES.txt
 central_genders_database.egg-info/dependency_links.txt
 central_genders_database.egg-info/top_level.txt
 gender_pkg/__init__.py
+gender_pkg/testquery.py
