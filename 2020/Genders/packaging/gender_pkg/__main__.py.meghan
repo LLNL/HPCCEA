@@ -44,7 +44,24 @@ def findNodes(mydb,gender_namei):
    
 	return records
 
+def getVals(mydb,gender_name):
+	gender_name = str(gender_name)
+	sql = "SELECT val,node_name FROM CONFIGURATION WHERE gender_name = %s"
+	cur = mydb.cursor(buffered=True,dictionary=True)
+	val = (gender_name,)
+	cur.execute(sql,val)
+	records = cur.fetchall()
+	return records
 
+def getUVals(mydb,gender_name):
+	gender_name = str(gender_name)
+	sql = "SELECT DISTINCT val FROM CONFIGURATION WHERE gender_name = %s"
+	cur = mydb.cursor(buffered=True,dictionary=True)
+	val = (gender_name,)
+	cur.execute(sql,val)
+	records = cur.fetchall()
+	return records
+   
 def main():
 	# Find a way to enable passwordless OR store the password after the first command for a certain period of time 
 	parser = argparse.ArgumentParser(description='Connect with database')
@@ -117,6 +134,53 @@ def main():
 				y = y[:-1]
 				y = hostlist.compress_range(y)
 				print(y, end=" ")
+	if results.comma != None:
+		finLi = []
+
+		else:
+			records = findNodes(mydb,str(results.comma[0]))
+			if results.X != None:
+				for row in records:
+					if row['node_name'] != results.X[0]:
+					finLi.append(row['node_name'])
+			else:
+				for row in records:
+					finLi.append(row['node_name'])
+			print(*finLi,sep=", ")
+
+	if results.newline != None:
+		records = findNodes(mydb,str(results.newline[0]))
+		if results.X != None:
+			for row in records:
+				if row['node_name'] != results.X[0]:
+					print(row['node_name'])
+
+		else:
+			for row in records:
+				print(row['node_name'])
+	if results.space != None:
+		records = findNodes(mydb,str(results.space[0]))
+		if results.X != None:
+			for row in records:
+				if row['node_name'] != results.X[0]:
+					print(row['node_name'],end=" ")
+	else:
+		for row in records:
+			print(row['node_name'],end=" ")
+
+	if results.V != None:
+
+		if len(results.V) == 0:
+			if results.U != None:
+				records = getUVals(mydb,results.U)
+				for row in records:
+					print(row['val'])
+
+		if len(results.V) == 1:
+			records = getVals(mydb,results.V[0])
+			for row in records:
+				print(row['val'])
+
 
 if __name__ == "__main__":
     main()
