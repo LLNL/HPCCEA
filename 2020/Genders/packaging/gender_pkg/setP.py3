@@ -4,10 +4,3 @@ def store():
     file_object.write(pss)
     file_object.close()
 
-def main():
-    store()
-
-
-if __name__ == "__main__":
-    main()
-

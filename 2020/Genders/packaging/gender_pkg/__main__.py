@@ -1,5 +1,6 @@
 import argparse
 import mysql-python
+import setP
 
 # Connects to the genders database. 
 def connectDatabase(password):
@@ -44,7 +45,8 @@ def main():
 	args = parser.parse_args()
 	
 
-	
+	if args.password != None:
+            setP.store()  
 
 
 if __name__ == "__main__":
