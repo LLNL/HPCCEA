@@ -59,7 +59,7 @@ def configuration(dest):
 			config_query = ("SELECT config_id, val FROM CONFIGURATION WHERE config_id=%s")
 			cursor.execute(config_query, (config_id,))
 			result = cursor.fetchall()
-			if len(result) == 0: 
+			if len(result) == 0: #This doesn't seem to be working properly
 				add_config = ("INSERT IGNORE INTO CONFIGURATION (config_id, val, node_name, gender_name) VALUES (%s, %s, %s, %s)")
 				cursor.execute(add_config, (config_id, value, node, attribute))
 				mydb.commit()
@@ -121,6 +121,24 @@ def __main__(dest):
 	configuration(dest)
 	deleteconfig(dest)
 
+def deleteconfignode(nodes): 
+	for node in nodes:
+		query = ("SELECT node_name FROM CONFIGURATION WHERE node_name=%s") 
+		cursor.execute(query, (node,))
+		results = cursor.fetchall()
+		if len(results) != 0: 
+			query = ("DELETE FROM CONFIGURATION WHERE node_name=%s")
+			cursor.execute(query, (node,))
+	
+def deleteconfiggender(attrs):
+	for attr in attrs: # CHANGED FROM NODES TO ATTRS
+		query = ("SELECT gender_name FROM CONFIGURATION WHERE gender_name=%s")
+		cursor.execute(query, (attr,))
+		results = cursor.fetchall()
+		if len(results) != 0:
+			query = ("DELETE FROM CONFIGURATION WHERE gender_name=%s")
+			cursor.execute(query, (attr,))
+
 import shutil
 
 os.system("ls -d ~/cfengine/clusters/*/genders > pathfile.txt")
@@ -138,10 +156,12 @@ with open("pathfile.txt", "r") as pathfile:
 		__main__(dest)
 		deletenodes(dest, nodes, deletenodeslist)
 		deleteattrs(dest, genderslist, deletegenders) 
+	deleteconfignode(deletenodeslist)
 	query = ("DELETE FROM NODE WHERE node_name=%s")
 	for node in deletenodeslist:
 		cursor.execute(query, (node,))
 		mydb.commit()
+	deleteconfiggender(deletegenders)
 	query = ("DELETE FROM GENDER WHERE gender_name=%s")
 	for gender in deletegenders:
 		cursor.execute(query, (gender,))
