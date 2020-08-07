@@ -1,31 +1,16 @@
 #!/usr/bin/python3
 import pdb
 import os
-os.environ['PYTHONPATH'] = '/usr/local/lib64/python3.6/site-packages'
-
-#LD_LIBRARY_PATH needs to be set outside the python shell
-os.environ['LD_LIBRARY_PATH'] = '/usr/local/lib'
-
 import genders
+import shutil
 
 def parseName(node_name): 
 	node_num = node_name[-1]
 	cluster = node_name[0:len(node_name)-1]	
 	return node_num, cluster
 
-import mysql.connector
-
-config = {
-  'user': 'root',
-  'password': 'nishappw', # EDIT WITH YOUR PASSWORD
-  'host': 'localhost',
-  'database': 'gender'
-}
-
-mydb = mysql.connector.connect(**config)
-cursor = mydb.cursor()
-
-def node(dest):
+def node(dest, mydb):
+	cursor = mydb.cursor()
 	gen = genders.Genders(filename=dest)
 	for node_name in gen.getnodes():
 		node_name_query = ("SELECT node_name FROM NODE WHERE node_name=%s")
@@ -36,8 +21,10 @@ def node(dest):
 			add_node = ("INSERT IGNORE INTO NODE (node_name, node_num, cluster) VALUES (%s, %s, %s)")
 			cursor.execute(add_node, (node_name, node_num, cluster))
 			mydb.commit()
+	cursor.close()
 
-def gender(dest):
+def gender(dest, mydb):
+	cursor = mydb.cursor()
 	gen = genders.Genders(filename=dest)
 	for attr in gen.getattr_all():
 		gender_query = ("SELECT gender_name from GENDER where gender_name=%s")
@@ -48,9 +35,10 @@ def gender(dest):
 			add_gender = ("INSERT IGNORE INTO GENDER (gender_name, descrip) VALUES (%s, %s)")
 			cursor.execute(add_gender, (attr, descrip))
 			mydb.commit()	
+	cursor.close()
 
-# CONFIGURATION 
-def configuration(dest):
+def configuration(dest, mydb):
+	cursor = mydb.cursor()
 	gen = genders.Genders(filename=dest)
 	for node in gen.getnodes(): 
 		for attribute in gen.getattr(node):
@@ -70,8 +58,10 @@ def configuration(dest):
 					update_config = ("UPDATE CONFIGURATION SET val=%s WHERE config_id=%s")
 					cursor.execute(update_config, (value, config_id))
 					mydb.commit()
+	cursor.close()
 
-def deletenodes(dest, present, absent):
+def deletenodes(dest, present, absent, mydb):
+	cursor = mydb.cursor()
 	gen = genders.Genders(filename=dest)
 	node_query = ("SELECT node_name FROM NODE")
 	cursor.execute(node_query)
@@ -83,8 +73,10 @@ def deletenodes(dest, present, absent):
 				absent.remove(node_name)
 		elif (not node_name in present) and (not node_name in absent):
 			absent.append(node_name)
+	cursor.close()
 
-def deleteattrs(dest, present, absent):
+def deleteattrs(dest, present, absent, mydb):
+        cursor = mydb.cursor()
         gen = genders.Genders(filename=dest)
         node_query = ("SELECT gender_name FROM GENDER")
         cursor.execute(node_query)
@@ -96,9 +88,10 @@ def deleteattrs(dest, present, absent):
                                 absent.remove(gender_name)
                 elif (not gender_name in present) and (not gender_name in absent):
                         absent.append(gender_name)
+        cursor.close()
 
-# other idea - create set of nodes that exist currently, take difference with all items in database, delete the difference 
-def deleteconfig(dest):
+def deleteconfig(dest, mydb):
+	cursor = mydb.cursor()
 	gen = genders.Genders(filename=dest)
 	for node in gen.getnodes():
 		query = ("SELECT gender_name, val FROM CONFIGURATION WHERE node_name=%s")
@@ -114,40 +107,38 @@ def deleteconfig(dest):
 					query = ("DELETE FROM CONFIGURATION WHERE config_id=%s")
 					cursor.execute(query, (node + gender_name,))
 					mydb.commit()
+	cursor.close()
 
-def __main__(dest):
-	node(dest)
-	gender(dest)
-	configuration(dest)
-	deleteconfig(dest)
+def update(dest, mydb):
+	node(dest, mydb)
+	gender(dest, mydb)
+	configuration(dest, mydb)
+	deleteconfig(dest, mydb)
 
-import shutil
-
-os.system("ls -d ~/cfengine/clusters/*/genders > pathfile.txt")
-file_object = open('pathfile.txt', 'a')
-file_object.write('/etc/genders')
-file_object.close()
-
-with open("pathfile.txt", "r") as pathfile:
-	nodes, deletenodeslist = [], []
-	genderslist, deletegenders = [], []
-	for line in pathfile:
-		line = line.strip() 
-		dest = "tempfile.txt"
-		shutil.copyfile(line, dest)
-		__main__(dest)
-		deletenodes(dest, nodes, deletenodeslist)
-		deleteattrs(dest, genderslist, deletegenders) 
-	query = ("DELETE FROM NODE WHERE node_name=%s")
-	for node in deletenodeslist:
-		cursor.execute(query, (node,))
-		mydb.commit()
-	query = ("DELETE FROM GENDER WHERE gender_name=%s")
-	for gender in deletegenders:
-		cursor.execute(query, (gender,))
-		mydb.commit()
-
-os.remove("pathfile.txt")
-os.remove("tempfile.txt")
-cursor.close()
-mydb.close()
+def __main__(mydb):
+	os.system("ls -d ~/cfengine/clusters/*/genders > pathfile.txt")
+	file_object = open('pathfile.txt', 'a')
+	file_object.write('/etc/genders')
+	file_object.close()
+	with open("pathfile.txt", "r") as pathfile:
+		nodes, deletenodeslist = [], []
+		genderslist, deletegenders = [], []
+		for line in pathfile:
+			line = line.strip() 
+			dest = "tempfile.txt"
+			shutil.copyfile(line, dest)
+			update(dest, mydb)
+			deletenodes(dest, nodes, deletenodeslist, mydb)
+			deleteattrs(dest, genderslist, deletegenders, mydb) 
+		cursor = mydb.cursor()
+		query = ("DELETE FROM NODE WHERE node_name=%s")
+		for node in deletenodeslist:
+			cursor.execute(query, (node,))
+			mydb.commit()
+		query = ("DELETE FROM GENDER WHERE gender_name=%s")
+		for gender in deletegenders:
+			cursor.execute(query, (gender,))
+			mydb.commit()
+	os.remove("pathfile.txt")
+	os.remove("tempfile.txt")
+	cursor.close()
