@@ -61,7 +61,35 @@ def getUVals(mydb,gender_name):
 	cur.execute(sql,val)
 	records = cur.fetchall()
 	return records
-   
+
+def getValinNode(mydb,gender_name,node_name):
+	sql = "SELECT val FROM CONFIGURATION WHERE gender_name = %s AND node_name = %s"
+	val = (gender_name,node_name)
+	cur = mydb.cursor(buffered=True,dictionary=True)
+	cur.execute(sql,val,)
+	records = cur.fetchall()
+	return records
+
+def findNodes(mydb,gender_namei):
+	sql = "SELECT DISTINCT n.node_name FROM NODE n JOIN CONFIGURATION c WHERE (n.node_name = c.node_name AND c.gender_name = %s )"
+	val = (gender_namei,)
+	cur = mydb.cursor(buffered=True, dictionary=True)
+	cur.execute(sql,val)
+	records = cur.fetchall()
+	return records
+def findGenders(mydb,node_namei):
+	sql = "SELECT DISTINCT g.gender_name FROM GENDER g JOIN CONFIGURATION c WHERE (g.gender_name = c.gender_name AND c.node_name = %s)"
+	val = (node_namei,)
+	cur = mydb.cursor(buffered=True, dictionary=True)
+	cur.execute(sql,val)
+	records = cur.fetchall()
+	return records
+def allGenders(mydb):
+	sql = "SELECT DISTINCT gender_name FROM GENDER"
+	cur = mydb.cursor(buffered=True, dictionary=True)
+	cur.execute(sql)
+	records = cur.fetchall()
+	return records
 def main():
 	# Find a way to enable passwordless OR store the password after the first command for a certain period of time 
 	parser = argparse.ArgumentParser(description='Connect with database')
@@ -181,6 +209,38 @@ def main():
 			for row in records:
 				print(row['val'])
 
+	if results.v != None:
+		records = getValinNode(mydb,results.v[1],results.v[0])
+		for row in records:
+			print(row['val'])
+
+	if results.Q != None:
+		if len(results.Q) == 1:
+			records = findNodes(mydb,str(results.Q[0]))
+			if len(records) > 0:
+				sys.exit(0)
+			else:
+				sys.exit(1)
+		if len(results.Q) == 2:
+
+		records =  findNodes(mydb,results.Q[1])
+		for rec in records:
+
+			if rec['node_name'] == results.Q[0]:
+				sys.exit(0)
+		sys.exit(1)
+	if results.valuesWnodes != None:
+		records = getVals(mydb,*results.valuesWnodes)
+		for row in records:
+			print(row['node_name']," ",row['val'])
+
+		if results.l != None:
+			if len(results.l) > 0:
+				findGenders(mydb,*results.l)
+		else:
+			records = allGenders(mydb)
+			for row in records:
+				print(row['gender_name'])
 
 if __name__ == "__main__":
     main()
