@@ -90,21 +90,40 @@ def parsedefault(inp):
 		parser.error("Too many arguments.")
 	return node, attr
 
-def formatnodes(nodes, attr=None): 
+def cluster(nodes):
+	clusters = []
+	clustered_nodes = []
+	current = []
+	for node in nodes:
+		clust = node[0:len(node)-1]
+		if clust in clusters:
+			current.append(node)
+		else:
+			past = current.copy()
+			clustered_nodes.append(past)
+			clusters.append(clust)
+			current.append(node)
+	return clustered_nodes
+
+def formatnodes(nodes, attr=None, excludeattr=None): 
+	pdb.set_trace()
 	toprint = "";
 	clusters = []
 	for node in nodes:
 		clust = node[0:len(node)-1]	
 		if not clust in clusters:
 			clusters.append(clust)
-			if attr == None:
+			clust += '%'
+			if attr == None and excludeattr == None:
 				query = ('SELECT node_name FROM NODE WHERE cluster=%s')
 				cursor.execute(query, (clust,))
-			else:	
+			elif attr != None and excludeattr == None:	
 				query = ('SELECT node_name FROM CONFIGURATION  WHERE node_name LIKE %s && gender_name=%s')
-				cursor.execute(query, (clust+'%' ,attr))
+				cursor.execute(query, (clust ,attr))
+			else:
+				query = ('SELECT node_name FROM CONFIGURATION WHERE node_name LIKE %s AND gender_name=%s AND node_name NOT IN (SELECT node_name FROM CONFIGURATION WHERE gender_name=%s)')
+				cursor.execute(query, (clust, attr, excludeattr))
 			results = parsequery(cursor.fetchall())
-			#print(hostlist.compress_range(results))
 			toprint += hostlist.compress_range(results)
 			toprint+= ','
 	print(toprint[:len(toprint)-1])
@@ -116,22 +135,34 @@ def A():
 	return results 
 
 def X(attr, excludeattr): 
-#	pdb.set_trace()
-	query = ("SELECT node_name FROM CONFIGURATION WHERE gender_name=%s AND gender_name!=%s")
+	query = ("SELECT node_name FROM CONFIGURATION WHERE gender_name=%s AND node_name NOT IN (SELECT node_name FROM CONFIGURATION WHERE gender_name=%s)")
 	cursor.execute(query, (attr, excludeattr))
 	results = cursor.fetchall()
 	return parsequery(results)
 
+def logic(query):
+	if (query[0][0] == '~'):
+		attr = query[0][1:len(query[0])]
+		query = ('SELECT DISTINCT node_name FROM CONFIGURATION WHERE gender_name!=%s')
+		cursor.execute(query, (attr,))
+		return parsequery(cursor.fetchall())
+
 if args.q != None:
+	excludeattr = None 
 	attr = args.q[0]
 	if args.A: 
 		nodes = A()
 	elif args.X != None: 
 		nodes = X(attr, args.X)
+		excludeattr = args.X
+	elif len(args.q) == 3 or attr[0] == '~':
+		if (attr[0] == '~'):
+			attr = args.q[0][1:len(args.q[0])]
+		nodes = logic(args.q) 
 	else: 
-		nodes  = c_n_s_query(attr)
+		nodes= c_n_s_query(attr)
 	if len(nodes) != 0:	
-		formatnodes(nodes, attr)
+		formatnodes(nodes, attr, excludeattr)
 elif args.c != None:
 	if args.A: 
 		results = A()
