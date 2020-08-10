@@ -188,15 +188,15 @@ def main():
         finLi = []
 
        
-            records = findNodes(mydb,str(results.comma[0]))
-            if results.X != None:
-                for row in records:
-                    if row['node_name'] != results.X[0]:
-                        finLi.append(row['node_name'])
-            else:
-                for row in records:
+        records = findNodes(mydb,str(results.comma[0]))
+        if results.X != None:
+            for row in records:
+                if row['node_name'] != results.X[0]:
                     finLi.append(row['node_name'])
-            print(*finLi,sep=", ")
+        else:
+            for row in records:
+                finLi.append(row['node_name'])
+        print(*finLi,sep=", ")
 
     if results.newline != None:
         records = findNodes(mydb,str(results.newline[0]))
