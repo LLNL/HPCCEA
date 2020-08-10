@@ -1,7 +1,7 @@
-Metadata-Version: 2.1
+Metadata-Version: 1.1
 Name: centralgendersdatabase
-Version: 0.0.2
-Summary: centralized node attribute database
+Version: 0.0.3
+Summary: Centralized Node Attribute Database
 Home-page: https://github.com/LLNL/HPCCEA/tree/gendersteam/2020/Genders
 Author: Meghan Utter and Nisha Prabhakar
 Author-email: utter2@llnl.gov, nisha.p@berkeley.edu
@@ -20,6 +20,4 @@ Description: # Centralized Genders Database
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
-Requires-Python: >=3.6
-Description-Content-Type: text/markdown
+Classifier: Operating System :: Linux

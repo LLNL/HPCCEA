@@ -1,10 +1,11 @@
 import argparse
-import mysql-python
+import mysql.python.connector
 import setP
 import loaddata
 
-# Connects to the genders database. 
+# Connects to the genders database.
 def connectDatabase(password):
+
     #block tests if gender database exists already
     try:
 	try: 
