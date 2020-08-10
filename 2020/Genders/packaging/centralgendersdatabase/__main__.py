@@ -211,13 +211,13 @@ def main():
 
     if results.space != None:
         records = findNodes(mydb,str(results.space[0]))
-            if results.X != None:
-                for row in records:
-                    if row['node_name'] != results.X[0]:
-                        print(row['node_name'],end=" ")
-            else:
-                for row in records:
+        if results.X != None:
+            for row in records:
+                if row['node_name'] != results.X[0]:
                     print(row['node_name'],end=" ")
+        else:
+            for row in records:
+                print(row['node_name'],end=" ")
 
     if results.V != None:
 
