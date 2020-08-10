@@ -1,12 +1,12 @@
-#Setting password
-####Password set up
-
-`
-` python3 -m centralgendersdatabase --password 
-"Enter mysql password: " '
-
-9. Now tool can be run "passwordlessly" by all users
+# Setting Password  
+#### Password Set Up
 
 
-#populating database
+` python3 -m centralgendersdatabase --password `
+"Enter mysql password: " 
+
+Now tool can be run "passwordlessly" by all users
+
+
+# Populating Database
 
