@@ -8,7 +8,7 @@ import genders
 import mysql.connector
 from mysql.connector import Error
 import argparse
-from . centralgendersdatabase import loaddata 
+from .  import loaddata 
 import setP
 
 # Connects to the genders database.
