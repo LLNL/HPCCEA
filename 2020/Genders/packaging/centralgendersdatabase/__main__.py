@@ -200,14 +200,14 @@ def main():
 
     if results.newline != None:
         records = findNodes(mydb,str(results.newline[0]))
-            if results.X != None:
-                for row in records:
-                    if row['node_name'] != results.X[0]:
-                        print(row['node_name'])
+        if results.X != None:
+            for row in records:
+                if row['node_name'] != results.X[0]:
+                    print(row['node_name'])
 
-                    else:
-                        for row in records:
-                            print(row['node_name'])
+        else:
+            for row in records:
+                print(row['node_name'])
 
     if results.space != None:
         records = findNodes(mydb,str(results.space[0]))
