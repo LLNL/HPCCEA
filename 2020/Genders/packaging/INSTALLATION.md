@@ -30,3 +30,23 @@
 
 ## mySQL server set up 
 
+####Dependencies 
+1. download MySQL repositories: sudo wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm 
+2. prepare the repository: sudo rpm -Uvh mysql80-community-release-el7-3.noarch.rpm
+3. install MySQL: sudo yum install mysql-server
+4. start MySQL: sudo systemctl start mysqld
+5. check status: sudo systemctl status mysqld: copy mysqld.service path
+6. add export path statement to end of .bash_profile file
+
+####Password set up 
+1. grep 'temporary password' /var/log/mysqld.log
+2. copy password
+3. mysql -u root -p
+4. enter copied password 
+5. SET GLOBAL validate_password.policy=LOW;
+6. exit mySQL server
+7. run python3 -m centralgendersdatabase --password 
+8. This will promt you to add in the offical password 
+9. Now tool can be run "passwordlessly" by all users 
+
+
