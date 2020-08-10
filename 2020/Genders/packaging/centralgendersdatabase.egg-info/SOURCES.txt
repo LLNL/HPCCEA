@@ -2,6 +2,7 @@ README.md
 setup.py
 centralgendersdatabase/__init__.py
 centralgendersdatabase/__main__.py
+centralgendersdatabase/testmain.py
 centralgendersdatabase.egg-info/PKG-INFO
 centralgendersdatabase.egg-info/SOURCES.txt
 centralgendersdatabase.egg-info/dependency_links.txt

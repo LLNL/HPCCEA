@@ -3,38 +3,51 @@ import io
 from shutil import copyfile
 import subprocess
 from pathlib import Path
-import os;
-import genders;
+import os
+import genders
 import mysql.connector
 from mysql.connector import Error
-import argparse;
-
+import argparse
+import loaddata 
+import setP
 
 # Connects to the genders database.
 def connectDatabase(password):
     #block tests if gender database exists already
     try:
-        config = {'user': 'root','password': '%s'}
-# Command in main to write to file with password
-
-
-        mydb = mysql.connector.connect( host="localhost",user="root",password="Puffyf15", database="gender")
+        try:
+            with open('passW.txt') as f:
+                password = [line.rstrip('\n') for line in f][0]
+        except Error as e:
+            print(e)
+            print("Please add your password using --password.")
+        config = {
+            'user': 'root',
+            'password': f'{password}',
+            'host': 'localhost',
+            'database': 'gender'
+        }
+        mydb = mysql.connector.connect(**config)
         if mydb.is_connected():
             cursor = mydb.cursor(buffered=True,dictionary=True)
     #if it does not exists runs create.sql script
     except Error as e:
         print(e)
-        mydb = mysql.connector.connect(host="localhost",user="root",password="Puffyf15")
+        config = {
+            'user': 'root',
+            'password': f'{password}',
+            'host': 'localhost'
+        }
+        mydb = mysql.connector.connect(**config)
         cursor = mydb.cursor(buffered=True , dictionary=True)
-                # Open and read the file as a single buffer
-        fd = open('createALL.sql', 'r')
+        # Open and read the file as a single buffer
+        fd = open('create.sql', 'r')
         sqlFile = fd.read()
         fd.close()
-
         sqlCommands = sqlFile.split(';')
-                # Execute every command from the input file
+        # Execute every command from the input file
         for command in sqlCommands:
-                # This will skip and report errors
+            # This will skip and report errors
             try:
                 cursor.execute(command)
             except Error as e:
@@ -98,8 +111,10 @@ def allGenders(mydb):
     records = cur.fetchall()
     return records
 def main():
+    mydb = connectDatabase()
     parser = argparse.ArgumentParser(description='Connect with database')
-    parser.add_argument('password', type=str)	
+    parser.add_argument('--password', action = 'store_true')
+    parser.add_argument('--load', action="store_true")
     parser.add_argument('-dd',help='drops entire database',action='store_true',dest='dd')
 
     parser.add_argument('-q', nargs='*',help='prints list of nodes having the specified attribute in host range',action='store', dest='hostlist')
@@ -129,6 +144,8 @@ def main():
     if args.password != None:
         setP.store()  
         #finds nodes w specified gender in hostlist format
+    if args.load:
+        loaddata.main(mydb)
     if results.hostlist != None:
         finLi = []
         records = []
