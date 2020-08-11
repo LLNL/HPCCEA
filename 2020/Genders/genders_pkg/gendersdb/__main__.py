@@ -152,6 +152,7 @@ def main():
     if results.load:
         loaddata.main(mydb)
     if results.hostlist != None:
+        
         finLi = []
         records = []
         prev = False
@@ -162,33 +163,35 @@ def main():
             for row in record:
                 if row['node_name'] != results.X[0]:
                     records.append(row)
-                else:
-                    records = findNodes(mydb,str(results.hostlist[0]))
-                    if (len(records)) > 0:
-                        cluster0 = records[0]
-                        cluster0 = cluster0['node_name']
-                        cluster0 = cluster0[:-1]
-                        for row in records:
-                            clusterT = row['node_name']
-                            clusterT = clusterT[:-1]
-                            if cluster0 == clusterT:
-                                hosts += ( row['node_name'] + ',')
-                                prev = True
-                            elif cluster0 != clusterT and prev == True:
-                                finLi.append(hosts)
-                                hosts = ''
-                                hosts += ( row['node_name'] + ',')
-                                prev = False
-                            elif cluster0 != clusterT and prev == False:
-                                hosts = ''
-                                hosts += ( row['node_name'] + ',')
-                                prev = True
-                                cluster0 = clusterT
-                                finLi.append(hosts)
-                        for y in finLi:
-                            y = y[:-1]
-                            y = hostlist.compress_range(y)
-                            print(y, end= " ")
+        else:
+            records = findNodes(mydb,str(results.hostlist[0]))
+        if (len(records)) > 0:
+            
+            cluster0 = records[0]
+            cluster0 = cluster0['node_name']
+            cluster0 = cluster0[:-1]
+            for row in records:
+                clusterT = row['node_name']
+                clusterT = clusterT[:-1]
+                if cluster0 == clusterT:
+                    hosts += ( row['node_name'] + ',')
+                    prev = True
+                elif cluster0 != clusterT and prev == True:
+                    finLi.append(hosts)
+                    hosts = ''
+                    hosts += ( row['node_name'] + ',')
+                    prev = False
+                elif cluster0 != clusterT and prev == False:
+                    hosts = ''
+                    hosts += ( row['node_name'] + ',')
+                    prev = True
+                cluster0 = clusterT
+            finLi.append(hosts)
+            for y in finLi:
+                
+                y = y[:-1]
+                y = hostlist.compress_range(y)
+                print(y, end= " ")
 # COMMENTING OUT THIS SECTION ------- FIX 
     if results.comma != None:
         finLi = []
