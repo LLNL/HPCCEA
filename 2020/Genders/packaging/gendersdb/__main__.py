@@ -11,6 +11,8 @@ from mysql.connector import Error
 import argparse
 from gendersdb import loaddata 
 from gendersdb import setP
+import pdb
+import sys
 
 # Connects to the genders database.
 def connectDatabase():
@@ -142,9 +144,11 @@ def main():
     
 
     args = parser.parse_args()	
-
     if args.password != None:
-        setP.store()  
+        
+    #if args.password:
+     #   setP.store()  
+      #  sys.exit()
     #finds nodes w specified gender in hostlist format
     mydb = connectDatabase() 
     if args.load:

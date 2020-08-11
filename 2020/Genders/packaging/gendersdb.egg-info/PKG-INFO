@@ -1,4 +1,4 @@
-Metadata-Version: 1.1
+Metadata-Version: 2.1
 Name: gendersdb
 Version: 0.0.1
 Summary: Centralized Node Attribute Database
@@ -21,3 +21,5 @@ Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: Linux
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
