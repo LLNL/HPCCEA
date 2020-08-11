@@ -8,7 +8,7 @@ import genders
 import mysql.connector
 from mysql.connector import Error
 import argparse
-from .  import loaddata 
+import loaddata 
 import setP
 
 # Connects to the genders database.
@@ -184,40 +184,41 @@ def main():
                             y = y[:-1]
                             y = hostlist.compress_range(y)
                             print(y, end= " ")
-    if results.comma != None:
-        finLi = []
-
-       
-        records = findNodes(mydb,str(results.comma[0]))
-        if results.X != None:
-            for row in records:
-                if row['node_name'] != results.X[0]:
-                    finLi.append(row['node_name'])
-        else:
-            for row in records:
-                finLi.append(row['node_name'])
-        print(*finLi,sep=", ")
+# COMMENTING OUT THIS SECTION ------- FIX 
+#    if results.comma != None:
+#        finLi = []
+#
+#        else:
+#            records = findNodes(mydb,str(results.comma[0]))
+#            if results.X != None:
+#                for row in records:
+#                    if row['node_name'] != results.X[0]:
+#                        finLi.append(row['node_name'])
+#                    else:
+#                        for row in records:
+#                            finLi.append(row['node_name'])
+#                    print(*finLi,sep=", ")
 
     if results.newline != None:
         records = findNodes(mydb,str(results.newline[0]))
-        if results.X != None:
-            for row in records:
-                if row['node_name'] != results.X[0]:
-                    print(row['node_name'])
+            if results.X != None:
+                for row in records:
+                    if row['node_name'] != results.X[0]:
+                        print(row['node_name'])
 
-        else:
-            for row in records:
-                print(row['node_name'])
+                    else:
+                        for row in records:
+                            print(row['node_name'])
 
     if results.space != None:
         records = findNodes(mydb,str(results.space[0]))
-        if results.X != None:
-            for row in records:
-                if row['node_name'] != results.X[0]:
+            if results.X != None:
+                for row in records:
+                    if row['node_name'] != results.X[0]:
+                        print(row['node_name'],end=" ")
+            else:
+                for row in records:
                     print(row['node_name'],end=" ")
-        else:
-            for row in records:
-                print(row['node_name'],end=" ")
 
     if results.V != None:
 

@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="centralgendersdatabase",
-    version="0.0.3",
+    name="gendersdb",
+    version="0.0.1",
     author="Meghan Utter and Nisha Prabhakar",
     author_email="utter2@llnl.gov, nisha.p@berkeley.edu",
     description="Centralized Node Attribute Database",
