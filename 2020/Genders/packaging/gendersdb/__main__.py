@@ -1,4 +1,3 @@
-#from ~/py-hostlist/hostlist import hostlist 
 import hostlist
 import io
 from shutil import copyfile
@@ -115,7 +114,6 @@ def allGenders(mydb):
     return records
 
 def main():
-    #mydb = connectDatabase()
     parser = argparse.ArgumentParser(description='Connect with database')
     parser.add_argument('--password', action = 'store_true')
     parser.add_argument('--load', action="store_true")
@@ -143,15 +141,13 @@ def main():
     parser.add_argument('-X',nargs='*',help='exlcude node from query')
     
 
-    args = parser.parse_args()	
-    if args.password != None:
-        
-    #if args.password:
-     #   setP.store()  
-      #  sys.exit()
+    results = parser.parse_args()	
+    if results.password:
+       setP.store()  
+       sys.exit()
     #finds nodes w specified gender in hostlist format
     mydb = connectDatabase() 
-    if args.load:
+    if results.load:
         loaddata.main(mydb)
     if results.hostlist != None:
         finLi = []
@@ -192,19 +188,17 @@ def main():
                             y = hostlist.compress_range(y)
                             print(y, end= " ")
 # COMMENTING OUT THIS SECTION ------- FIX 
-#    if results.comma != None:
-#        finLi = []
-#
-#        else:
-#            records = findNodes(mydb,str(results.comma[0]))
-#            if results.X != None:
-#                for row in records:
-#                    if row['node_name'] != results.X[0]:
-#                        finLi.append(row['node_name'])
-#                    else:
-#                        for row in records:
-#                            finLi.append(row['node_name'])
-#                    print(*finLi,sep=", ")
+    if results.comma != None:
+        finLi = []
+        records = findNodes(mydb,str(results.comma[0]))
+        if results.X != None:
+            for row in records:
+                if row['node_name'] != results.X[0]:
+                    finLi.append(row['node_name'])
+        else:
+            for row in records:
+                finLi.append(row['node_name'])
+        print(*finLi,sep=", ")
 
     if results.newline != None:
         records = findNodes(mydb,str(results.newline[0]))
@@ -212,9 +206,9 @@ def main():
             for row in records:
                 if row['node_name'] != results.X[0]:
                     print(row['node_name'])
-                else:
-                    for row in records:
-                        print(row['node_name'])
+        else:
+            for row in records:
+                print(row['node_name'])
 
     if results.space != None:
         records = findNodes(mydb,str(results.space[0]))
@@ -227,13 +221,11 @@ def main():
                 print(row['node_name'],end=" ")
 
     if results.V != None:
-
         if len(results.V) == 0:
             if results.U != None:
                 records = getUVals(mydb,results.U)
                 for row in records:
                     print(row['val'])
-
         if len(results.V) == 1:
             records = getVals(mydb,results.V[0])
             for row in records:
@@ -252,18 +244,16 @@ def main():
             else:
                 sys.exit(1)
         if len(results.Q) == 2:
-
             records =  findNodes(mydb,results.Q[1])
             for rec in records:
-
                 if rec['node_name'] == results.Q[0]:
                     sys.exit(0)
             sys.exit(1)
+    
     if results.valuesWnodes != None:
         records = getVals(mydb,*results.valuesWnodes)
         for row in records:
             print(row['node_name']," ",row['val'])
-
             if results.l != None:
                 if len(results.l) > 0:
                     findGenders(mydb,*results.l)
@@ -272,6 +262,10 @@ def main():
                     for row in records:
                         print(row['gender_name'])
 
+    if results.dd:
+        sql = "DROP DATABASE gender"
+        cur = mydb.cursor(buffered=True, dictionary=True)
+        cur.execute(sql)
+
 if __name__ == "__main__":
     main()
-
