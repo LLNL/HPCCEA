@@ -115,9 +115,8 @@ def allGenders(mydb):
     return records
 
 def parsedefault(inp):
-    gen = genders.Genders(filename='/etc/genders/')
     if (len(inp) == 1):
-        node = gen.getnodename()
+        node = os.system('echo $HOSTNAME') 
         attr = inp[0]
     elif (len(inp) == 2):
         node = inp[0]

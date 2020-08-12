@@ -13,6 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/LLNL/HPCCEA/tree/gendersteam/2020/Genders",
     packages=setuptools.find_packages(),
+    entry_points = {'console_scripts':['gendersdb=gendersdb.__main__:main']},
     classifiers=[  
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
