@@ -114,6 +114,18 @@ def allGenders(mydb):
     records = cur.fetchall()
     return records
 
+def parsedefault(inp):
+    gen = genders.Genders(filename='/etc/genders/')
+    if (len(inp) == 1):
+        node = gen.getnodename()
+        attr = inp[0]
+    elif (len(inp) == 2):
+        node = inp[0]
+        attr = inp[1]
+    else:
+        parser.error("Too many arguments.")
+    return node, attr
+
 def main():
     parser = argparse.ArgumentParser(description='Connect with database')
     parser.add_argument('-password', action = 'store_true')
@@ -131,7 +143,7 @@ def main():
     parser.add_argument('-n',nargs=1,help='prints list of nodes having specified attribute in newline separated list',action='store',dest='newline')
     
     parser.add_argument('-s',nargs=1,help='prints list of nodes having specified attribute in space separated list',action='store',dest='space')
-    parser.add_argument('-v',nargs=1,help='outputs values associated with gender on a particular node',action='store')
+    parser.add_argument('-v', metavar = ('node', 'attr'), nargs = '+', help='outputs values associated with gender on a particular node')
     
     parser.add_argument('-vv',nargs=1,help='outputs values associated with gender and with node listed',action='store',dest='valuesWnodes')
     
@@ -236,10 +248,21 @@ def main():
             for row in records:
                 print(row['val'])
 
-    if results.v != None:
-        records = getVals(mydb,*results.v)
-        for row in records:
-            print(row['val'])
+#    if results.v != None:
+#        records = getVals(mydb,*results.v)
+#        for row in records:
+#            print(row['val'])
+    if  results.v != None:
+        cursor = mydb.cursor() 
+        node, attr = parsedefault(results.v)
+        query = ("SELECT val FROM CONFIGURATION WHERE node_name=%s && gender_name=%s")
+        cursor.execute(query, (node, attr))
+        result = cursor.fetchall()
+        if len(result) == 0:
+                parser.error("node or attribute not found")
+        else:
+                if result[0][0] != None:
+                        print(result[0][0])
 
     if results.Q != None:
         if len(results.Q) == 1:
