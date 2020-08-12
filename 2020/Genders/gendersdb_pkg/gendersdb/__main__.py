@@ -237,7 +237,7 @@ def main():
                 print(row['val'])
 
     if results.v != None:
-        records = getValinNode(mydb,results.v[1],results.v[0])
+        records = getVals(mydb,*results.v)
         for row in records:
             print(row['val'])
 
