@@ -125,6 +125,14 @@ def parsedefault(inp):
         parser.error("Too many arguments.")
     return node, attr
 
+def X(attr, excludeattr, mydb):
+    #pdb.set_trace()
+    cursor = mydb.cursor()
+    query = ("SELECT node_name FROM CONFIGURATION WHERE gender_name=%s AND node_name NOT IN (SELECT node_name FROM CONFIGURATION WHERE gender_name=%s)")
+    cursor.execute(query, (attr, excludeattr))
+    results = cursor.fetchall()
+    return results
+
 def main():
     parser = argparse.ArgumentParser(description='Connect with database')
     parser.add_argument('-password', action = 'store_true')
@@ -153,6 +161,8 @@ def main():
     parser.add_argument('-U',help='V will only output unique values')
     
     parser.add_argument('-X',nargs='*',help='exlcude node from query')
+
+    parser.add_argument('-XX',nargs='*',help='exlcude node from query')
     
 
     results = parser.parse_args()	
@@ -164,21 +174,21 @@ def main():
     if results.load:
         loaddata.main(mydb)
     if results.hostlist != None:
-        
         finLi = []
         records = []
         prev = False
         hosts = ''
         clusterN = ""
-        if results.X != None:
+        if results.X != None: 
+            records = X(results.hostlist[0], results.X[0], mydb)
+        elif results.XX != None:
             record = findNodes(mydb,str(results.hostlist[0]))
             for row in record:
-                if row['node_name'] != results.X[0]:
+                if row['node_name'] != results.XX[0]:
                     records.append(row)
         else:
             records = findNodes(mydb,str(results.hostlist[0]))
         if (len(records)) > 0:
-            
             cluster0 = records[0]
             cluster0 = cluster0['node_name']
             cluster0 = cluster0[:-1]
@@ -200,16 +210,19 @@ def main():
                 cluster0 = clusterT
             finLi.append(hosts)
             for y in finLi:
-                
                 y = y[:-1]
                 y = hostlist.compress_range(y)
                 print(y, end= " ")
+            print()
     if results.comma != None:
         finLi = []
-        records = findNodes(mydb,str(results.comma[0]))
         if results.X != None:
+            records = X(results.comma[0], results.X[0], mydb)
+        else: 
+            records = findNodes(mydb,str(results.comma[0]))
+        if results.XX != None:
             for row in records:
-                if row['node_name'] != results.X[0]:
+                if row['node_name'] != results.XX[0]:
                     finLi.append(row['node_name'])
         else:
             for row in records:
@@ -217,24 +230,31 @@ def main():
         print(*finLi,sep=", ")
 
     if results.newline != None:
-        records = findNodes(mydb,str(results.newline[0]))
         if results.X != None:
+            records = X(results.newline[0], results.X[0], mydb)
+        else: 
+            records = findNodes(mydb,str(results.newline[0]))
+        if results.XX != None:
             for row in records:
-                if row['node_name'] != results.X[0]:
+                if row['node_name'] != results.XX[0]:
                     print(row['node_name'])
         else:
             for row in records:
                 print(row['node_name'])
 
     if results.space != None:
-        records = findNodes(mydb,str(results.space[0]))
         if results.X != None:
+            records = X(results.space[0], results.X[0], mydb)
+        else:
+            records = findNodes(mydb,str(results.space[0]))
+        if results.XX != None:
             for row in records:
-                if row['node_name'] != results.X[0]:
+                if row['node_name'] != results.XX[0]:
                     print(row['node_name'],end=" ")
         else:
             for row in records:
                 print(row['node_name'],end=" ")
+        print()
 
     if results.V != None:
         if len(results.V) == 0:
@@ -247,10 +267,6 @@ def main():
             for row in records:
                 print(row['val'])
 
-#    if results.v != None:
-#        records = getVals(mydb,*results.v)
-#        for row in records:
-#            print(row['val'])
     if  results.v != None:
         cursor = mydb.cursor() 
         node, attr = parsedefault(results.v)

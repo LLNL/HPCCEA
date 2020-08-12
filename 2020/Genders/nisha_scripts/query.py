@@ -14,7 +14,7 @@ import hostlist
 
 config = {
   'user': 'root',
-  'password': 'nishappw',  # EDIT WITH YOUR PASSWORD
+  'password': 'MyNewPass',  # EDIT WITH YOUR PASSWORD
   'host': 'localhost',
   'database': 'gender'
 }
@@ -106,7 +106,6 @@ def cluster(nodes):
 	return clustered_nodes
 
 def formatnodes(nodes, attr=None, excludeattr=None): 
-	pdb.set_trace()
 	toprint = "";
 	clusters = []
 	for node in nodes:
