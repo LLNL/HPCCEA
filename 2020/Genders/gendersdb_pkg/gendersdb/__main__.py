@@ -18,6 +18,7 @@ def connectDatabase():
     #block tests if gender database exists already
     try:
         try:
+# Change this path later
             with open('passW.txt') as f:
                 password = [line.rstrip('\n') for line in f][0]
         except Error as e:
@@ -192,7 +193,6 @@ def main():
                 y = y[:-1]
                 y = hostlist.compress_range(y)
                 print(y, end= " ")
-# COMMENTING OUT THIS SECTION ------- FIX 
     if results.comma != None:
         finLi = []
         records = findNodes(mydb,str(results.comma[0]))
