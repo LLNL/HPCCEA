@@ -1,4 +1,4 @@
-import hostlist
+from hostlist import hostlist
 import io
 from shutil import copyfile
 import subprocess
