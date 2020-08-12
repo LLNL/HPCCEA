@@ -35,7 +35,7 @@ def connectDatabase():
             cursor = mydb.cursor(buffered=True,dictionary=True)
     #if it does not exists runs create.sql script
     except Error as e:
-        print(e)
+        print(e) # Output a message instead 
         config = {
             'user': 'root',
             'password': f'{password}',
@@ -160,7 +160,7 @@ def main():
        setP.store()  
        sys.exit()
     #finds nodes w specified gender in hostlist format
-    mydb = connectDatabase() 
+    mydb = connectDatabase() #If the database doesn't exist
     if results.load:
         loaddata.main(mydb)
     if results.hostlist != None:
