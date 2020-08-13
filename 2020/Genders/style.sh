@@ -8,7 +8,7 @@ fi
 SCRIPT=$1
 
 #bandit -r $SCRIPT
-#black --check $SCRIPT
+black $SCRIPT
 # E231: Missing whitespace after ',', ';', or ':'
 # E501: Line too long (82 > 79 characters)
 # W503: Line break occurred before a binary operator
