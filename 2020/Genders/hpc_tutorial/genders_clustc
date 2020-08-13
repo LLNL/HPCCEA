@@ -1,0 +1,17 @@
+# Configuration (mgmt)
+clustc[1]          cfhost=%n-pub,staged_config
+clustc[1]          partitioned_cluster=lead
+clustc[1]          passwdhost=local,nopasswddist
+clustc[1]          cluster_accounts=&linuxdev,account_updates=attb,local_passwords
+clustc[1]          ver_accounts=105
+
+# Accounts (any)
+clustc[2]          passwdhost=local
+clustc[2]          hpw,arena_homes
+clustc[2]          cluster_accounts=&all:@academy.accts
+clustc[2]          account_updates=attb,local_passwords
+clustc[2]          ver_accounts=105
+clustc[2]          testgender3
+
+#
+
