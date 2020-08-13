@@ -172,7 +172,7 @@ def main():
     #finds nodes w specified gender in hostlist format
     mydb = connectDatabase() #If the database doesn't exist
     if results.load:
-        loaddata.main(mydb)
+        loaddata.loaddata(mydb)
     if results.hostlist != None:
         finLi = []
         records = []

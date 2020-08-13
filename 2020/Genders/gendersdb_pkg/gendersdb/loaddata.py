@@ -125,7 +125,7 @@ def update(dest, mydb):
     deleteconfig(dest, mydb)
 
 
-def main(mydb):
+def loaddata(mydb):
     os.system("ls -d ~/cfengine/clusters/*/genders > pathfile.txt")
     file_object = open("pathfile.txt", "a")
     file_object.write("/etc/genders")
