@@ -126,9 +126,8 @@ def parsedefault(inp):
     return node, attr
 
 def X(attr, excludeattr, mydb):
-    #pdb.set_trace()
     cursor = mydb.cursor()
-    query = ("SELECT node_name FROM CONFIGURATION WHERE gender_name=%s AND node_name NOT IN (SELECT node_name FROM CONFIGURATION WHERE gender_name=%s)")
+    query = ("SELECT DISTINCT node_name FROM CONFIGURATION WHERE gender_name=%s AND node_name NOT IN (SELECT node_name FROM CONFIGURATION WHERE gender_name=%s)")
     cursor.execute(query, (attr, excludeattr))
     results = cursor.fetchall()
     return results
@@ -190,22 +189,38 @@ def main():
             records = findNodes(mydb,str(results.hostlist[0]))
         if (len(records)) > 0:
             cluster0 = records[0]
-            cluster0 = cluster0['node_name']
+            if results.X != None:
+                cluster0 = cluster0[0]
+            else: 
+                cluster0 = cluster0['node_name']
             cluster0 = cluster0[:-1]
             for row in records:
-                clusterT = row['node_name']
+                clusterT = ''
+                if results.X != None:
+                    clusterT = row[0]
+                else:                 
+                    clusterT = row['node_name']
                 clusterT = clusterT[:-1]
                 if cluster0 == clusterT:
-                    hosts += ( row['node_name'] + ',')
+                    if results.X != None:
+                        hosts += ( row[0] + ',')
+                    else: 
+                        hosts += ( row['node_name'] + ',')
                     prev = True
                 elif cluster0 != clusterT and prev == True:
                     finLi.append(hosts)
                     hosts = ''
-                    hosts += ( row['node_name'] + ',')
+                    if results.X != None:
+                        hosts += ( row[0] + ',')
+                    else:
+                        hosts += ( row['node_name'] + ',')
                     prev = False
                 elif cluster0 != clusterT and prev == False:
                     hosts = ''
-                    hosts += ( row['node_name'] + ',')
+                    if results.X != None:
+                        hosts += ( row[0] + ',')
+                    else:
+                        hosts += ( row['node_name'] + ',')
                     prev = True
                 cluster0 = clusterT
             finLi.append(hosts)
@@ -226,7 +241,10 @@ def main():
                     finLi.append(row['node_name'])
         else:
             for row in records:
-                finLi.append(row['node_name'])
+                if results.X: 
+                    finLi.append(row[0])
+                else: 
+                    finLi.append(row['node_name'])
         print(*finLi,sep=", ")
 
     if results.newline != None:
@@ -240,7 +258,10 @@ def main():
                     print(row['node_name'])
         else:
             for row in records:
-                print(row['node_name'])
+                if results.X != None:
+                    print(row[0])
+                else:
+                    print(row['node_name'])
 
     if results.space != None:
         if results.X != None:
@@ -253,7 +274,10 @@ def main():
                     print(row['node_name'],end=" ")
         else:
             for row in records:
-                print(row['node_name'],end=" ")
+                if results.X != None:
+                    print(row[0], end = " ")
+                else: 
+                    print(row['node_name'],end=" ")
         print()
 
     if results.V != None:
