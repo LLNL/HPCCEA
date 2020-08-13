@@ -30,8 +30,8 @@
 - Otherwise
    - `git clone https://github.com/LLNL/HPCCEA.git`
    - `git checkout gendersteam`
-   - `cd HPCCEA/2020/Genders/genders_pkg`
-   - `pip3 install -e . `
+- `cd HPCCEA/2020/Genders/genders_pkg`
+- `pip3 install -e . `
 
 ## mySQL server set up 
 
@@ -53,5 +53,3 @@
 7. `run python3 -m centralgendersdatabase --password` 
 8. This will promt you to add in the offical password 
 9. Now tool can be run "passwordlessly" by all users 
-
-
