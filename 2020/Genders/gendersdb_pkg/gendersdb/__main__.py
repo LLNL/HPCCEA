@@ -57,6 +57,14 @@ def connectDatabase():
                 print ("Command skipped: ", e)
     return mydb
 
+def allNodes(mydb):
+    sql = "SELECT DISTINCT node_name FROM NODE"
+    cur = mydb.cursor(buffered=True,dictionary=True)
+    cur.execute(sql)
+    records = cur.fetchall()
+    return records
+
+#TWO FIND NODES METHODS ... delete?
 def findNodes(mydb,gender_namei):
     sql = "SELECT DISTINCT n.node_name FROM NODE n JOIN CONFIGURATION c WHERE (n.node_name = c.node_name AND c.gender_name = %s )"
     val = (gender_namei,)
@@ -159,7 +167,8 @@ def main():
     
     parser.add_argument('-U',help='V will only output unique values')
     
-    parser.add_argument('-X',nargs='*',help='exlcude node from query')
+    parser.add_argument('-A', action='store_true', help='prints all nodes in the desired format')
+    parser.add_argument('-X',nargs='*',help='exclude node from query')
 
     parser.add_argument('-XX',nargs='*',help='exlcude node from query')
     
@@ -172,6 +181,7 @@ def main():
     mydb = connectDatabase() #If the database doesn't exist
     if results.load:
         loaddata.loaddata(mydb)
+    #pdb.set_trace()
     if results.hostlist != None:
         finLi = []
         records = []
@@ -185,6 +195,8 @@ def main():
             for row in record:
                 if row['node_name'] != results.XX[0]:
                     records.append(row)
+        elif results.A: 
+            records = allNodes(mydb)
         else:
             records = findNodes(mydb,str(results.hostlist[0]))
         if (len(records)) > 0:
