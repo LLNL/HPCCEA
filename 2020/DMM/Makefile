@@ -18,6 +18,9 @@ matrixUtil.o: matrixUtil.c matrixUtil.h
 main_multiply.o: main_multiply.c
 	$(CC) $(CFLAGS) -c main_multiply.c
 
+run_first:
+	./first_program
+
 run_multiply:
 	./multiply $(N) test_cases/x$(N) test_cases/y$(N) test_cases/a$(N) 0
 
