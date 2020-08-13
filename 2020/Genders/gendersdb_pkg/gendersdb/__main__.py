@@ -154,9 +154,9 @@ def main():
 
     parser.add_argument('-c',nargs='*',help='prints list of nodes having specified attribute in comma seperated format',action='store',dest='comma')
     
-    parser.add_argument('-n',nargs=1,help='prints list of nodes having specified attribute in newline separated list',action='store',dest='newline')
+    parser.add_argument('-n',nargs='*',help='prints list of nodes having specified attribute in newline separated list',action='store',dest='newline')
     
-    parser.add_argument('-s',nargs=1,help='prints list of nodes having specified attribute in space separated list',action='store',dest='space')
+    parser.add_argument('-s',nargs='*',help='prints list of nodes having specified attribute in space separated list',action='store',dest='space')
     parser.add_argument('-v', metavar = ('node', 'attr'), nargs = '+', help='outputs values associated with gender on a particular node')
     
     parser.add_argument('-vv',nargs=1,help='outputs values associated with gender and with node listed',action='store',dest='valuesWnodes')
@@ -181,7 +181,6 @@ def main():
     mydb = connectDatabase() #If the database doesn't exist
     if results.load:
         loaddata.loaddata(mydb)
-    #pdb.set_trace()
     if results.hostlist != None:
         finLi = []
         records = []
@@ -245,6 +244,8 @@ def main():
         finLi = []
         if results.X != None:
             records = X(results.comma[0], results.X[0], mydb)
+        elif results.A:
+            records = allNodes(mydb)
         else: 
             records = findNodes(mydb,str(results.comma[0]))
         if results.XX != None:
@@ -262,6 +263,8 @@ def main():
     if results.newline != None:
         if results.X != None:
             records = X(results.newline[0], results.X[0], mydb)
+        elif results.A:
+            records = allNodes(mydb)
         else: 
             records = findNodes(mydb,str(results.newline[0]))
         if results.XX != None:
@@ -278,6 +281,8 @@ def main():
     if results.space != None:
         if results.X != None:
             records = X(results.space[0], results.X[0], mydb)
+        elif results.A: 
+            records = allNodes(mydb)
         else:
             records = findNodes(mydb,str(results.space[0]))
         if results.XX != None:
