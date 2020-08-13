@@ -339,13 +339,15 @@ def main():
         records = getVals(mydb,*results.valuesWnodes)
         for row in records:
             print(row['node_name']," ",row['val'])
-            if results.l != None:
-                if len(results.l) > 0:
-                    findGenders(mydb,*results.l)
-                else:
-                    records = allGenders(mydb)
-                    for row in records:
-                        print(row['gender_name'])
+            
+    if results.l != None:
+        if len(results.l) > 0:
+            findGenders(mydb,*results.l)
+        else:
+            records = allGenders(mydb)
+            for row in records:
+                print(row['gender_name'])
+
     if results.descrip != None:
         cursor = mydb.cursor()
         gender = results.descrip[0]
