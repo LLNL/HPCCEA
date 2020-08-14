@@ -1,0 +1,9 @@
+#Definition
+clusta[1-3]        altname=nisha,cluster=clust,lcschedcluster=clust
+
+# Facility
+clusta[1-3]        archive_zone=green,lab=llnl,center=green,arena=attb
+
+# Hardware
+clusta[1-3]        rdma,sol_port=ttyS1,console=ttyS1,model=R720
+

@@ -1,0 +1,14 @@
+# mgmt
+clustb[1]       mgmt,pdsh_all_skip,psacct
+clustb[1]       sshd
+clustb[1]       dhcpd,tftp,nfs,nfs-server
+clustb[1]       hosts_allow=arena
+
+
+# Login
+clustb[2-3]     login
+clustb[2-3]     crond,psacct,sshd,cups
+clustb[2-3]     hosts_allow=arena
+# Also NAT router nodes for student clusters, etc
+clustb[2-3]     gw,ipforw,iptables
+
