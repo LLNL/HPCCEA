@@ -50,6 +50,6 @@
 4. enter copied password 
 5. `SET GLOBAL validate_password.policy=LOW;`
 6. exit mySQL server
-7. `run python3 -m centralgendersdatabase --password` 
+7. run `gendersdb -password`
 8. This will promt you to add in the offical password 
 9. Now tool can be run "passwordlessly" by all users 
