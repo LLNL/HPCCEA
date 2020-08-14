@@ -43,5 +43,7 @@ X * Y = A
 
 
 Code to access MSRs are in msrUtil.c
+
 Code to read in matrices in matrixUtil.c
+
 Code in msr_safe.h is from LLNL/msr-safe
