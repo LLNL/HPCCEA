@@ -1,5 +1,8 @@
 # Further Development 
 
+## Style
+- Generally need to change `if (not) (x in y)` to `if (x not in y)`
+
 ## Nodeattr Options that Haven't Been Implemented Yet
 
 - q logic
