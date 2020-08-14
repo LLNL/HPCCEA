@@ -28,6 +28,9 @@ comma seperated: -c
 space seperated: -s
 newline seprated: -n
 
+' gendersdb -Q [attr] `
+Will set environment variables based on existance. If attr is in the database it will return 0, otherwise it will return 1 
+
 #Additional modifications 
 All of the above qeurying options can be modified to refine the query
 
@@ -38,7 +41,22 @@ This will return all of the nodes that have the specified attribute but not the 
 This will return all of the nodes that have a specified attribute but not be a particular node
 
 ` gendersdb -q -A `
-This will return all of the attributes that exist in the database
+This will return all of the nodes that exist in the database
 
-#Getting values
+# Getting values
+` gendersdb -v [attr] [node]`
+This will return all of the values of an attribute that exist on a node. If you do not pass a node name the local node will be assumed.
+
+` gendersdb -V [attr] `
+Will print all of the values of an attribute that exist on database.
+` gendersdb -V -U [attr] `
+Will only print unique values of an attribute that exist on databse.
+` gendersdb -vv [attr] `
+Same as -V exept that it prints the node name with it
+
+# more
+
+` gendersdb -l [node]`
+If node is specified will print all of the genders on a node,otherwise all of the genders in database.
+
 
