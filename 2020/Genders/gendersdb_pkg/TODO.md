@@ -1,5 +1,8 @@
 # Further Development 
 
+## Style
+- Generally need to change `if (not) (x in y)` to `if (x not in y)`
+
 ## Nodeattr Options that Haven't Been Implemented Yet
 - h run automatically
 Help wil run with you right -h but not if there is not arugments given at all

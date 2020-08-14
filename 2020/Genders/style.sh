@@ -14,3 +14,5 @@ black $SCRIPT
 # W503: Line break occurred before a binary operator
 # Line length == 88 is what black uses
 flake8 --ignore=E231,E501,W503 --max-line-length=88 $SCRIPT
+
+# Created by Mike Gilbert
