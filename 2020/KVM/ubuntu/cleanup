@@ -1,0 +1,4 @@
+ virsh destroy ubuntutest
+ virsh undefine ubuntutest
+ rm  -f /var/lib/libvirt/images/ubuntutest.qcow2 
+

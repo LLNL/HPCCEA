@@ -1,0 +1,13 @@
+name=openSUSE_15_2
+ram=2048
+vcpus=2
+os_variant=linux
+location=/var/lib/libvirt/boot/openSUSE-Leap-15.2-DVD-x86_64-Current.iso
+graphics=nographics
+disk_path=/var/lib/libvirt/images/openSUSE_15_2.qcow2
+disk_size=8
+disk_bus=virtio
+disk_format=qcow2
+network="bridge=br1"
+autoyast=file:/root/autoinst.xml
+extra_args="console=ttyS0"

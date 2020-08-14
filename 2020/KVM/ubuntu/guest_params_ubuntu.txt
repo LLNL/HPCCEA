@@ -1,0 +1,12 @@
+name=ubuntu18_04
+ram=2048
+vcpus=2
+os_variant=ubuntu18.04
+location=http://archive.ubuntu.com/ubuntu/dists/bionic/main/installer-amd64/
+graphics=nographics
+disk_path=/var/lib/libvirt/images/ubuntu18_04.qcow2
+disk_size=8
+disk_bus=virtio
+disk_format=qcow2
+network="bridge=br1"
+extra_args=console=ttyS0
