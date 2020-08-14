@@ -14,7 +14,7 @@ import hostlist
 
 config = {
   'user': 'root',
-  'password': 'MyNewPass',  # EDIT WITH YOUR PASSWORD
+  'password': # EDIT WITH YOUR PASSWORD
   'host': 'localhost',
   'database': 'gender'
 }
