@@ -7,4 +7,6 @@ The tool can be found [here](https://github.com/chaos/genders).
 
 With the genders tool, information can only be queried locally with the *nodeattr* tool. We designed this database in order to allow engineers to access this information for multiple clusters from anywhere in the system. 
 
+Our final package is in the Genders/gendersdb_pkg/ folder! 
+
 This was developed by Nisha Prabhakar and Meghan Utter during their summer 2020 HPC Cluster Enginnering Academy Internship. Mike Gilbert and Jason Shortino served as our mentors. 
