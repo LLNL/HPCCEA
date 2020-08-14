@@ -1,0 +1,13 @@
+name=guest_w_net
+ram=1024
+vcpus=2
+os_variant=centos7.0
+location=/var/lib/libvirt/boot/CentOS-7-x86_64-DVD-2003.iso
+graphics=nographics
+disk_path=/var/lib/libvirt/images/guest_w_net.qcow2
+disk_size=8
+disk_bus=virtio
+disk_format=qcow2
+network="bridge=br1"
+initrd_inject=/root/anaconda-ks.cfg
+extra_args="console=ttyS0 ks=file:/anaconda-ks.cfg"

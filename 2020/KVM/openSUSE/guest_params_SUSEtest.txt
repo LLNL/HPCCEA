@@ -1,0 +1,12 @@
+name=SUSEtest
+ram=2048
+vcpus=2
+os_variant=linux
+location=/var/lib/libvirt/boot/openSUSE-Leap-15.2-DVD-x86_64-Current.iso
+graphics=nographics
+disk_path=/var/lib/libvirt/images/SUSEtest.qcow2
+disk_size=8
+disk_bus=virtio
+disk_format=qcow2
+network="bridge=br1"
+extra_args="console=ttyS0 ip=192.168.95.55::192.168.95.1:255.255.255.0::eth0:none"
