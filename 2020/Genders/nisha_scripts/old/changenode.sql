@@ -1,7 +1,0 @@
-use gender;
-
-ALTER TABLE CONFIGURATION
-ADD CONSTRAINT deletenode
-    FOREIGN KEY (node_name)
-    REFERENCES NODE (node_name) 
-    ON DELETE CASCADE;
