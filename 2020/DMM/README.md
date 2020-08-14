@@ -42,6 +42,6 @@ X * Y = A
 
 
 
-Code to acces MSRs are in msrUtil.c
+Code to access MSRs are in msrUtil.c
 
 Code in msr_safe.h is from LLNL/msr-safe
