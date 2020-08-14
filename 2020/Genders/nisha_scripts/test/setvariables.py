@@ -1,3 +1,4 @@
+# Test setting environment variables in python
 # UPDATE -----------
 # ERROR: doesn't work the same as exporting the variables in bash - create a driver script instead + debug
 import os
