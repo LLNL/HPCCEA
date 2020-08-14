@@ -14,7 +14,7 @@ def connectDatabase():
 	#I think I want to look into making that passwordless since this would
 	#only work on boron2
 
-        mydb = mysql.connector.connect( host="localhost",user="root",password="Puffyf15", database="gender")
+        mydb = mysql.connector.connect( host="localhost",user="root",password="", database="gender")#put your password here
 	
         if mydb.is_connected():
             print('Connected to MySQL database')
