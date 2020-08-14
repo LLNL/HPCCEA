@@ -43,7 +43,7 @@ This will return all of the nodes that have a specified attribute but not be a p
 ` gendersdb -q -A `
 This will return all of the nodes that exist in the database
 
-#Getting values
+# Getting values
 ` gendersdb -v [attr] [node]`
 This will return all of the values of an attribute that exist on a node. If you do not pass a node name the local node will be assumed.
 
@@ -54,7 +54,7 @@ Will only print unique values of an attribute that exist on databse.
 ` gendersdb -vv [attr] `
 Same as -V exept that it prints the node name with it
 
-#more
+# more
 
 ` gendersdb -l [node]`
 If node is specified will print all of the genders on a node,otherwise all of the genders in database.
