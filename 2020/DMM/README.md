@@ -38,3 +38,10 @@ make run_multiply N=4
 ```
 where N is the size of the matrix, which are available in the test_cases folder
 X * Y = A
+
+
+
+
+Code to acces MSRs are in msrUtil.c
+
+Code in msr_safe.h is from LLNL/msr-safe
