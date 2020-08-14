@@ -115,6 +115,12 @@ def findGenders(mydb,node_namei):
     records = cur.fetchall()
     return records
 
+def findGendersandValues(mydb, node_namei):
+    query = ("SELECT gender_name, val FROM CONFIGURATION WHERE node_name=%s")
+    cursor = mydb.cursor()
+    cursor.execute(query, (node_namei,))
+    return cursor.fetchall()
+
 def allGenders(mydb):
     sql = "SELECT DISTINCT gender_name FROM GENDER"
     cur = mydb.cursor(buffered=True, dictionary=True)
@@ -341,11 +347,17 @@ def main():
             print(row['node_name']," ",row['val'])
             
     if results.l != None:
-        if len(results.l) > 0:
-            findGenders(mydb,*results.l)
+        if len(results.l) == 1:
+            records = findGendersandValues(mydb,*results.l)
         else:
             records = allGenders(mydb)
-            for row in records:
+        for row in records:
+            if len(results.l) == 1:
+                if (row[1] == None): 
+                    print(row[0])
+                else: 
+                    print(row[0] + "=" + row[1])
+            else: 
                 print(row['gender_name'])
 
     if results.descrip != None:
