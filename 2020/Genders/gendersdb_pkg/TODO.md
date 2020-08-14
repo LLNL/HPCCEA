@@ -1,7 +1,8 @@
 # Further Development 
 
 ## Nodeattr Options that Haven't Been Implemented Yet
-
+- h run automatically
+Help wil run with you right -h but not if there is not arugments given at all
 - q logic
     - -q &&
     - -q ||
