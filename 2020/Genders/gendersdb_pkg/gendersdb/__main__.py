@@ -341,12 +341,12 @@ def main():
             print(row['node_name']," ",row['val'])
             
     if results.l != None:
-        if len(results.l) > 0:
-            findGenders(mydb,*results.l)
+        if len(results.l) == 1:
+            records = findGenders(mydb,*results.l)
         else:
             records = allGenders(mydb)
-            for row in records:
-                print(row['gender_name'])
+        for row in records:
+            print(row['gender_name'])
 
     if results.descrip != None:
         cursor = mydb.cursor()
