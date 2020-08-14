@@ -41,7 +41,7 @@ This will return all of the nodes that have the specified attribute but not the 
 This will return all of the nodes that have a specified attribute but not be a particular node
 
 ` gendersdb -q -A `
-This will return all of the attributes that exist in the database
+This will return all of the nodes that exist in the database
 
 #Getting values
 ` gendersdb -v [attr] [node]`
@@ -53,5 +53,10 @@ Will print all of the values of an attribute that exist on database.
 Will only print unique values of an attribute that exist on databse.
 ` gendersdb -vv [attr] `
 Same as -V exept that it prints the node name with it
+
+#more
+
+` gendersdb -l [node]`
+If node is specified will print all of the genders on a node,otherwise all of the genders in database.
 
 
