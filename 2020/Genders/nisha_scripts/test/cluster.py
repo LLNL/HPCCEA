@@ -1,6 +1,8 @@
 #!/usr/bin/bash
 import pdb
 
+# Testing grouping a list of nodes into lists of nodes separated by cluster
+
 def cluster(nodes):
         clusters = []
         clustered_nodes = []
