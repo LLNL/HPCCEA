@@ -29,7 +29,7 @@ def connectDatabase():
 	#if it does not exists runs createAll.sql script 
     except Error as e: 
         print(e)
-        mydb = mysql.connector.connect( host="localhost", user="root", password="Puffyf15" )
+        mydb = mysql.connector.connect( host="localhost", user="root", password="" )#put your pasword here
         cursor = mydb.cursor(buffered=True , dictionary=True)
 		# Open and read the file as a single buffer
         fd = open('createALL.sql', 'r')
