@@ -53,3 +53,5 @@
 7. run `gendersdb -password`
 8. This will promt you to add in the offical password 
 9. Now tool can be run "passwordlessly" by all users 
+
+#### Note: Run commands inside the `gendersdb` folder.
