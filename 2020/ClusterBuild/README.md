@@ -2,7 +2,7 @@
 
 ## Description of work flow
 
-- Kickstart mamagement node
+- Kickstart management node
 
 - clone this repo on to newly install managemnet node
 
