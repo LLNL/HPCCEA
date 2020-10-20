@@ -101,7 +101,7 @@
         state: started
         name: slurmctld
 
-- name: "start slurm"
+- name: "start slurm on compute"
   hosts: compute
   gather_facts: no
   tasks:
