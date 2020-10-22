@@ -1,0 +1,23 @@
+---
+
+- name: "Update default file"
+  hosts: localhost
+  tasks:
+    - name: Setup Infiniband interface
+      copy:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-ib0"
+        content: |
+            TYPE=infiniband
+            DEVICE=ib0
+            BOOTPROTO=static
+            NAME=ib0
+            ONBOOT=yes
+            IPADDR={{IB_IP}}1  # change this to match your network
+            NETMASK=255.255.224.0
+            CONNECTED_MODE=yes
+
+    - name: bring interface down
+      command: ifdown ib0
+
+    - name: bring interface up
+      command: ifup ib0

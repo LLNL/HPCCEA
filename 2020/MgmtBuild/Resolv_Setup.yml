@@ -1,0 +1,12 @@
+#Working on doing this with a script
+---
+- hosts: localhost
+  tasks:
+  - name: Add doman to resolv.conf
+    lineinfile:
+      path: /etc/resolv.conf
+      line: 'domain llnl.gov'
+  - name: Add name server to resolv.conf
+    lineinfile:
+      path: /etc/resolv.conf
+      line: 'nameserver 192.12.17.17'

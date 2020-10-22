@@ -1,0 +1,9 @@
+---
+- name: setup syslinux for PXE network boot server
+  hosts: localhost
+  tasks:
+    - name: copy contents of syslinux to /tftpboot
+      copy:
+        src: /usr/share/syslinux/
+        dest: /tftpboot
+

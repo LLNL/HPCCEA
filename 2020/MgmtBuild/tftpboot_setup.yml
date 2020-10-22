@@ -1,0 +1,43 @@
+---
+
+- name: set up tftpboot
+  hosts: localhost
+  tasks:
+    - name: create new partition
+      parted:
+        device: /dev/sdb
+        label: gpt
+
+    - name: create primary partition
+      parted:
+        device: /dev/sdb
+        number: 1
+        part_type: primary
+        part_start: 0%
+        part_end: 100%
+        state: present
+
+    - name: create xfs filesystem
+      filesystem:
+        fstype: xfs
+        dev: /dev/sdb1
+        force: yes
+
+    - name: make tftpboot directory
+      file:
+        path: /tftpboot
+        state: directory
+        mode: '0755'
+
+    - name: add to /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "/dev/sdb1        /tftpboot   xfs     defaults        0 0"
+
+    - name: mount /tftpboot
+      mount:
+        path: /tftpboot
+        src: /dev/sdb1
+        fstype: xfs
+        state: mounted
+

@@ -1,0 +1,79 @@
+- name: Populate /tftpboot
+  hosts: localhost
+  tasks:
+    - name: Download CentOS ISO
+      get_url:
+        url: http://linux.mirrors.es.net/centos/7/isos/x86_64/CentOS-7-x86_64-DVD-2003.iso
+        dest: /tmp/CentOS-7-x86_64-DVD-2003.iso
+        mode: '0444'
+
+    # note ansible mount module manipulates /etc/fstab, not what we want in this case
+    - name: Mount iso 
+      command: mount -o loop /tmp/CentOS-7-x86_64-DVD-2003.iso /mnt
+      args:
+        warn: no
+
+    - name: Create CentOS7 dir in /tftpboot
+      file:
+        path: /tftpboot/centos7
+        state: directory
+
+    - name: Copy CentOS7 image to new dir
+      copy:
+        src: /mnt/images/pxeboot/initrd.img
+        dest: /tftpboot/centos7
+
+    - name: Copy CentOS7 kernel to new dir
+      copy:
+        src: /mnt/images/pxeboot/vmlinuz
+        dest: /tftpboot/centos7
+
+    - name: Edit vsftpd.conf ('listen=YES')
+      lineinfile:
+        path: /etc/vsftpd/vsftpd.conf
+        regexp: 'listen='
+        line: 'listen=YES'
+
+    - name: Edit vsftpd.conf ('listen_ipv6=NO')
+      lineinfile:
+        path: /etc/vsftpd/vsftpd.conf
+        regexp: 'listen_ipv6='
+        line: 'listen_ipv6=NO'
+
+    - name: Edit vsftpd.conf ('anon_root=/tftpboot/ftp')
+      lineinfile:
+        path: /etc/vsftpd/vsftpd.conf
+        regexp: 'anon_root='
+        line: 'anon_root=/tftpboot/ftp'
+
+    - name: Create /ftp/pub dir in /tftpboot
+      file:
+        path: /tftpboot/ftp/pub
+        state: directory
+        recurse: yes # Trying this to see if it will create parent dirs too
+
+    - name: Copy files from /mnt/ to new dir
+      shell: cp -r /mnt/* /tftpboot/ftp/pub  # Easiest to use shell to copy dir contents
+
+    - name: Change permissions for new dir
+      file:
+        path: /tftpboot/ftp/pub
+        mode: "0755"
+        recurse: yes
+
+    - name: Enable and start vsftpd
+      systemd:
+        enabled: yes
+        state: started
+        name: vsftpd 
+
+    - name: Fix SElinux security measures
+      shell: restorecon -Rv /tftpboot
+
+    - name: Fix ftp issues
+      shell: chcon -R -t public_content_t /tftpboot
+
+    # note ansible mount module manipulates /etc/fstab, not what we want in this case
+    - name: Mount iso 
+      command: umount  /mnt
+

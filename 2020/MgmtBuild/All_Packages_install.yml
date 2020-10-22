@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  tasks:
+    - yum:
+        name:
+          - wget
+          - ftp
+          - tftp
+          - dhcp
+          - syslinux
+          - tftp-server
+          - vsftpd
+          - xinetd
+          - pykickstart
+          - ntp
+          - ntpdate
+          - iptables-services
+          - pdsh
+          - libibverbs-utils
+          - infiniband-diags
+          - ibutils
+          - perftest
+          - libmlx4
+          - libibverbs
+          - opensm
+          - net-tools
+          - openmpi
+          - openmpi-devel
+          - freeipmi
+          - powerman
+          - conman
+          - rpm-build
+          - bzip2-devel
+          - perl-ExtUtils-MakeMaker
+          - perl-Switch
+          - openssl
+          - openssl-devel
+          - pam-devel
+          - readline-devel
+          - mariadb-server
+          - mariadb-devel
+          - nfs-utils
+          - libnfs-utils
+          - vim 
+          - epel-release
+          - git
+        state: installed

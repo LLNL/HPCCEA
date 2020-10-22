@@ -1,0 +1,76 @@
+---
+# installs and starts ntp service on all nodes
+- hosts: localhost
+  tasks:
+    - name: setup em2:1
+      copy:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-em2:1"
+        content: |
+           BOOTPROTO=static
+           TYPE=Ethernet
+           NAME=em2:1
+           DEVICE=em2:1
+           ONBOOT=yes
+           IPADDR={{ em21 }}1
+           NETMASK=255.255.255.0
+
+    - name: bring up em2:1
+      command: ifup em2:1
+
+    - name: powerman config file
+      copy:
+        dest: "/etc/powerman/powerman.conf"
+        content: |
+           include "/etc/powerman/ipmipower.dev"
+           
+           listen "127.0.0.1:10101"
+           
+           ###device for ipmipower
+           device  "ipmi0"  "ipmipower"  "/usr/sbin/ipmipower -h  p[2-5] -u root -p root |&"
+           
+           ####nodes for ipmipower make sure to all all valid nodes
+           node  "{{ cluster_name }}2"   "ipmi0"  "p2"
+           node  "{{ cluster_name }}3"   "ipmi0"  "p3"
+           node  "{{ cluster_name }}4"   "ipmi0"  "p4"
+           node  "{{ cluster_name }}5"   "ipmi0"  "p5"
+
+    - name: make powerman directory
+      file:
+        path: /var/run/powerman
+        state: directory
+        mode: "0755"
+        owner: "daemon"
+        group: "daemon"
+
+    - name: conman config file
+      copy:
+        dest: "/etc/conman.conf"
+        content: |   
+           SERVER keepalive=ON
+           SERVER logdir="/var/log/conman"
+           SERVER logfile="/var/log/conman.log"
+           SERVER loopback=ON
+           SERVER pidfile="/var/run/conman.pid"
+           SERVER resetcmd="powerman -0 %N; sleep 3; powerman -1 %N"
+           SERVER timestamp=1h
+           SERVER nofile=60
+           GLOBAL seropts="115200,8n1"
+           GLOBAL log="console.%N"
+           GLOBAL logopts="sanitize,timestamp"
+           
+           CONSOLE name="{{ cluster_name }}2"      dev="ipmi:p2" ipmiopts="W:solpayloadsize,U:root,P:root"
+           CONSOLE name="{{ cluster_name }}3"      dev="ipmi:p3" ipmiopts="W:solpayloadsize,U:root,P:root"
+           CONSOLE name="{{ cluster_name }}4"      dev="ipmi:p4" ipmiopts="W:solpayloadsize,U:root,P:root"
+           CONSOLE name="{{ cluster_name }}5"      dev="ipmi:p5" ipmiopts="W:solpayloadsize,U:root,P:root"
+
+    - name: start powerman
+      systemd:
+        name: powerman
+        state: started
+        enabled: yes
+
+    - name: start conman
+      systemd:
+        name: conman
+        state: started
+        enabled: yes

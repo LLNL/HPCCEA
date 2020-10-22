@@ -1,0 +1,31 @@
+---
+# installs iptables
+- hosts: localhost
+  tasks:
+    - name: Turnoff firewall
+      command: systemctl stop firewalld
+    
+    - name: Disable firewall
+      command: systemctl disable firewalld
+    
+    - name: add IP forwarding 
+      command: sysctl -w net.ipv4.ip_forward=1
+    
+    - name: setup IP forwarding for reboot
+      copy:
+        dest: "/etc/sysconfig/sysctl.conf"
+        content: net.ipv4.ip_forward = 1
+
+    - name: Setup Ip tables
+      copy:
+        dest: "/etc/sysconfig/iptables"
+        content: |
+           *nat
+           -A POSTROUTING -s {{mgmt_network}}0/24 -o em1 -j SNAT --to-source {{ mgmt_ip }}
+           COMMIT
+
+    - name: start iptables
+      systemd:
+        name: iptables
+        state: started
+        enabled: yes

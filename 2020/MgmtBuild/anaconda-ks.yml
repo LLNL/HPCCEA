@@ -1,0 +1,109 @@
+---
+
+- hosts: localhost
+  tasks:
+   - name: anaconda.cfg
+     copy:
+       dest: "/tftpboot/ftp/pub/anaconda-ks.cfg"
+       content: |
+          #version=DEVEL
+          # System authorization information
+            auth --enableshadow --passalgo=sha512
+          # Install OS instead of upgrade
+          install
+          cmdline
+          # Run the Setup Agent on first boot
+          firstboot --enable
+          ignoredisk --only-use=sda,sdb,sdc,sdd,sde,sdf
+          # Keyboard layouts
+          keyboard --vckeymap=us --xlayouts='us'
+          # System language
+          lang en_US.UTF-8
+          
+          # Network information
+          network  --bootproto=dhcp --device=em1 --ipv6=auto --no-activate
+          network  --bootproto=dhcp --hostname=localhost.localdomain
+          # Reboot after installation
+          reboot
+          # Use network installation
+          url --url="ftp://ftp:ftp@{{ mgmt_ip_address }}1/pub"
+          # Root password
+          rootpw --plaintext {{ root_password }}
+          # System services
+          services --disabled="chronyd"
+          # Do not configure the X Window System
+          skipx
+          # System timezone
+          timezone America/Los_Angeles --isUtc --nontp
+          # System bootloader configuration
+          bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=sda
+          autopart --type=lvm
+          # Partition clearing information
+          clearpart --all --initlabel
+          
+          %packages
+          @^minimal
+          @core
+          kexec-tools
+          kexec-tools
+          
+          %end
+          
+          %addon com_redhat_kdump --enable --reserve-mb='auto'
+          
+          %end
+          
+          %post
+          yum install -y wget 
+          wget -P /etc/ ftp://{{ mgmt_ip_address }}1/pub/hosts
+          wget -P /etc/ ftp://{{ mgmt_ip_address }}1/pub/resolv.conf
+          mv /etc/hosts.1 /etc/hosts
+          mv /etc/resolv.conf.1 /etc/resolv.conf
+          mkdir /root/.ssh
+          touch /root/.ssh/authorized_keys
+          wget -P /root/.ssh/ ftp://{{ mgmt_ip_address }}1/pub/id_rsa.pub
+          wget -P /root/.ssh/ ftp://{{ mgmt_ip_address }}1/pub/id_rsa
+          mv /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+          %end
+          
+          %anaconda
+          pwpolicy root --minlen=6 --minquality=50 --notstrict --nochanges --notempty
+          pwpolicy user --minlen=6 --minquality=50 --notstrict --nochanges --notempty
+          pwpolicy luks --minlen=6 --minquality=50 --notstrict --nochanges --notempty
+          %end
+
+   - name: SSH Key
+     openssh_keypair:
+       path: "~/.ssh/id_rsa"
+       type: rsa
+       owner: root
+       size: 4096
+       state: present
+       force: yes
+   - name: move key into authorized keys
+     shell: cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+
+   - name: Chcon for anaconda file
+     command: chcon -t public_content_t /tftpboot/ftp/pub/anaconda-ks.cfg
+
+   - name: perms for rsa id
+     file:
+       path: /root/.ssh/id_rsa
+       mode: "0600"
+
+   - name: perms for rsa id pub
+     file:
+       path: /root/.ssh/id_rsa.pub
+       mode: "0600"
+
+   - name: Copy hosts to pub. 
+     command: cp /etc/hosts /tftpboot/ftp/pub
+
+   - name: Copy rsa id to pub. 
+     command: cp /root/.ssh/id_rsa /tftpboot/ftp/pub
+
+   - name: Copy public key to pub. 
+     command: cp /root/.ssh/id_rsa.pub /tftpboot/ftp/pub
+
+   - name: Copy resolv.conf to pub. 
+     command: cp /etc/resolv.conf /tftpboot/ftp/pub

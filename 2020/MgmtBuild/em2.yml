@@ -1,0 +1,20 @@
+---
+# installs and starts ntp service on all nodes
+- hosts: localhost
+  tasks:
+    - name: setup em2
+      copy:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-em2"
+        content: |
+           TYPE=Ethernet
+           BOOTPROTO=static
+           DEFROUTE=yes
+           NAME=em2
+           DEVICE=em2
+           ONBOOT=yes
+           IPADDR={{ em2 }}1
+           NETMASK=255.255.255.0
+
+    - name: bring up em2
+      command: ifup em2
+
