@@ -1,0 +1,218 @@
+
+.TH FENCE_AGENT 8 2009-10-20 "fence_mpath (Fence Agent)"
+.SH NAME
+fence_mpath - Fence agent for multipath persistent reservation
+.SH DESCRIPTION
+.P
+fence_mpath is an I/O fencing agent that uses SCSI-3 persistent reservations to control access multipath devices. Underlying devices must support SCSI-3 persistent reservations (SPC-3 or greater) as well as the "preempt-and-abort" subcommand.
+The fence_mpath agent works by having an unique key for each pair of node and device that has to be set also in /etc/multipath.conf. Once registered, a single node will become the reservation holder by creating a "write exclusive, registrants only" reservation on the device(s). The result is that only registered nodes may write to the device(s). When a node failure occurs, the fence_mpath agent will remove the key belonging to the failed node from the device(s). The failed node will no longer be able to write to the device(s). A manual reboot is required.
+.P
+fence_mpath accepts options on the command line as well
+as from stdin. Fenced sends parameters through stdin when it execs the
+agent. fence_mpath can be run by itself with command
+line options.  This is useful for testing and for turning outlets on or off
+from scripts.
+
+Vendor URL: https://www.sourceware.org/dm/
+.SH PARAMETERS
+
+	
+.TP
+.B -o, --action=[action]
+. 
+Fencing action (Default Value: off)
+	
+.TP
+.B -d, --devices=[devices]
+. 
+List of devices to use for current operation. Devices can be comma-separated list of device-mapper multipath devices (eg. /dev/mapper/3600508b400105df70000e00000ac0000 or /dev/mapper/mpath1). Each device must support SCSI-3 persistent reservations. This parameter is always required.
+	
+.TP
+.B -k, --key=[key]
+. 
+Key to use for the current operation. This key should be unique to a node and have to be written in /etc/multipath.conf. For the "on" action, the key specifies the key use to register the local node. For the "off" action, this key specifies the key to be removed from the device(s). This parameter is always required.
+	
+.TP
+.B -v, --verbose
+. 
+Verbose mode
+	
+.TP
+.B -D, --debug-file=[debugfile]
+. 
+Write debug information to given file
+	
+.TP
+.B -V, --version
+. 
+Display version information and exit
+	
+.TP
+.B -h, --help
+. 
+Display help and exit
+	
+.TP
+.B --delay=[seconds]
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B --login-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B --mpathpersist-path=[path]
+. 
+Path to mpathpersist binary (Default Value: /usr/sbin/mpathpersist)
+	
+.TP
+.B --power-timeout=[seconds]
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B --power-wait=[seconds]
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 0)
+	
+.TP
+.B --shell-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B --store-path=[path]
+. 
+Path to directory where fence agent can store information (Default Value: /var/run/cluster)
+	
+.TP
+.B --retry-on=[attempts]
+. 
+Count of attempts to retry power on (Default Value: 1)
+	
+.TP
+.B --use-sudo
+. 
+Use sudo (without password) when calling 3rd party software
+	
+.TP
+.B --sudo-path=[path]
+. 
+Path to sudo binary (Default Value: /usr/bin/sudo)
+
+.SH ACTIONS
+
+	
+.TP
+\fBon \fP
+Power on machine.
+	
+.TP
+\fBoff \fP
+Power off machine.
+	
+.TP
+\fBstatus \fP
+This returns the status of the plug/virtual machine.
+	
+.TP
+\fBmonitor \fP
+Check the health of fence device
+	
+.TP
+\fBmetadata \fP
+Display the XML metadata describing this resource.
+	
+.TP
+\fBvalidate-all \fP
+Validate if all required parameters are entered.
+
+.SH STDIN PARAMETERS
+
+	
+.TP
+.B action
+. 
+Fencing action (Default Value: off)
+	
+.TP
+.B devices
+. 
+List of devices to use for current operation. Devices can be comma-separated list of device-mapper multipath devices (eg. /dev/mapper/3600508b400105df70000e00000ac0000 or /dev/mapper/mpath1). Each device must support SCSI-3 persistent reservations. This parameter is always required.
+	
+.TP
+.B key
+. 
+Key to use for the current operation. This key should be unique to a node and have to be written in /etc/multipath.conf. For the "on" action, the key specifies the key use to register the local node. For the "off" action, this key specifies the key to be removed from the device(s). This parameter is always required.
+	
+.TP
+.B verbose
+. 
+Verbose mode
+	
+.TP
+.B debug
+. 
+Write debug information to given file
+	
+.TP
+.B version
+. 
+Display version information and exit
+	
+.TP
+.B help
+. 
+Display help and exit
+	
+.TP
+.B delay
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B login_timeout
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B mpathpersist_path
+. 
+Path to mpathpersist binary (Default Value: /usr/sbin/mpathpersist)
+	
+.TP
+.B power_timeout
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B power_wait
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 0)
+	
+.TP
+.B shell_timeout
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B store_path
+. 
+Path to directory where fence agent can store information (Default Value: /var/run/cluster)
+	
+.TP
+.B retry_on
+. 
+Count of attempts to retry power on (Default Value: 1)
+	
+.TP
+.B sudo
+. 
+Use sudo (without password) when calling 3rd party software
+	
+.TP
+.B sudo_path
+. 
+Path to sudo binary (Default Value: /usr/bin/sudo)

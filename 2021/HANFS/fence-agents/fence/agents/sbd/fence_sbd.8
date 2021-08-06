@@ -1,0 +1,219 @@
+
+.TH FENCE_AGENT 8 2009-10-20 "fence_sbd (Fence Agent)"
+.SH NAME
+fence_sbd - Fence agent for sbd
+.SH DESCRIPTION
+.P
+fence_sbd is I/O Fencing agent which can be used in environments where sbd can be used (shared storage).
+.P
+fence_sbd accepts options on the command line as well
+as from stdin. Fenced sends parameters through stdin when it execs the
+agent. fence_sbd can be run by itself with command
+line options.  This is useful for testing and for turning outlets on or off
+from scripts.
+
+Vendor URL: 
+.SH PARAMETERS
+
+	
+.TP
+.B -o, --action=[action]
+. 
+Fencing action (Default Value: reboot)
+	
+.TP
+.B --devices=[device_a,device_b]
+. 
+SBD Device This parameter is always required.
+	
+.TP
+.B -m, --method=[method]
+. 
+Method to fence (onoff|cycle) (Default Value: cycle)
+	
+.TP
+.B -n, --plug=[id]
+. 
+Physical plug number on device, UUID or identification of machine This parameter is always required.
+	
+.TP
+.B -v, --verbose
+. 
+Verbose mode
+	
+.TP
+.B -D, --debug-file=[debugfile]
+. 
+Write debug information to given file
+	
+.TP
+.B -V, --version
+. 
+Display version information and exit
+	
+.TP
+.B -h, --help
+. 
+Display help and exit
+	
+.TP
+.B -C, --separator=[char]
+. 
+Separator for CSV created by 'list' operation (Default Value: ,)
+	
+.TP
+.B --delay=[seconds]
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B --login-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B --power-timeout=[seconds]
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B --power-wait=[seconds]
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 0)
+	
+.TP
+.B --sbd-path=[path]
+. 
+Path to SBD binary (Default Value: /sbin/sbd)
+	
+.TP
+.B --shell-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B --retry-on=[attempts]
+. 
+Count of attempts to retry power on (Default Value: 1)
+
+.SH ACTIONS
+
+	
+.TP
+\fBon \fP
+Power on machine.
+	
+.TP
+\fBoff \fP
+Power off machine.
+	
+.TP
+\fBreboot \fP
+Reboot machine.
+	
+.TP
+\fBstatus \fP
+This returns the status of the plug/virtual machine.
+	
+.TP
+\fBlist \fP
+List available plugs with aliases/virtual machines if there is support for more then one device. Returns N/A otherwise.
+	
+.TP
+\fBlist-status \fP
+List available plugs with aliases/virtual machines and their power state if it can be obtained without additional commands.
+	
+.TP
+\fBmonitor \fP
+Check the health of fence device
+	
+.TP
+\fBmetadata \fP
+Display the XML metadata describing this resource.
+	
+.TP
+\fBvalidate-all \fP
+Validate if all required parameters are entered.
+
+.SH STDIN PARAMETERS
+
+	
+.TP
+.B action
+. 
+Fencing action (Default Value: reboot)
+	
+.TP
+.B devices
+. 
+SBD Device This parameter is always required.
+	
+.TP
+.B method
+. 
+Method to fence (onoff|cycle) (Default Value: cycle)
+	
+.TP
+.B port
+. 
+Physical plug number on device, UUID or identification of machine This parameter is always required.
+	
+.TP
+.B verbose
+. 
+Verbose mode
+	
+.TP
+.B debug
+. 
+Write debug information to given file
+	
+.TP
+.B version
+. 
+Display version information and exit
+	
+.TP
+.B help
+. 
+Display help and exit
+	
+.TP
+.B separator
+. 
+Separator for CSV created by 'list' operation (Default Value: ,)
+	
+.TP
+.B delay
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B login_timeout
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B power_timeout
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B power_wait
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 0)
+	
+.TP
+.B sbd_path
+. 
+Path to SBD binary (Default Value: /sbin/sbd)
+	
+.TP
+.B shell_timeout
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B retry_on
+. 
+Count of attempts to retry power on (Default Value: 1)

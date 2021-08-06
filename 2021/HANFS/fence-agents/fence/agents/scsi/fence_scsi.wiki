@@ -1,0 +1,25 @@
+
+[=#fence_scsi]
+||='''Fence agent for SCSI persistent reservation''' =||='''fence_scsi''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| action || -o, --action=[action] || {{{off}}} || Fencing action ||
+|| aptpl || -a, --aptpl || {{{}}} || Use the APTPL flag for registrations. This option is only used for the 'on' action. ||
+|| devices || -d, --devices=[devices] || {{{}}} || List of devices to use for current operation. Devices can be comma-separated list of raw devices (eg. /dev/sdc). Each device must support SCSI-3 persistent reservations. ||
+|| key || -k, --key=[key] || {{{}}} || Key to use for the current operation. This key should be unique to a node. For the "on" action, the key specifies the key use to register the local node. For the "off" action, this key specifies the key to be removed from the device(s). ||
+|| nodename || -n, --nodename=[nodename] || {{{}}} || Name of the node to be fenced. The node name is used to generate the key value used for the current operation. This option will be ignored when used with the -k option. ||
+|| logfile || -f, --logfile || {{{}}} || Log output (stdout and stderr) to file ||
+|| verbose || -v, --verbose || {{{}}} || Verbose mode ||
+|| debug || -D, --debug-file=[debugfile] || {{{}}} || Write debug information to given file ||
+|| version || -V, --version || {{{}}} || Display version information and exit ||
+|| help || -h, --help || {{{}}} || Display help and exit ||
+|| delay || --delay=[seconds] || {{{0}}} || Wait X seconds before fencing is started ||
+|| login_timeout || --login-timeout=[seconds] || {{{5}}} || Wait X seconds for cmd prompt after login ||
+|| power_timeout || --power-timeout=[seconds] || {{{20}}} || Test X seconds for status change after ON/OFF ||
+|| power_wait || --power-wait=[seconds] || {{{0}}} || Wait X seconds after issuing ON/OFF ||
+|| shell_timeout || --shell-timeout=[seconds] || {{{3}}} || Wait X seconds for cmd prompt after issuing command ||
+|| retry_on || --retry-on=[attempts] || {{{1}}} || Count of attempts to retry power on ||
+|| corosync-cmap_path || --corosync-cmap-path=[path] || {{{/usr/sbin/corosync-cmapctl}}} || Path to corosync-cmapctl binary ||
+|| sg_persist_path || --sg_persist-path=[path] || {{{/usr/bin/sg_persist}}} || Path to sg_persist binary ||
+|| sg_turs_path || --sg_turs-path=[path] || {{{/usr/bin/sg_turs}}} || Path to sg_turs binary ||
+|| vgs_path || --vgs-path=[path] || {{{/usr/sbin/vgs}}} || Path to vgs binary ||
+
