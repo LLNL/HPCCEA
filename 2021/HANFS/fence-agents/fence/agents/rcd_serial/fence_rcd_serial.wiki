@@ -1,0 +1,18 @@
+
+[=#fence_rcd_serial]
+||='''rcd_serial fence agent''' =||='''fence_rcd_serial''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| action || -o, --action=[action] || {{{reboot}}} || Fencing action ||
+|| method || -m, --method=[method] || {{{cycle}}} || Method to fence ||
+|| serial_port || --serial-port=[port] || {{{/dev/ttyS0}}} || Port of the serial device ||
+|| verbose || -v, --verbose || {{{}}} || Verbose mode ||
+|| debug || -D, --debug-file=[debugfile] || {{{}}} || Write debug information to given file ||
+|| version || -V, --version || {{{}}} || Display version information and exit ||
+|| help || -h, --help || {{{}}} || Display help and exit ||
+|| delay || --delay=[seconds] || {{{0}}} || Wait X seconds before fencing is started ||
+|| login_timeout || --login-timeout=[seconds] || {{{5}}} || Wait X seconds for cmd prompt after login ||
+|| power_timeout || --power-timeout=[seconds] || {{{20}}} || Test X seconds for status change after ON/OFF ||
+|| power_wait || --power-wait=[seconds] || {{{2}}} || Wait X seconds after issuing ON/OFF ||
+|| shell_timeout || --shell-timeout=[seconds] || {{{3}}} || Wait X seconds for cmd prompt after issuing command ||
+|| retry_on || --retry-on=[attempts] || {{{1}}} || Count of attempts to retry power on ||
+

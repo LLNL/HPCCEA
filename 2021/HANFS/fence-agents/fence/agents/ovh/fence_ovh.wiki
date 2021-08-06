@@ -1,0 +1,22 @@
+
+[=#fence_ovh]
+||='''Fence agent for OVH''' =||='''fence_ovh''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| action || -o, --action=[action] || {{{reboot}}} || Fencing action ||
+|| email || -Z, --email=[email] || {{{}}} || Reboot email ||
+|| login || -l, --username=[name] || {{{}}} || Login name ||
+|| passwd || -p, --password=[password] || {{{}}} || Login password or passphrase ||
+|| passwd_script || -S, --password-script=[script] || {{{}}} || Script to run to retrieve password ||
+|| port || -n, --plug=[id] || {{{}}} || Physical plug number on device, UUID or identification of machine ||
+|| verbose || -v, --verbose || {{{}}} || Verbose mode ||
+|| debug || -D, --debug-file=[debugfile] || {{{}}} || Write debug information to given file ||
+|| version || -V, --version || {{{}}} || Display version information and exit ||
+|| help || -h, --help || {{{}}} || Display help and exit ||
+|| separator || -C, --separator=[char] || {{{,}}} || Separator for CSV created by 'list' operation ||
+|| delay || --delay=[seconds] || {{{0}}} || Wait X seconds before fencing is started ||
+|| login_timeout || --login-timeout=[seconds] || {{{5}}} || Wait X seconds for cmd prompt after login ||
+|| power_timeout || --power-timeout=[seconds] || {{{20}}} || Test X seconds for status change after ON/OFF ||
+|| power_wait || --power-wait=[seconds] || {{{0}}} || Wait X seconds after issuing ON/OFF ||
+|| shell_timeout || --shell-timeout=[seconds] || {{{3}}} || Wait X seconds for cmd prompt after issuing command ||
+|| retry_on || --retry-on=[attempts] || {{{1}}} || Count of attempts to retry power on ||
+

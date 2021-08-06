@@ -1,0 +1,347 @@
+
+.TH FENCE_AGENT 8 2009-10-20 "fence_idrac (Fence Agent)"
+.SH NAME
+fence_idrac - Fence agent for IPMI
+.P
+fence_ilo3 - Fence agent for HP iLO3 (symlink)
+
+.P
+fence_ilo4 - Fence agent for HP iLO4 (symlink)
+
+.P
+fence_imm - Fence agent for IBM Integrated Management Module (symlink)
+
+.P
+fence_idrac - Fence agent for Dell iDRAC (symlink)
+
+.SH DESCRIPTION
+.P
+fence_ipmilan is an I/O Fencing agentwhich can be used with machines controlled by IPMI.This agent calls support software ipmitool (http://ipmitool.sf.net/). WARNING! This fence agent might report success before the node is powered off. You should use -m/method onoff if your fence device works correctly with that option.
+.P
+fence_idrac accepts options on the command line as well
+as from stdin. Fenced sends parameters through stdin when it execs the
+agent. fence_idrac can be run by itself with command
+line options.  This is useful for testing and for turning outlets on or off
+from scripts.
+
+Vendor URL: 
+.SH PARAMETERS
+
+	
+.TP
+.B -o, --action=[action]
+. 
+Fencing action (Default Value: reboot)
+	
+.TP
+.B -A, --auth=[auth]
+. 
+IPMI Lan Auth type. (md5|password|none)
+	
+.TP
+.B -C, --cipher=[cipher]
+. 
+Ciphersuite to use (same as ipmitool -C parameter)
+	
+.TP
+.B -4, --inet4-only
+. 
+Forces agent to use IPv4 addresses only
+	
+.TP
+.B -6, --inet6-only
+. 
+Forces agent to use IPv6 addresses only
+	
+.TP
+.B -a, --ip=[ip]
+. 
+IP address or hostname of fencing device
+	
+.TP
+.B -u, --ipport=[port]
+. 
+TCP/UDP port to use for connection with device (Default Value: 623)
+	
+.TP
+.B -P, --lanplus
+. 
+Use Lanplus to improve security of connection (Default Value: 0)
+	
+.TP
+.B -l, --username=[name]
+. 
+Login name
+	
+.TP
+.B -m, --method=[method]
+. 
+Method to fence (onoff|cycle) (Default Value: onoff)
+	
+.TP
+.B -p, --password=[password]
+. 
+Login password or passphrase
+	
+.TP
+.B -S, --password-script=[script]
+. 
+Script to run to retrieve password
+	
+.TP
+.B -n, --plug=[ip]
+. 
+IP address or hostname of fencing device (together with --port-as-ip)
+	
+.TP
+.B -L, --privlvl=[level]
+. 
+Privilege level on IPMI device (callback|user|operator|administrator) (Default Value: administrator)
+	
+.TP
+.B -v, --verbose
+. 
+Verbose mode
+	
+.TP
+.B -D, --debug-file=[debugfile]
+. 
+Write debug information to given file
+	
+.TP
+.B -V, --version
+. 
+Display version information and exit
+	
+.TP
+.B -h, --help
+. 
+Display help and exit
+	
+.TP
+.B --delay=[seconds]
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B --ipmitool-path=[path]
+. 
+Path to ipmitool binary (Default Value: /usr/bin/ipmitool)
+	
+.TP
+.B --login-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B --port-as-ip
+. 
+Make "port/plug" to be an alias to IP address
+	
+.TP
+.B --power-timeout=[seconds]
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B --power-wait=[seconds]
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 2)
+	
+.TP
+.B --shell-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B --retry-on=[attempts]
+. 
+Count of attempts to retry power on (Default Value: 1)
+	
+.TP
+.B --use-sudo
+. 
+Use sudo (without password) when calling 3rd party software
+	
+.TP
+.B --sudo-path=[path]
+. 
+Path to sudo binary (Default Value: /usr/bin/sudo)
+
+.SH ACTIONS
+
+	
+.TP
+\fBon \fP
+Power on machine.
+	
+.TP
+\fBoff \fP
+Power off machine.
+	
+.TP
+\fBreboot \fP
+Reboot machine.
+	
+.TP
+\fBstatus \fP
+This returns the status of the plug/virtual machine.
+	
+.TP
+\fBmonitor \fP
+Check the health of fence device
+	
+.TP
+\fBmetadata \fP
+Display the XML metadata describing this resource.
+	
+.TP
+\fBvalidate-all \fP
+Validate if all required parameters are entered.
+	
+.TP
+\fBdiag \fP
+Pulse a diagnostic interrupt to the processor(s).
+
+.SH STDIN PARAMETERS
+
+	
+.TP
+.B action
+. 
+Fencing action (Default Value: reboot)
+	
+.TP
+.B auth
+. 
+IPMI Lan Auth type. (md5|password|none)
+	
+.TP
+.B cipher
+. 
+Ciphersuite to use (same as ipmitool -C parameter)
+	
+.TP
+.B inet4_only
+. 
+Forces agent to use IPv4 addresses only
+	
+.TP
+.B inet6_only
+. 
+Forces agent to use IPv6 addresses only
+	
+.TP
+.B ipaddr
+. 
+IP address or hostname of fencing device
+	
+.TP
+.B ipport
+. 
+TCP/UDP port to use for connection with device (Default Value: 623)
+	
+.TP
+.B lanplus
+. 
+Use Lanplus to improve security of connection (Default Value: 0)
+	
+.TP
+.B login
+. 
+Login name
+	
+.TP
+.B method
+. 
+Method to fence (onoff|cycle) (Default Value: onoff)
+	
+.TP
+.B passwd
+. 
+Login password or passphrase
+	
+.TP
+.B passwd_script
+. 
+Script to run to retrieve password
+	
+.TP
+.B port
+. 
+IP address or hostname of fencing device (together with --port-as-ip)
+	
+.TP
+.B privlvl
+. 
+Privilege level on IPMI device (callback|user|operator|administrator) (Default Value: administrator)
+	
+.TP
+.B verbose
+. 
+Verbose mode
+	
+.TP
+.B debug
+. 
+Write debug information to given file
+	
+.TP
+.B version
+. 
+Display version information and exit
+	
+.TP
+.B help
+. 
+Display help and exit
+	
+.TP
+.B delay
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B ipmitool_path
+. 
+Path to ipmitool binary (Default Value: /usr/bin/ipmitool)
+	
+.TP
+.B login_timeout
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B port_as_ip
+. 
+Make "port/plug" to be an alias to IP address
+	
+.TP
+.B power_timeout
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B power_wait
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 2)
+	
+.TP
+.B shell_timeout
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B retry_on
+. 
+Count of attempts to retry power on (Default Value: 1)
+	
+.TP
+.B sudo
+. 
+Use sudo (without password) when calling 3rd party software
+	
+.TP
+.B sudo_path
+. 
+Path to sudo binary (Default Value: /usr/bin/sudo)

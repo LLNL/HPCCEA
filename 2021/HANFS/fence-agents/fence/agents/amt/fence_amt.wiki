@@ -1,0 +1,29 @@
+
+[=#fence_amt]
+||='''Fence agent for AMT''' =||='''fence_amt''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| action || -o, --action=[action] || {{{reboot}}} || Fencing action ||
+|| boot_option || -b, --boot-option=[option] || {{{}}} || Change the default boot behavior of the machine. ||
+|| inet4_only || -4, --inet4-only || {{{}}} || Forces agent to use IPv4 addresses only ||
+|| inet6_only || -6, --inet6-only || {{{}}} || Forces agent to use IPv6 addresses only ||
+|| ipaddr || -a, --ip=[ip] || {{{}}} || IP address or hostname of fencing device ||
+|| ipport || -u, --ipport=[port] || {{{16994}}} || TCP/UDP port to use for connection with device ||
+|| method || -m, --method=[method] || {{{onoff}}} || Method to fence ||
+|| passwd || -p, --password=[password] || {{{}}} || Login password or passphrase ||
+|| passwd_script || -S, --password-script=[script] || {{{}}} || Script to run to retrieve password ||
+|| port || -n, --plug=[ip] || {{{}}} || IP address or hostname of fencing device (together with --port-as-ip) ||
+|| verbose || -v, --verbose || {{{}}} || Verbose mode ||
+|| debug || -D, --debug-file=[debugfile] || {{{}}} || Write debug information to given file ||
+|| version || -V, --version || {{{}}} || Display version information and exit ||
+|| help || -h, --help || {{{}}} || Display help and exit ||
+|| amttool_path || --amttool-path=[path] || {{{/usr/bin/amttool}}} || Path to amttool binary ||
+|| delay || --delay=[seconds] || {{{0}}} || Wait X seconds before fencing is started ||
+|| login_timeout || --login-timeout=[seconds] || {{{5}}} || Wait X seconds for cmd prompt after login ||
+|| port_as_ip || --port-as-ip || {{{}}} || Make "port/plug" to be an alias to IP address ||
+|| power_timeout || --power-timeout=[seconds] || {{{20}}} || Test X seconds for status change after ON/OFF ||
+|| power_wait || --power-wait=[seconds] || {{{0}}} || Wait X seconds after issuing ON/OFF ||
+|| shell_timeout || --shell-timeout=[seconds] || {{{3}}} || Wait X seconds for cmd prompt after issuing command ||
+|| retry_on || --retry-on=[attempts] || {{{1}}} || Count of attempts to retry power on ||
+|| sudo || --use-sudo || {{{}}} || Use sudo (without password) when calling 3rd party software ||
+|| sudo_path || --sudo-path=[path] || {{{/usr/bin/sudo}}} || Path to sudo binary ||
+

@@ -1,0 +1,248 @@
+
+.TH FENCE_AGENT 8 2009-10-20 "fence_scsi (Fence Agent)"
+.SH NAME
+fence_scsi - Fence agent for SCSI persistent reservation
+.SH DESCRIPTION
+.P
+fence_scsi is an I/O fencing agent that uses SCSI-3 persistent reservations to control access to shared storage devices. These devices must support SCSI-3 persistent reservations (SPC-3 or greater) as well as the "preempt-and-abort" subcommand.
+The fence_scsi agent works by having each node in the cluster register a unique key with the SCSI devive(s). Once registered, a single node will become the reservation holder by creating a "write exclusive, registrants only" reservation on the device(s). The result is that only registered nodes may write to the device(s). When a node failure occurs, the fence_scsi agent will remove the key belonging to the failed node from the device(s). The failed node will no longer be able to write to the device(s). A manual reboot is required.
+.P
+fence_scsi accepts options on the command line as well
+as from stdin. Fenced sends parameters through stdin when it execs the
+agent. fence_scsi can be run by itself with command
+line options.  This is useful for testing and for turning outlets on or off
+from scripts.
+
+Vendor URL: 
+.SH PARAMETERS
+
+	
+.TP
+.B -o, --action=[action]
+. 
+Fencing action (Default Value: off)
+	
+.TP
+.B -a, --aptpl
+. 
+Use the APTPL flag for registrations. This option is only used for the 'on' action.
+	
+.TP
+.B -d, --devices=[devices]
+. 
+List of devices to use for current operation. Devices can be comma-separated list of raw devices (eg. /dev/sdc). Each device must support SCSI-3 persistent reservations.
+	
+.TP
+.B -k, --key=[key]
+. 
+Key to use for the current operation. This key should be unique to a node. For the "on" action, the key specifies the key use to register the local node. For the "off" action, this key specifies the key to be removed from the device(s).
+	
+.TP
+.B -n, --nodename=[nodename]
+. 
+Name of the node to be fenced. The node name is used to generate the key value used for the current operation. This option will be ignored when used with the -k option.
+	
+.TP
+.B -f, --logfile
+. 
+Log output (stdout and stderr) to file
+	
+.TP
+.B -v, --verbose
+. 
+Verbose mode
+	
+.TP
+.B -D, --debug-file=[debugfile]
+. 
+Write debug information to given file
+	
+.TP
+.B -V, --version
+. 
+Display version information and exit
+	
+.TP
+.B -h, --help
+. 
+Display help and exit
+	
+.TP
+.B --delay=[seconds]
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B --login-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B --power-timeout=[seconds]
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B --power-wait=[seconds]
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 0)
+	
+.TP
+.B --shell-timeout=[seconds]
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B --retry-on=[attempts]
+. 
+Count of attempts to retry power on (Default Value: 1)
+	
+.TP
+.B --corosync-cmap-path=[path]
+. 
+Path to corosync-cmapctl binary (Default Value: /usr/sbin/corosync-cmapctl)
+	
+.TP
+.B --sg_persist-path=[path]
+. 
+Path to sg_persist binary (Default Value: /usr/bin/sg_persist)
+	
+.TP
+.B --sg_turs-path=[path]
+. 
+Path to sg_turs binary (Default Value: /usr/bin/sg_turs)
+	
+.TP
+.B --vgs-path=[path]
+. 
+Path to vgs binary (Default Value: /usr/sbin/vgs)
+
+.SH ACTIONS
+
+	
+.TP
+\fBon \fP
+Power on machine.
+	
+.TP
+\fBoff \fP
+Power off machine.
+	
+.TP
+\fBstatus \fP
+This returns the status of the plug/virtual machine.
+	
+.TP
+\fBmonitor \fP
+Check the health of fence device
+	
+.TP
+\fBmetadata \fP
+Display the XML metadata describing this resource.
+	
+.TP
+\fBvalidate-all \fP
+Validate if all required parameters are entered.
+
+.SH STDIN PARAMETERS
+
+	
+.TP
+.B action
+. 
+Fencing action (Default Value: off)
+	
+.TP
+.B aptpl
+. 
+Use the APTPL flag for registrations. This option is only used for the 'on' action.
+	
+.TP
+.B devices
+. 
+List of devices to use for current operation. Devices can be comma-separated list of raw devices (eg. /dev/sdc). Each device must support SCSI-3 persistent reservations.
+	
+.TP
+.B key
+. 
+Key to use for the current operation. This key should be unique to a node. For the "on" action, the key specifies the key use to register the local node. For the "off" action, this key specifies the key to be removed from the device(s).
+	
+.TP
+.B nodename
+. 
+Name of the node to be fenced. The node name is used to generate the key value used for the current operation. This option will be ignored when used with the -k option.
+	
+.TP
+.B logfile
+. 
+Log output (stdout and stderr) to file
+	
+.TP
+.B verbose
+. 
+Verbose mode
+	
+.TP
+.B debug
+. 
+Write debug information to given file
+	
+.TP
+.B version
+. 
+Display version information and exit
+	
+.TP
+.B help
+. 
+Display help and exit
+	
+.TP
+.B delay
+. 
+Wait X seconds before fencing is started (Default Value: 0)
+	
+.TP
+.B login_timeout
+. 
+Wait X seconds for cmd prompt after login (Default Value: 5)
+	
+.TP
+.B power_timeout
+. 
+Test X seconds for status change after ON/OFF (Default Value: 20)
+	
+.TP
+.B power_wait
+. 
+Wait X seconds after issuing ON/OFF (Default Value: 0)
+	
+.TP
+.B shell_timeout
+. 
+Wait X seconds for cmd prompt after issuing command (Default Value: 3)
+	
+.TP
+.B retry_on
+. 
+Count of attempts to retry power on (Default Value: 1)
+	
+.TP
+.B corosync-cmap_path
+. 
+Path to corosync-cmapctl binary (Default Value: /usr/sbin/corosync-cmapctl)
+	
+.TP
+.B sg_persist_path
+. 
+Path to sg_persist binary (Default Value: /usr/bin/sg_persist)
+	
+.TP
+.B sg_turs_path
+. 
+Path to sg_turs binary (Default Value: /usr/bin/sg_turs)
+	
+.TP
+.B vgs_path
+. 
+Path to vgs binary (Default Value: /usr/sbin/vgs)

@@ -1,0 +1,20 @@
+
+[=#fence_kdump]
+||='''fencing agent for use with kdump crash recovery service''' =||='''fence_kdump''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| nodename || -n, --nodename=\fINODE\fP || {{{}}} || Name or IP address of node to be fenced. This option is required for
+the "off" action. ||
+|| ipport || -p, --ipport=\fIPORT\fP || {{{7410}}} || IP port number that the \fIfence_kdump\fP agent will use to listen for
+messages. ||
+|| family || -f, --family=\fIFAMILY\fP || {{{auto}}} || IP network family. Force the \fIfence_kdump\fP agent to use a specific
+family. The value for \fIFAMILY\fP can be "auto", "ipv4", or
+"ipv6". ||
+|| action || -o, --action=\fIACTION\fP || {{{off}}} || Fencing action to perform. The value for \fIACTION\fP can be either
+"off" or "metadata". ||
+|| timeout || -t, --timeout=\fITIMEOUT\fP || {{{60}}} || Number of seconds to wait for message from failed node. If no message
+is received within \fITIMEOUT\fP seconds, the \fIfence_kdump\fP agent
+returns failure. ||
+|| verbose || -v, --verbose || {{{}}} || Print verbose output ||
+|| version || -V, --version || {{{}}} || Print version ||
+|| usage || -h, --help || {{{}}} || Print usage ||
+
