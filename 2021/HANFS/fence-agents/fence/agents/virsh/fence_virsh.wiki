@@ -1,0 +1,33 @@
+
+[=#fence_virsh]
+||='''Fence agent for virsh''' =||='''fence_virsh''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| action || -o, --action=[action] || {{{reboot}}} || Fencing action ||
+|| cmd_prompt || -c, --command-prompt=[prompt] || {{{['\\[EXPECT\\]#\\ ']}}} || Force Python regex for command prompt ||
+|| identity_file || -k, --identity-file=[filename] || {{{}}} || Identity file (private key) for SSH ||
+|| inet4_only || -4, --inet4-only || {{{}}} || Forces agent to use IPv4 addresses only ||
+|| inet6_only || -6, --inet6-only || {{{}}} || Forces agent to use IPv6 addresses only ||
+|| ipaddr || -a, --ip=[ip] || {{{}}} || IP address or hostname of fencing device ||
+|| ipport || -u, --ipport=[port] || {{{22}}} || TCP/UDP port to use for connection with device ||
+|| login || -l, --username=[name] || {{{}}} || Login name ||
+|| passwd || -p, --password=[password] || {{{}}} || Login password or passphrase ||
+|| passwd_script || -S, --password-script=[script] || {{{}}} || Script to run to retrieve password ||
+|| port || -n, --plug=[id] || {{{}}} || Physical plug number on device, UUID or identification of machine ||
+|| secure || -x, --ssh || {{{1}}} || Use SSH connection ||
+|| ssh_options || --ssh-options=[options] || {{{-t '/bin/bash -c "PS1=\\[EXPECT\\]#\  /bin/bash --noprofile --norc"'}}} || SSH options to use ||
+|| verbose || -v, --verbose || {{{}}} || Verbose mode ||
+|| debug || -D, --debug-file=[debugfile] || {{{}}} || Write debug information to given file ||
+|| version || -V, --version || {{{}}} || Display version information and exit ||
+|| help || -h, --help || {{{}}} || Display help and exit ||
+|| separator || -C, --separator=[char] || {{{,}}} || Separator for CSV created by 'list' operation ||
+|| delay || --delay=[seconds] || {{{0}}} || Wait X seconds before fencing is started ||
+|| login_timeout || --login-timeout=[seconds] || {{{5}}} || Wait X seconds for cmd prompt after login ||
+|| missing_as_off || --missing-as-off || {{{}}} || Missing port returns OFF instead of failure ||
+|| power_timeout || --power-timeout=[seconds] || {{{20}}} || Test X seconds for status change after ON/OFF ||
+|| power_wait || --power-wait=[seconds] || {{{0}}} || Wait X seconds after issuing ON/OFF ||
+|| shell_timeout || --shell-timeout=[seconds] || {{{3}}} || Wait X seconds for cmd prompt after issuing command ||
+|| retry_on || --retry-on=[attempts] || {{{1}}} || Count of attempts to retry power on ||
+|| sudo || --use-sudo || {{{}}} || Use sudo (without password) when calling 3rd party software ||
+|| ssh_path || --ssh-path=[path] || {{{/usr/bin/ssh}}} || Path to ssh binary ||
+|| sudo_path || --sudo-path=[path] || {{{/usr/bin/sudo}}} || Path to sudo binary ||
+
