@@ -1,0 +1,19 @@
+#Singularity Recipe that builds a container with OpenMPI installed from the package manager
+#Clones and compiles MPIBench
+
+Bootstrap: docker
+From: centos:8
+
+
+%post
+dnf install -y --enablerepo powertools librdmacm libibverbs libibumad numactl-devel libquadmath gcc-gfortran gcc-c++ pmix-devel libibverbs-devel rdma-core-devel hwloc-libs ibacm-devel libfabric-devel libpsm2-devel git make redhat-rpm-config openmpi openmpi-devel
+git clone https://github.com/LLNL/mpiBench.git
+export PATH=/usr/lib64/openmpi/bin:$PATH
+export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+cd mpiBench
+make
+
+%environment
+export PATH=/usr/lib64/openmpi/bin:$PATH
+export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+

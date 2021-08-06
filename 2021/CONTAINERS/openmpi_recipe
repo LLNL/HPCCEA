@@ -1,0 +1,46 @@
+#Singularity recipe that builds a container with OpenMPI installed from source
+#Clones and compiles MpiBench
+
+Bootstrap: docker
+From: centos:8
+
+
+%post
+dnf install -y --enablerepo powertools tar librdmacm libibverbs libibumad numactl-devel libquadmath gcc-gfortran gcc-c++ epel-release libibverbs-devel rdma-core-devel hwloc-libs ibacm-devel libfabric-devel libpsm2-devel git make redhat-rpm-config wget bzip2 
+
+#slurm partial install
+
+wget --no-check-certificate https://github.com/SchedMD/slurm/archive/slurm-20-02-7-1.tar.gz \
+  && tar -xf slurm-20-02-7-1.tar.gz \
+  && cd slurm-slurm-20-02-7-1 \
+  && ./configure --prefix=/usr/local \
+  && cd contribs/pmi2 \
+  && make -j32 install \
+  && ldconfig
+
+cd /
+
+wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.bz2
+tar xf openmpi-4.1.1.tar.bz2
+cd openmpi-4.1.1
+./configure --prefix=/usr/local/openmpi-4.1.1-slurm --with-pmix --with-pmi=/usr/local --with-psm2
+make -j32
+make install
+export LD_LIBRARY_PATH=/usr/local/openmpi-4.1.1-slurm/lib
+export PATH=/usr/local/openmpi-4.1.1-slurm/bin:/usr/share/Modules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+export OMPI_MCA_btl="tcp,self" 
+export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl_openib_if_include="mlx4_0:1"
+cd /
+git clone https://github.com/LLNL/mpiBench.git
+cd mpiBench
+make
+
+%environment
+export LD_LIBRARY_PATH=/usr/local/openmpi-4.1.1-slurm/lib
+export PATH=/usr/local/openmpi-4.1.1-slurm/bin:/usr/share/Modules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+export OMPI_MCA_btl="tcp,self" 
+export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl_openib_if_include="mlx4_0:1"
+
+
