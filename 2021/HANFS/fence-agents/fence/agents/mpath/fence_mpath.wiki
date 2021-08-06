@@ -1,0 +1,22 @@
+
+[=#fence_mpath]
+||='''Fence agent for multipath persistent reservation''' =||='''fence_mpath''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| action || -o, --action=[action] || {{{off}}} || Fencing action ||
+|| devices || -d, --devices=[devices] || {{{}}} || List of devices to use for current operation. Devices can be comma-separated list of device-mapper multipath devices (eg. /dev/mapper/3600508b400105df70000e00000ac0000 or /dev/mapper/mpath1). Each device must support SCSI-3 persistent reservations. ||
+|| key || -k, --key=[key] || {{{}}} || Key to use for the current operation. This key should be unique to a node and have to be written in /etc/multipath.conf. For the "on" action, the key specifies the key use to register the local node. For the "off" action, this key specifies the key to be removed from the device(s). ||
+|| verbose || -v, --verbose || {{{}}} || Verbose mode ||
+|| debug || -D, --debug-file=[debugfile] || {{{}}} || Write debug information to given file ||
+|| version || -V, --version || {{{}}} || Display version information and exit ||
+|| help || -h, --help || {{{}}} || Display help and exit ||
+|| delay || --delay=[seconds] || {{{0}}} || Wait X seconds before fencing is started ||
+|| login_timeout || --login-timeout=[seconds] || {{{5}}} || Wait X seconds for cmd prompt after login ||
+|| mpathpersist_path || --mpathpersist-path=[path] || {{{/usr/sbin/mpathpersist}}} || Path to mpathpersist binary ||
+|| power_timeout || --power-timeout=[seconds] || {{{20}}} || Test X seconds for status change after ON/OFF ||
+|| power_wait || --power-wait=[seconds] || {{{0}}} || Wait X seconds after issuing ON/OFF ||
+|| shell_timeout || --shell-timeout=[seconds] || {{{3}}} || Wait X seconds for cmd prompt after issuing command ||
+|| store_path || --store-path=[path] || {{{/var/run/cluster}}} || Path to directory where fence agent can store information ||
+|| retry_on || --retry-on=[attempts] || {{{1}}} || Count of attempts to retry power on ||
+|| sudo || --use-sudo || {{{}}} || Use sudo (without password) when calling 3rd party software ||
+|| sudo_path || --sudo-path=[path] || {{{/usr/bin/sudo}}} || Path to sudo binary ||
+

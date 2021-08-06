@@ -1,0 +1,31 @@
+
+[=#fence_docker]
+||='''Fence agent for Docker''' =||='''fence_docker''' =||
+|| '''Name Of The Argument For STDIN''' || '''Name Of The Argument For Command-Line''' || '''Default Value''' ||'''Description''' ||
+|| action || -o, --action=[action] || {{{reboot}}} || Fencing action ||
+|| inet4_only || -4, --inet4-only || {{{}}} || Forces agent to use IPv4 addresses only ||
+|| inet6_only || -6, --inet6-only || {{{}}} || Forces agent to use IPv6 addresses only ||
+|| ipaddr || -a, --ip=[ip] || {{{}}} || IP address or hostname of fencing device ||
+|| ipport || -u, --ipport=[port] || {{{80}}} || TCP/UDP port to use for connection with device ||
+|| method || -m, --method=[method] || {{{onoff}}} || Method to fence ||
+|| port || -n, --plug=[id] || {{{}}} || Physical plug number on device, UUID or identification of machine ||
+|| ssl || -z, --ssl || {{{}}} || Use SSL connection with verifying certificate ||
+|| ssl_insecure || --ssl-insecure || {{{}}} || Use SSL connection without verifying certificate ||
+|| ssl_secure || --ssl-secure || {{{}}} || Use SSL connection with verifying certificate ||
+|| api_version || --api-version || {{{1.11}}} || Version of Docker Remote API (default: 1.11) ||
+|| tlscacert || --tlscacert || {{{}}} || Path to CA certificate (PEM format) for TLS authentication.  Required if --ssl option is used. ||
+|| tlscert || --tlscert || {{{}}} || Path to client certificate (PEM format) for TLS authentication. Required if --ssl option is used. ||
+|| tlskey || --tlskey || {{{}}} || Path to client key (PEM format) for TLS authentication.  Required if --ssl option is used. ||
+|| verbose || -v, --verbose || {{{}}} || Verbose mode ||
+|| debug || -D, --debug-file=[debugfile] || {{{}}} || Write debug information to given file ||
+|| version || -V, --version || {{{}}} || Display version information and exit ||
+|| help || -h, --help || {{{}}} || Display help and exit ||
+|| separator || -C, --separator=[char] || {{{,}}} || Separator for CSV created by 'list' operation ||
+|| delay || --delay=[seconds] || {{{0}}} || Wait X seconds before fencing is started ||
+|| login_timeout || --login-timeout=[seconds] || {{{5}}} || Wait X seconds for cmd prompt after login ||
+|| power_timeout || --power-timeout=[seconds] || {{{20}}} || Test X seconds for status change after ON/OFF ||
+|| power_wait || --power-wait=[seconds] || {{{0}}} || Wait X seconds after issuing ON/OFF ||
+|| shell_timeout || --shell-timeout=[seconds] || {{{3}}} || Wait X seconds for cmd prompt after issuing command ||
+|| retry_on || --retry-on=[attempts] || {{{1}}} || Count of attempts to retry power on ||
+|| gnutlscli_path || --gnutlscli-path=[path] || {{{/usr/bin/gnutls-cli}}} || Path to gnutls-cli binary ||
+
