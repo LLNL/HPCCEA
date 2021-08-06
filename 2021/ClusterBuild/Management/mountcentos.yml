@@ -1,0 +1,60 @@
+---
+- name: "mount centos iso, copy initrd.img and vmlinuz over"
+  gather_facts: no
+  hosts: management 
+  tasks:
+
+          - name: "create centos8-install directory"
+            file:
+                path: /mnt/centos8-install/
+                state: directory 
+             
+          - name: "mount centos8-install from image file"
+            ansible.posix.mount:
+                               path: /mnt/centos8-install
+                               src: /root/CentOS-8.3.2011-x86_64-dvd1.iso
+                               fstype: iso9660
+                               opts: loop,ro
+                               state: mounted 
+
+          - name: "make /tftpboot/centos8 directory"
+            file:
+                path: /tftpboot/centos8
+                state: directory
+
+          - name: "copy initrd.img and vmlinuz to /tftpboot/centos8"
+            ansible.builtin.copy:
+               src: /mnt/centos8-install/images/pxeboot/{{ item }}
+               dest: /tftpboot/centos8
+            with_items:
+               - initrd.img
+               - vmlinuz
+
+          - name: "make directory /var/www/html/centos8-install"
+            file:
+                path: /var/www/html/centos8-install
+                state: directory
+                mode: 0755
+
+          - name:  "copy contents of /mnt/centos8-install to /var/www/html"
+            synchronize:
+                                src: /mnt/centos8-install/
+                                dest: /var/www/html/centos8-install
+
+          - name: "fix perms of /var/www/html/centos8-install"
+            file:
+                path: /var/www/html/centos8-install
+                mode: 0755
+                recurse: yes
+
+          - name:  "copy dd-mlx4-4.0-4.el8_3.elrepo.iso to /var/www/html"
+            ansible.builtin.copy:
+                src: /root/dd-mlx4-4.0-4.el8_3.elrepo.iso
+                dest: /var/www/html/centos8-install/dd-mlx4-4.0-4.el8_3.elrepo.iso
+                mode: 0755
+
+          - name:  "copy dd-megaraid_sas-07.714.04.00-1.el8_3.elrepo.iso to /var/www/html"
+            ansible.builtin.copy:
+                src: /root/dd-megaraid_sas-07.714.04.00-1.el8_3.elrepo.iso
+                dest: /var/www/html/centos8-install/dd-megaraid_sas-07.714.04.00-1.el8_3.elrepo.iso
+                mode: 0755

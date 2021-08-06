@@ -1,0 +1,36 @@
+---
+
+- name: "xinetd actions"
+  gather_facts: no
+  hosts: management
+  tasks:
+
+    - name: "Enable and start xinetd"
+      systemd:
+        name: xinetd
+        state: started
+        enabled: yes
+
+    - name: "Create xinetd file and add lines"
+      copy:
+        dest: /etc/xinetd.d/tftp
+        content: |
+          # default: off
+          # description: The tftp server serves files using the trivial file transfer\
+          # protocol. The tftp protocol is often used to boot diskless \
+          # workstations, download configuration files to network-aware printers , \
+          # and to start the installation process for some operating systems.
+          service tftp
+          {
+          socket_type = dgram
+          protocol = udp
+          wait = yes
+          user = root
+          server = /usr/sbin/in.tftpd
+          server_args = -s /tftpboot/ -v
+          disable = no
+          per_source = 11
+          cps = 100 2
+          flags = IPv4
+          }    
+

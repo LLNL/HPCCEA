@@ -1,0 +1,10 @@
+---
+- hosts: management
+  tasks:
+   - name:  enable and start httpd
+     ansible.builtin.service:
+       name: httpd
+       enabled: yes
+       state: started
+
+

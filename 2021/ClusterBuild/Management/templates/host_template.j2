@@ -1,0 +1,15 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+{{ base_ip }}{{ outward_ip }} {{ host }}i
+{% for name, data in devices.items() -%}
+{% for node in range(1, (nodes|int)+1 ) %}
+{{ data.ip_addr }}{{ node }}
+{%- if node == 1 and (name == 'ethernet' or name == 'powerman') %} {{ data.prefix }}{{ host }}i {{ data.prefix }}{{ host }}{{ node }} 
+{%- if name == 'ethernet' %} {{ data.prefix }}{{ node }} {% endif -%}
+{%- else %} {% if name != 'infiniband' -%} {{ data.prefix }} {%- endif -%} {{ host }}{{ node }} {{ data.prefix }}{{ node }}
+{%- endif %}
+
+{% endfor %}
+
+{% endfor %}

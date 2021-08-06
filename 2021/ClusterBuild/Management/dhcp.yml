@@ -1,0 +1,19 @@
+---
+###Assuming that address_dict.yml include ip, mac, and hostname of compute nodes in the correct format
+
+- name: "Editing dhcpd.conf file"
+  hosts: management
+  gather_facts: no
+  vars_files: address_dict.yml
+  tasks: 
+    - name: Include dhcpd.conf file
+      ansible.builtin.template:                               # Declaring Copy Module
+        src: "dhcp.conf.j2"                   # Source Location
+        dest: "/etc/dhcp/dhcpd.conf"
+        owner: root
+        group: root
+    - name:  enable and start dhcpd
+      ansible.builtin.service:
+        name: dhcpd
+        enabled: yes
+        state: started

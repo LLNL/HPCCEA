@@ -1,0 +1,65 @@
+#version=RHEL8
+# Reboot after installation
+reboot
+eula --agreed
+# Use text mode install
+text --non-interactive
+# Installation logging level
+logging --level=debug --host={{ mgmt_ip }} --port=514
+
+%packages
+@^minimal-environment
+kexec-tools
+kexec-tools
+nfs-utils
+
+%end
+
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+# Firewall configuration
+firewall --disabled
+# Network information
+network  --bootproto=dhcp --device=link --ipv6=auto --activate
+network  --hostname=localhost.localdomain
+
+# Use network installation
+url --url="http://{{ mgmt_ip }}/centos8-install/" --noverifyssl
+
+# System authorization information
+auth --enableshadow --passalgo=sha512
+
+firstboot --enable
+# Do not configure the X Window System
+skipx
+# System services
+services --disabled="chronyd"
+
+#ignoredisk --only-use=sda
+# System bootloader configuration
+bootloader --append="crashkernel=auto" --location=mbr --boot-drive=sda
+autopart --type=plain --nohome
+
+# Clear the Master Boot Record
+zerombr
+# Partition clearing information
+clearpart --all --initlabel --drives=sda
+
+# System timezone
+timezone America/Los_Angeles --isUtc --nontp
+
+# Root password
+rootpw --plaintext {{ root_password }}
+
+%addon com_redhat_kdump --enable --reserve-mb='auto'
+
+%end
+
+%anaconda
+pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+%end

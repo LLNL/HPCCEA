@@ -1,0 +1,8 @@
+---
+- name: "Host name setup"
+  gather_facts: no
+  hosts: localhost 
+  tasks:
+    - name: Set a hostname
+      ansible.builtin.hostname:
+        name: "{{ host }}i"

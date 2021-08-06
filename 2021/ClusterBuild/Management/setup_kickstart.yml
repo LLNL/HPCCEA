@@ -1,0 +1,27 @@
+---
+
+- name: "Setup of kickstart file for automated install" 
+  hosts: management
+  gather_facts: no 
+  vars:
+    output: "tests"
+  tasks:
+    - name: "templating new anaconda-ks.cfg file" 
+      ansible.builtin.template: 
+        src: anaconda-ks.cfg.j2
+        dest: /var/www/html/centos8-install/anaconda-ks.cfg
+        owner: root
+        group: root
+        mode: '0755'
+        force: yes
+    - name: "install pykickstart"
+      dnf:
+        name: pykickstart
+        state: present 
+    #- name: "confirm cfg validity"
+      #ansible.builtin.shell: "ksvalidator /var/www/html/centos8-install/anaconda-ks.cfg > /dev/null 2>&1"
+      #register: output
+    #- name: "debug output of validity"
+      #ansible.builtin.debug: 
+        #var: output
+

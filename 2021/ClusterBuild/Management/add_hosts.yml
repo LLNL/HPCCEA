@@ -1,0 +1,26 @@
+---
+
+- name: "set up etc host file"
+  gather_facts: no #delete
+  vars:
+    base_ip: "192.168."
+    devices:
+      ethernet:
+        prefix: "e"
+        ip_addr: "{{ base_ip }}{{ eip }}."
+      powerman:
+        prefix: "p"
+        ip_addr: "{{ base_ip }}{{ pip }}."
+      infiniband:
+        prefix: "h"
+        ip_addr: "{{ base_ip }}{{ hip }}."
+  hosts: localhost  ## need this because we don't have a valid /etc/hosts yet
+  tasks:
+    - name: create hosts file
+      template:
+        src: templates/host_template.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+
+# Sample Call: sudo ansible-playbook add_hosts.yml --extra-vars "host=radon nodes=5 outward_ip=59.4 eip=95 pip=96 hip=126"

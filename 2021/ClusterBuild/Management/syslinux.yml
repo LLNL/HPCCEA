@@ -1,0 +1,27 @@
+---
+- name: "copy syslinux contents and make default file"
+  gather_facts: no
+  hosts: management 
+  tasks:
+          - name: "copy contents of /usr/share/syslinux/ to /tftpboot"
+            copy: 
+                src: /usr/share/syslinux/
+                dest: /tftpboot/
+
+          - name: "create pxelinux.cfg directory"
+            file:
+                path: /tftpboot/pxelinux.cfg
+                state: directory 
+
+          - name: "add default file under pxelinux.cfg directory"
+            file: 
+                path: /tftpboot/pxelinux.cfg/default
+                mode: u+rw
+                state: absent
+
+          - name: "add contents to default file using template: pass in management IP address as ipaddr"
+            template:
+                    src: default.j2
+                    dest: /tftpboot/pxelinux.cfg/default
+                    owner: root 
+                    group: root

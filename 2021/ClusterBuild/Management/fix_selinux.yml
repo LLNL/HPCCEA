@@ -1,0 +1,29 @@
+---
+
+- name: "Setting up selinux + restart other daemons" 
+  hosts: management
+  gather_facts: no
+  tasks:
+    - name: "fix selinux security measures"
+      ansible.builtin.command: "restorecon -Rv /tftpboot"
+    - name: "fix tfp issues"
+      ansible.builtin.command: "chcon -R -t public_content_t /tftpboot"
+    - name: "install tftp" 
+      dnf:
+        name: tftp  
+        state: present
+    - name: "restart tftp daemons"
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: tftp
+    - name: "restart http daemon"
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: httpd
+    - name: "restart inetd daemon"
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: yes
+        name: xinetd

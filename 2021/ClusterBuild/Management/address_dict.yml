@@ -1,0 +1,8 @@
+- compute_nodes:
+    - host: nickel2
+      mac: 00:1e:67:6d:2d:b6
+      ip: 192.168.95.2
+    - host: nickel3
+      mac: 00:1e:67:6d:8e:87
+      ip: 192.168.95.3
+

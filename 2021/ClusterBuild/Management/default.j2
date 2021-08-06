@@ -1,0 +1,17 @@
+DEFAULT menu.c32
+PROMPT 0
+MENU TITLE ########## PXE Boot Menu ##########
+TIMEOUT 150
+TOTALTIMEOUT 6000
+ONTIMEOUT 1  # go to this label after timeout expires
+  
+LABEL 1
+       MENU LABEL ^1) Install CentOS 8 x64 over the network with Kickstart
+       KERNEL centos8/vmlinuz
+APPEND initrd=centos8/initrd.img inst.ks=http://{{ ipaddr  }}/centos8-install/anaconda-ks.cfg inst.dd=http://{{ ipaddr }}/centos8-install/dd-megaraid_sas-07.714.04.00-1.el8_3.elrepo.iso inst.dd=http://{{ ipaddr }}/centos8-install/dd-mlx4-4.0-4.el8_3.elrepo.iso inst.cmdline inst.gpt console=ttyS0,115200n8  # Note Change ttyS1 to ttyS0 for the silicon cluster
+  
+LABEL local
+        MENU LABEL ^2) local boot
+        MENU DEFAULT
+        COM32 chain.c32
+        APPEND hd0

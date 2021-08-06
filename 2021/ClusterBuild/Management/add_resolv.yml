@@ -1,0 +1,14 @@
+---
+
+- name: "edit resolv file"
+  hosts: management
+  vars:
+    domain: "llnl.gov"
+    nameserver: "192.12.17.17"
+  tasks:
+    - name: add resolv
+      template:
+       src: templates/resolv_template.j2 
+       dest: /etc/resolv.conf
+       owner: root
+       group: root

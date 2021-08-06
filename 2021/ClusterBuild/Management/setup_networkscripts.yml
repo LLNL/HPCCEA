@@ -1,0 +1,57 @@
+---
+
+- name: configure network interfaces
+  hosts: management
+  gather_facts: no
+  tasks:
+  - name: grab public facing ip
+    shell: cat /etc/hosts | grep " {{ cluster_name }}" | head -1
+    register: ext_ip
+  - name: populate eno1
+    copy:
+      dest: /etc/sysconfig/network-scripts/ifcfg-eno1
+      content: |
+        TYPE=Ethernet
+        BOOTPROTO=static
+        DEFROUTE=yes
+        NAME=eno1
+        DEVICE=eno1
+        ONBOOT=yes
+        IPADDR={{ ext_ip.stdout.split()[0] }}
+        NETMASK=255.255.224.0
+        GATEWAY=192.168.59.200
+  - name: grab mgmt network ips
+    shell: cat /etc/hosts | grep " e{{ cluster_name }}" | head -1
+    register: ip_mgmt
+  - name: grab ipmi ips
+    shell: cat /etc/hosts | grep " p{{ cluster_name }}" | head -1
+    register: ip_ipmi
+  - name: populate eno2:1
+    copy:
+      dest: /etc/sysconfig/network-scripts/ifcfg-eno2:1
+      content: |
+        TYPE=Ethernet
+        BOOTPROTO=static
+        NAME=eno2:1
+        DEVICE=eno2:1
+        ONBOOT=yes
+        IPADDR={{ ip_ipmi.stdout.split()[0] }}
+        NETMASK=255.255.255.0
+  - name: grab infiniband ips
+    shell: cat /etc/hosts | grep " {{ cluster_name }}" | head -1
+    register: ip_inf
+  - name: populate ib
+    copy:
+      dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+      content: |
+        TYPE=infiniband
+        BOOTPROTO=static
+        NAME=ib0
+        DEVICE=ib0
+        ONBOOT=yes
+        IPADDR="192.168.{{ hip }}.1" 
+        NETMASK=255.255.255.0
+        CONNECTED_MODE=yes
+
+
+...
