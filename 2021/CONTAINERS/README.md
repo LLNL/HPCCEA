@@ -2,5 +2,8 @@
 High Performance Computing Cluster Engineering Academy Containers project
 
 
+Team Members:
+Bryan Whitehurst
 Rachel Yamamoto
+
 
