@@ -1,0 +1,30 @@
+---
+
+- name: setup cron
+  hosts: e2
+  gather_facts: no
+  tasks: 
+  - name: install cron
+    dnf:
+      name:
+        - crontabs
+      state: present
+  - name: start crond
+    ansible.builtin.systemd:
+      name: crond.service   
+      state: started
+      enabled: yes
+  - name: example cron
+    ansible.builtin.cron:
+      name: "example cron job 1"
+      minute: "15"
+      hour: "10"
+      job: "uptime > /tmp/uptime.txt"
+  - name: example cron
+    ansible.builtin.cron:
+      name: "example cron job 2"
+      minute: "0"
+      hour: "11"
+      day: "1"
+      job: "who -q >> /tmp/who.txt"
+...

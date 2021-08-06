@@ -1,0 +1,47 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+   - name: dnf install nfs-utils libnfs-utils
+     dnf:
+       name: 
+         - nfs-utils
+         - libnfs-utils
+       state: present
+- hosts: management
+  tasks:
+   - name:  enable and start nfs-server
+     ansible.builtin.service:
+       name: nfs-server
+       enabled: yes
+       state: started
+   - name: Editing the /etc/exports file
+     ansible.builtin.lineinfile:
+         path: /etc/exports
+         line: /home        192.168.95.0/255.255.255.0(rw,sync,no_root_squash)
+         create: yes
+   - name:  restart nfs-server
+     ansible.builtin.service:
+         name: nfs-server
+         state: restarted
+- hosts: compute
+  gather_facts: no
+  tasks:
+   - name: host
+     ansible.builtin.command: hostname
+     register: myhost
+   - name: Mounting NFs
+     mount:
+       src: 'e{{myhost.stdout [:-1]}}1:/home'
+       path: /home
+       state: mounted
+       fstype: nfs
+
+   - name: setboolean
+     ansible.builtin.command: setsebool -P use_nfs_home_dirs 1
+
+   - name:  start sshd
+     ansible.builtin.service:
+         name: sshd
+         state: restarted
+         enabled: yes

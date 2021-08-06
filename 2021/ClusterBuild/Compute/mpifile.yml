@@ -1,0 +1,22 @@
+---
+
+- name: "editing mpi.sh file"
+  gather_facts: no
+  hosts: all
+  tasks:
+
+    - name: "create and add lines to file" 
+      copy:
+        dest: "/etc/profile.d/mpi.sh"
+        content: | 
+          export PATH=/usr/lib64/openmpi/bin:$PATH
+          export LD_LIBRARY_PATH=/usr/lib64/openmpi/lib:$LD_LIBRARY_PATH
+
+    - name: "testing mpicc"
+      command: which mpicc
+      register: location
+
+    - name: "print/check output of which mpicc"
+      debug:
+        msg: "output which mpicc: {{location.stdout[0:40]}}"
+

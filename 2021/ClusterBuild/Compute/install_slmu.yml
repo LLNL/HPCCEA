@@ -1,0 +1,47 @@
+---
+
+- name: "install slurm/munge dependencies" 
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: "install dependencies"
+      dnf:
+        name: 
+          - wget
+          - rpm-build
+          - bzip2-devel
+          - perl-ExtUtils-MakeMaker
+          - openssl
+          - openssl-devel
+          - pam-devel
+          - readline-devel
+          - mariadb-server
+          - mariadb-devel
+          - python3
+          - make
+          - libtool
+          - munge
+          - perl-Switch
+          - munge-devel
+        state: present
+    - name: "dnf config manager" 
+      ansible.builtin.shell:
+        cmd: "dnf config-manager --set-enabled powertools"
+    - name: "download munge" 
+      get_url:
+        url: https://github.com/dun/munge/releases/download/munge-0.5.13/munge-0.5.13.tar.xz
+        dest: /tmp/
+    - name: "download slurm" 
+      get_url:
+        url: https://download.schedmd.com/slurm/slurm-20.11.7.tar.bz2
+        dest: /tmp/
+    - name: "copy bash script"
+      ansible.builtin.copy:
+        src: ./slmu-rpm.sh
+        dest: /tmp/
+        owner: root
+        group: root 
+
+    - name: "build rpms"
+      ansible.builtin.shell:
+        cmd: "bash /tmp/slmu-rpm.sh >/dev/null 2>/dev/null"

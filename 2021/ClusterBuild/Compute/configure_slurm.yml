@@ -1,0 +1,24 @@
+---
+
+- name: "Configuring slurm"
+  hosts: management
+  gather_facts: no
+  vars: 
+    lead: "dummy data" 
+  tasks: 
+    - name: "Edit slurm.conf"
+      ansible.builtin.template: 
+        src: slurm.conf.j2 
+        dest: /etc/slurm/slurm.conf
+- name: "Copying conf files to nodes" 
+  hosts: compute
+  gather_facts: no
+  tasks:
+    - name: "copying slurm.conf" 
+      ansible.builtin.copy: 
+        src: /etc/slurm/slurm.conf
+        dest: /etc/slurm/slurm.conf
+    - name: "copying cgroup.conf.example" 
+      ansible.builtin.copy: 
+        src: /etc/slurm/cgroup.conf.example
+        dest: /etc/slurm/cgroup.conf

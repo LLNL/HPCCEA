@@ -1,0 +1,41 @@
+---
+
+- name: "setup chrony"
+  gather_facts: no
+  hosts: all
+  tasks:
+
+    - name: "date list before chrony"
+      command: date
+      register: time
+
+    - name: "print current time before chrony"
+      debug:
+        msg: "Current date/time: {{time.stdout[0:28]}}"
+
+    - name: "install chrony"
+      dnf:
+        name:
+          - chrony
+        state: present
+
+    - name: "enable chronyd"
+      systemd:
+         name: chronyd
+         enabled: yes
+         masked: no
+
+    - name: "start chronyd"
+      systemd:
+        state: started
+        name: chronyd
+
+    - name: "date list after chrony"
+      command: date
+      register: time
+
+    - name: "print current time after chrony"
+      debug:
+        msg: "Current date/time: {{time.stdout[0:28]}}"
+
+   

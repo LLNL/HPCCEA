@@ -1,0 +1,61 @@
+---
+
+- name: "setup slurm user/directory"
+  hosts: all
+  tasks:
+    - name: "Add slurm user"
+      ansible.builtin.user:
+        name: slurm
+        shell: /bin/bash
+        password: !
+    - name: "create slurm directories"
+      ansible.builtin.file:
+        path: /var/spool/slurm
+        state: directory
+        recurse: yes
+        owner: slurm
+        group: slurm
+- name: "create munge key"
+  hosts: management
+  gather_facts: no
+  tasks:
+    - name: "creating munge key"
+      ansible.builtin.shell:
+        cmd: "/usr/sbin/create-munge-key"
+- name: "copy munge key to compute nodes"
+  hosts: compute
+  gather_facts: no
+  tasks:
+    - name: "copy munge key"
+      ansible.builtin.copy:
+        src: /etc/munge/munge.key
+        dest: /etc/munge/munge.key
+        owner: munge
+        group: munge
+        mode: 0400
+- name: "start munge and copy passwd, etc"
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: "enabling munge on system"
+      ansible.builtin.systemd:
+        state: started
+        enabled: yes
+        name: munge
+    - name: "Copying /etc/passwd"
+      ansible.builtin.copy:
+        src: /etc/passwd
+        dest: /etc/
+    - name: "Copying /etc/home"
+      ansible.builtin.copy:
+        src: /etc/group
+        dest: /etc/
+    - name: "Copying /etc/shadow"
+      ansible.builtin.copy:
+        src: /etc/shadow
+        dest: /etc/
+    - name: "Copying /etc/gshadow"
+      ansible.builtin.copy: 
+        src: /etc/gshadow
+        dest: /etc/
+

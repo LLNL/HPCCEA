@@ -1,0 +1,42 @@
+---
+- name: install and configure pdsh on management node
+  gather_facts: no
+  hosts: management 
+  tasks:
+   - name: Install epel-release, make, tar, gcc, readline-devel
+     dnf:
+        name: 
+          - epel-release
+          - make
+          - tar
+          - gcc
+          - readline-devel
+        state: latest 
+ 
+   - name: wget pdsh
+     get_url:
+       url: https://github.com/chaos/pdsh/releases/download/pdsh-2.34/pdsh-2.34.tar.gz
+       dest: /root 
+       mode: u+rwx 
+
+   - name: unarchive pdsh to home directory
+     ansible.builtin.unarchive:
+       src: /root/pdsh-2.34.tar.gz
+       dest: /root
+
+   - name: remove README.QsNet from pdsh.spec
+     ansible.builtin.replace:
+       path: /root/pdsh-2.34/pdsh.spec
+       regexp: 'README.QsNet'
+       replace: ""
+ 
+   - name: archive pdsh-2.34 directory
+     community.general.archive:
+       path: /root/pdsh-2.34
+       dest: /root/pdsh-2.34-1.tar.gz
+
+   - name: build pdsh 
+     command: "{{ item }}"
+     with_items:
+     - rpmbuild -ta pdsh-2.34-1.tar.gz
+     - rpm -ivh rpmbuild/RPMS/x86_64/pdsh-*

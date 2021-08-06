@@ -1,0 +1,36 @@
+---
+
+- name: setup infiniband
+  hosts: compute
+  vars:
+    inf_host: "h{{ inventory_hostname[-1] }}"
+  tasks:
+    - name: find ip address
+      set_fact:
+        ip_addr: "{{(lookup('file', '/etc/hosts').splitlines() |
+                     select('search', inf_host) | first).split().0}}"
+    - name: create ifcfg-ib0 file
+      template:
+        src: templates/ib0_template.j2
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        owner: root
+        group: root
+    # if ib0 is no available, ifdown ib0 throws an error
+    # may need a reboot to load in kernel modules
+    - name: switch ib0 off
+      command: ifdown ib0
+      ignore_errors: yes
+    - name: switch ib0 on
+      command: ifup ib0
+
+- name: enable opensm
+  hosts: management
+  tasks:
+    - name: enable opensm
+      systemd:
+        name: opensm
+        enabled: yes
+    - name: start opensm
+      systemd:
+        name: opensm
+        state: started

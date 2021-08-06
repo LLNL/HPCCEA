@@ -1,0 +1,73 @@
+---
+ 
+- name: "create ssh key for root user"
+  gather_facts: no
+  hosts: localhost 
+  tasks:
+
+  - name: generate ssh key for root user
+    ansible.builtin.user:
+      user: root
+      generate_ssh_key: yes
+      ssh_key_bits: 4096
+      ssh_key_file: .ssh/id_rsa
+
+
+- name: create user accout on management node with ssh key
+  gather_facts: no
+  hosts: management
+  tasks:
+  
+  - name: create new user with hashed password
+    ansible.builtin.user:
+      name: "{{ username }}"
+      password: "{{ upassword | password_hash('sha512') }}"
+      uid: '{{ userid }}'
+
+  - name: generate ssh keys for newly created user
+    ansible.builtin.user:
+      name: "{{ username }}"
+      generate_ssh_key: yes
+      ssh_key_bits: 4096
+      ssh_key_file: .ssh/id_rsa
+
+
+- name: "create user accounts on compute nodes"
+  gather_facts: no
+  hosts: compute
+  tasks:
+  - name: create new user with hashed password
+    ansible.builtin.user:
+      name: "{{ username }}"
+      password: "{{ upassword | password_hash('sha512') }}"
+      uid: '{{ userid }}'
+
+
+- name: "copy ssh keys over for user accounts" 
+  gather_facts: no
+  hosts: management
+  tasks:
+
+  - name: copy ssh keys over to compute nodes
+    become: yes
+    become_user: "{{ username }}"
+    ansible.builtin.shell: sshpass -p "{{ upassword }}" ssh-copy-id -o StrictHostKeyChecking=no "{{ username }}"@{{ item }}
+    with_lines: sed -e '1,/\[compute\]/d' /etc/ansible/hosts
+
+
+  - name: copy ssh keys over to e1
+    become: yes
+    become_user: "{{ username }}"
+    ansible.builtin.shell: sshpass -p "{{ upassword }}" ssh-copy-id -o StrictHostKeyChecking=no "{{ username }}"@e1
+
+- name: on all nodes, give new user sudo perms, and set authorized keys on all nodes
+  gather_facts: no
+  hosts: management, compute
+  tasks:
+
+  - name: give user sudo
+    lineinfile:
+        path: /etc/sudoers
+        line: '"{{ username }}"    ALL=(ALL)       ALL'
+
+

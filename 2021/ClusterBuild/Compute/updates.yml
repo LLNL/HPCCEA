@@ -1,0 +1,31 @@
+---
+
+- name: "Patching and updates"
+  hosts: all
+  gather_facts: no
+  tasks:
+
+    - name: "disable epel"
+      command: dnf config-manager --disable epel
+       
+
+    - name: "security patches"
+      command: dnf updateinfo list security all 
+
+    - name: "listing updates"
+      dnf:
+        security: yes
+        list: updates
+        state: latest
+
+    - name: "update"
+      dnf:
+        security: yes
+        name: "*"
+        state: latest
+    
+    - name: "general upgrade on all packages"
+      command: dnf -y upgrade
+
+    - name: "clean all"
+      command: dnf clean all
