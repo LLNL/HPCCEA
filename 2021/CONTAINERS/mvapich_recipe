@@ -1,0 +1,40 @@
+#Singularity recipe that builds a container with mvapich2 installed from source
+#Clones and compiles MpiBench
+
+Bootstrap: docker
+From: centos:8
+
+
+%post
+dnf install -y  --enablerepo powertools librdmacm tar git libibverbs libibumad numactl-devel libquadmath gcc-gfortran gcc gcc-c++ libibverbs-devel rdma-core-devel hwloc-libs ibacm-devel libfabric-devel libpsm2-devel libevent-devel hwloc-devel make curl wget bzip2 python3
+
+#slurm partial install
+
+export LD_LIBRARY_PATH=/usr/local/mvapich2-2.3.6/lib:/usr/local/slurm/lib
+export PATH=/usr/local/mvapich2-2.3.6/bin:/usr/share/Modules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+wget --no-check-certificate https://github.com/SchedMD/slurm/archive/slurm-20-02-7-1.tar.gz \
+  && tar -xf slurm-20-02-7-1.tar.gz \
+  && cd slurm-slurm-20-02-7-1 \
+  && ./configure --prefix=/usr/local/slurm \
+  && cd contribs/pmi2 \
+  && make -j32 install \
+  && ldconfig
+
+cd /
+wget http://mvapich.cse.ohio-state.edu/download/mvapich/mv2/mvapich2-2.3.6.tar.gz
+tar -xvf mvapich2-2.3.6.tar.gz
+cd mvapich2-2.3.6
+./configure --with-pm=slurm --with-pmi=pmi2 --with-slurm=/usr/local/slurm --prefix=/usr/local/mvapich2-2.3.6
+make -j32 install
+export LD_LIBRARY_PATH=/usr/local/mvapich2-2.3.6/lib:/usr/local/slurm/lib
+export PATH=/usr/local/mvapich2-2.3.6/bin:/usr/share/Modules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+
+cd /
+git clone https://github.com/LLNL/mpiBench.git
+cd mpiBench
+make
+
+%environment
+export LD_LIBRARY_PATH=/usr/local/mvapich2-2.3.6/lib:/usr/local/slurm/lib
+export PATH=/usr/local/mvapich2-2.3.6/bin:/usr/share/Modules/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+

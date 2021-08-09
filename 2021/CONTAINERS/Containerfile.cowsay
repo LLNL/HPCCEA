@@ -1,0 +1,10 @@
+#Builds a container that runs cowsay upon execution
+
+FROM ubuntu
+
+RUN apt-get update
+RUN apt-get install cowsay fortune -y
+
+ENV PATH=$PATH:/usr/games
+
+CMD fortune | cowsay 
