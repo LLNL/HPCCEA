@@ -1,0 +1,12 @@
+Bootstrap: library
+From: centos
+
+%post
+    dnf -y install git python3 gzip coreutils 
+    dnf -y --enablerepo=powertools install texinfo
+    git clone https://github.com/erkin/ponysay.git
+    cd ponysay
+    ./setup.py --freedom=partial install
+
+%runscript
+    ponysay "I am a pony"
