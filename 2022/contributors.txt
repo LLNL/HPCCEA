@@ -1,8 +1,11 @@
 # 2022 HPCCEA Contributors
 
-1. L.A. 
-2. P.B.
-3. N.C.
-4. C.D.
-5. G.M.
+
+1. Lindsey Amaro @lamaro02
+2. Prabhleen Bagri @Codeleen
+3. Naomi Cheeves NCC912 cheeves2@llnl.gov
+4. Christine Deng @christinedn - christinedn7@gmail.com
+5. Gabe Maxfield (@Gameslinger - maxfield3@llnl.gov)
 6. Eric Sledge (@ericsledge - ilsledgee@gmail.com)
+7. David Fox @foxdllnl
+
