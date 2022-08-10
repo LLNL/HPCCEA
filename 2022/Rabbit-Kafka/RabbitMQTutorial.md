@@ -9,6 +9,10 @@ On a compute node or VM (do not install on the management node), complete the fo
     *     rpm --import https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
     *     rpm --import https://packagecloud.io/rabbitmq/erlang/gpgkey
     *     rpm --import https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+```
+print(Hello World!)
+sys.exit(0)
+```
 * Navigate to /etc/yum.repos.d/ and create a new file called rabbitmq.repo with the following content:
         ``` 
         ##
