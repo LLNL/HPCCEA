@@ -10,9 +10,9 @@ On a compute node or VM (do not install on the management node), complete the fo
     *     rpm --import https://packagecloud.io/rabbitmq/erlang/gpgkey
     *     rpm --import https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 * Navigate to /etc/yum.repos.d/ and create a new file called rabbitmq.repo with the following content:
-           ##
-           ## Zero dependency Erlang
-           ##
+        `##`
+        `## Zero dependency Erlang`
+        `##`
         [rabbitmq_erlang]
         name=rabbitmq_erlang
 	baseurl=https://packagecloud.io/rabbitmq/erlang/el/8/$basearch
