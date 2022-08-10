@@ -70,6 +70,24 @@ metadata_expire=300
 
 Navigate back to the home directory on your compute node/VM and complete these steps.
 * Update Yum and enable all repositories:
-    *    yum update -y`
-    *    yum -q makecache -y --disablerepo='*' --enablerepo='rabbitmq_erlang' --enablerepo='rabbitmq_server'`
+    * `yum update -y`
+    * `yum -q makecache -y --disablerepo='*' --enablerepo='rabbitmq_erlang' --enablerepo='rabbitmq_server'`
+* Install dependencies
+    * `yum install socat logrotate -y` 
+* Install Erlang and RabbitMQ
+    * `yum install --repo rabbitmq_erlang --repo rabbitmq_server erlang rabbitmq-server -y`
+* Enable and start RabbitMQ
+    * `systemctl enable --now rabbitmq-server`
+    * `systemctl status rabbitmq-server`
+
+### Configuring RabbitMQ
+On the node/VM where you installed RabbitMQ:
+* Create a RabbitMQ user:
+    * `rabbitmqctl add_user "your_rabbitmq_username"`
+    * Once you type this, it will prompt you to set a password as well
+* Create a Virtual Host for this user to connect to:
+    * `rabbitmqctl add_vhost "your_vhost_name"`
+* Set permissions, so the user you created can access your Virtual Host:
+    * `rabbitmqctl set_permissions -p "your_vhost_name" "your_rabbitmq_username" ".*" ".*" ".*"`
+
 
