@@ -280,20 +280,22 @@ inactive-age-limit = "7d"
 ## Configuring Resources
 >`flux R encode` encodes the arguments into RFC 20 (ASCII format for network interchange). You can assign string-based properties to ranks using the properties field in R. Properties are used in job constraints specified by users on the command line. At the minimum, a hostlist and core idset must be specified
 
-Generate RFC 20 format (**Change to correct cluster under hosts**):
+Generate RFC 20 format (**Change to correct cluster under hosts**)
 ```
 flux R encode --hosts=siliconi,silicon[2-5] --cores=0-3 >/usr/local/etc/flux/system/R
 ```
 
-View the RFC 20 generated format:
+View the RFC 20 generated format
 ```
 cat /usr/local/etc/flux/system/R
 ```
 
-Example output  
+Example output:  
 
-![](https://i.imgur.com/vx4vuAO.png)
-
+```
+[root@siliconi ~]# cat /usr/local/etc/flux/system/R
+{"version": 1, "execution": {"R_lite": [{"rank": "0-4", "children": {"core": "0-3"}}], "starttime": 0.0, "expiration": 0.0, "nodelist": ["siliconi,silicon[2-5]"]}}
+```
 
 ## Getting Flux to start on boot up
 >Flux.service file needs to be copied to system default location so that flux can be started, stopped, enabled, and disabled with systemctl.
@@ -318,9 +320,15 @@ Display free nodes
 flux resource list
 ```
 
-Example output  
-![](https://i.imgur.com/pJ1PuP0.png)
+Example output:    
+``
+[root@siliconi ~]# flux resource list
+     STATE NNODES   NCORES    NGPUS NODELIST
+      free      5       20        0 siliconi,silicon[2-5]
+ allocated      0        0        0
+      down      0        0        0
 
+```
 
 ## Running a job
 >[flux mini run](https://flux-framework.readthedocs.io/projects/flux-core/en/latest/man1/flux-mini.html) submits jobs to run under Flux. 
