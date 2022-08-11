@@ -336,9 +336,11 @@ Submit a job with two tasks and two nodes
 Example output  
 ```
 [christine@nvm2 ~]$ flux mini run -n2 -N2 hostname 2>/dev/null | grep -v cpu-affinity 
-nvm3 nvm4
+nvm3
+nvm4
 [christine@nvm2 ~]$ flux mini run -n2 -N1 hostname 2>/dev/null | grep -v cpu-affinity
-nvm4 nvm4
+nvm4
+nvm4
 ```
 ## Running an MPI job
 Install mpicc if you haven't already done so:  
