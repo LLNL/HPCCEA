@@ -154,3 +154,57 @@ Now, log into a different compute node or VM that you have *not* installed Rabbi
           connection.close()
 
 
+w, go to a different compute node or VM, one that doesn't have RabbitMQ installed and that doesn't have your send.py file. 
+* Install pip (if not already installed) and the Pika Python module, as you did on the node with send.py
+* Create a file called receive.py
+    * On the first line of the file, import the pika, sys, and os modules: `import pika, sys, os`
+    * Delcare the main function: `def main():`
+        * Inside that function, establish a connection with the server and delcare the queue you will receive messages from. These 4 lines of code will be exactly the same as they were in send.py. The queue you delcare here must have the same name as the queue you declared in send.py.
+        * Still inside the main function, define a callback function, which will print the messages received by the queue:
+            
+              def callback(ch, method, properties, body):
+                  print(" [x] Received %r" %body)
+
+        * Outside of the callback function (but still within the main function), have your receiver begin consuming messages from the queue
+        
+              channel.basic_consume(queue='your_queue_name', on_message_callback=callback, auto_ack=True)
+              print(' [*] Waiting for messages. To exit, press CTRL+C')
+              channel.start_consuming()
+    * Outside of the main function, write the code that will start your main function:
+    
+          if __name__=='__main__':
+              try:
+                  main()
+              except KeyboardInterrupt:
+                  print('Interrupted')
+                  try:
+                      sys.exit(0)
+                  except SystemExit:
+                      os._exit(0)
+                      
+    * Example of the complete program:
+            
+          import pika, sys, os
+          
+          def main()
+              credentials = pika.PlainCredentials('your_rabbitmq_username', 'your_rabbitmq_password')
+              connection = pika.BlockingConnection(pika.ConnectionParameters('server_node',5672,'your_vhost',credentials))
+              channel = connection.channel()
+              # must declare queue in both send and receive, since we do not know which will be started first
+              channel.queue_declare(queue='test')
+              def callback(ch, method, properties, body):
+                  print(" [x] Received %r" %body)
+                  
+              channel.basic_consume(queue='test', on_message_callback=callback, auto_ack=True)
+              print(' [*] Waiting for messages. To exit, press CTRL+C')
+              channel.start_consuming()
+          if __name__=='__main__':
+              try:
+                  main()
+              except KeyboardInterrupt:
+                  print('Interrupted')
+                  try:
+                      sys.exit(0)
+                  except SystemExit:
+                      os._exit(0)
+
