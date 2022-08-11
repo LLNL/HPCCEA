@@ -113,8 +113,10 @@ make install
 ## Configuring flux-security 
 >Job requests are signed using a library provided by flux-security. This ensures authenticity. This library reads configuration from /usr/local/etc/flux/security/conf.d/*.toml.
 
-View the following file
-`cat /usr/local/etc/flux/security/conf.d/sign.toml`
+View the following file  
+```
+cat /usr/local/etc/flux/security/conf.d/sign.toml
+```
 
 Ensure it looks like the content below
 ```  
