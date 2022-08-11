@@ -27,7 +27,7 @@ cat /etc/passwd | grep christine
   
 On the management node,
 
-1.  Edit the /etc/exports file and add the following line 
+1.  Edit the /etc/exports file and add the following line   
 ```    
 /usr/local  192.168.95.0/255.255.255.0(rw,sync,no_root_squash)
 /home 192.168.95.0/255.255.255.0(rw,sync,no_root_squash)
@@ -40,7 +40,7 @@ On the management node,
     
 On all compute nodes,
 
-1.  Edit /etc/fstab and add the following line (**change to management node**):
+1.  Edit /etc/fstab and add the following line (**Change to correct management node**)
 ```
 esilicon1:/usr/local  /usr/local  nfs  defaults  0 0
 esilicon1:/home /home nfs  defaults  0 0
@@ -73,7 +73,7 @@ Install Alma 8 packages on all nodes
 dnf install -y autoconf automake libtool make pkgconfig glibc-devel zeromq-devel czmq-devel libuuid-devel jansson-devel lz4-devel libarchive-devel hwloc-devel sqlite-devel lua lua-devel lua-posix python3-devel python3-cffi python3-yaml python3-jsonschema python3-sphinx aspell aspell-en valgrind-devel mpich-devel jq libsodium-devel jansson-devel libuuid-devel munge-devel hwloc-devel boost-devel boost-graph boost-system boost-filesystem boost-regex libedit-devel libxml2-devel python3-pyyaml yaml-cpp-devel gcc-c++
 ```
 
-Do the following on the management node. Make sure to install flux-security first then flux-core. flux-core builds on flux-security which is what allows flux to run as multi-users.
+Do the following installations on the management node. Make sure to install flux-security first then flux-core. flux-core builds on flux-security which is what allows flux to run as multi-users.
 
 Install flux-security
 ```
