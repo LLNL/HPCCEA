@@ -62,13 +62,13 @@ Install epel release
 dnf install -y epel-release
 ```
 
-Enable epel repo and powertools repo on all nodes:
+Enable epel repo and powertools repo on all nodes
 ```
 dnf config-manager --enable epel
 dnf config-manager --set-enabled powertools
 ```
 
-Install Alma 8 packages on all nodes:
+Install Alma 8 packages on all nodes
 ```
 dnf install -y autoconf automake libtool make pkgconfig glibc-devel zeromq-devel czmq-devel libuuid-devel jansson-devel lz4-devel libarchive-devel hwloc-devel sqlite-devel lua lua-devel lua-posix python3-devel python3-cffi python3-yaml python3-jsonschema python3-sphinx aspell aspell-en valgrind-devel mpich-devel jq libsodium-devel jansson-devel libuuid-devel munge-devel hwloc-devel boost-devel boost-graph boost-system boost-filesystem boost-regex libedit-devel libxml2-devel python3-pyyaml yaml-cpp-devel gcc-c++
 ```
@@ -111,10 +111,10 @@ make install
 ## Configuring flux-security 
 >Job requests are signed using a library provided by flux-security. This ensures authenticity. This library reads configuration from /usr/local/etc/flux/security/conf.d/*.toml.
 
-View the following file:
+View the following file
 `cat /usr/local/etc/flux/security/conf.d/sign.toml`
 
-Ensure it looks like the content below:
+Ensure it looks like the content below
 ```  
 # Job requests should be valid for 2 weeks 
 # Use munge as the job request signing mechanism 
@@ -137,7 +137,7 @@ Edit imp.toml
 vi /usr/local/etc/flux/imp/conf.d/imp.toml
 ```
 
-Add the following lines:
+Add the following lines
 ```
 # Only allow access to the IMP exec method by the 'flux' user.
 
@@ -157,27 +157,27 @@ Change permissions of the file. This is so that flux jobs can be ran under a sta
 >Overlay network security requires a certificate to be distributed to all nodes and should only be readable by the flux user.
 
 
-Log in as flux user:
+Log in as flux user
 ```
 sudo su - flux
 ```
 
-Generate key:
+Generate key
 ```
 flux keygen /tmp/curve.cert
 ```
 
-Log out of flux:
+Log out of flux
 ```
 exit
 ```
 
-Make directory:
+Make directory
 ```
 mkdir -p /usr/local/etc/flux/system/
 ```
 
-Move the key:
+Move the key
 ```
 mv /tmp/curve.cert /usr/local/etc/flux/system/
 ```
@@ -190,7 +190,7 @@ Make directory:
 mkdir -p /usr/local/etc/flux/system/conf.d
 ```
 
-Edit system.toml file: 
+Edit system.toml file  
 ```
 vi /usr/local/etc/flux/system/conf.d/system.toml
 ```
@@ -286,7 +286,7 @@ View the RFC 20 generated format:
 cat /usr/local/etc/flux/system/R
 ```
 
-Example output: 
+Example output  
 
 ![](https://i.imgur.com/vx4vuAO.png)
 
@@ -294,22 +294,22 @@ Example output:
 ## Getting Flux to start on boot up
 >Flux.service file needs to be copied to system default location so that flux can be started, stopped, enabled, and disabled with systemctl.
 
-Copy the flux.service file into the system default location on all nodes:  
+Copy the flux.service file into the system default location on all nodes  
 ```
 cp /usr/local/usr/lib/systemd/system/flux.service /usr/lib/systemd/system/
 ```
 
-Enable and start flux on all nodes.  
+Enable and start flux on all nodes  
 ```
 systemctl enable --now flux
 ``` 
 
-Check that flux is running on all nodes:  
+Check that flux is running on all nodes  
 ```
 systemctl status flux
 ```
 
-Display free nodes:  
+Display free nodes  
 ```
 flux resource list
 ```
@@ -328,10 +328,10 @@ Example output
 Log in as standard user
 `sudo su - christine`
 
-Submit a job with two tasks and two nodes:
+Submit a job with two tasks and two nodes  
 `flux mini run -n2 -N2 hostname 2>/dev/null | grep -v cpu-affinity`
 
-Example output:  
+Example output  
 ```
 [christine@nvm2 ~]$ flux mini run -n2 -N2 hostname 2>/dev/null | grep -v cpu-affinity 
 nvm3 nvm4
@@ -344,7 +344,7 @@ Install mpicc if you haven't already done so:
 dnf install -y openmpi-devel
 ```
 
-Create a file called hello.c:  
+Create a file called hello.c  
 ```
 vi hello.c
 ```
@@ -380,7 +380,7 @@ int main(int argc, char** argv) {
     MPI_Finalize();
 }
 ```
-Compile the file:  
+Compile the file  
 ```
 /usr/lib64/openmpi/bin/mpicc -o hello hello.c
 ```
@@ -390,13 +390,9 @@ Submit the job (Change to correct directory)
 flux mini run -n2 -N2 /home/christine/hello 2>/dev/null | grep -v cpu-affinity
 ```
 
-Expected output:
+Expected output  
 ```
 [christine@nvm2 ~]$ flux mini run -n2 -N2 /home/christine/hello 2>/dev/null | grep -v cpu-affinity
 Hello world from processor nvm3, rank 0 out of 2 processors
 Hello world from processor nvm4, rank 1 out of 2 processors
 ```
-
-
-
-
