@@ -230,3 +230,7 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
       Your output should now match the sample output.
 
 And that's it! You now have a working RabbitMQ server and Hello World application.
+
+### References
+https://www.rabbitmq.com/install-rpm.html
+https://www.rabbitmq.com/tutorials/tutorial-one-python.html
