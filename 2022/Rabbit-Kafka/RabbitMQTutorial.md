@@ -218,9 +218,9 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
       # send.py - output
       [x] Sent 'Hello World!'
 
-* Debug: If the second line of your receive.py output looks like `[x] Received b'Hello World!'`, go into your receive.py file and, under the callback function, alter the print statement to say the following:
+    * Debug: If the second line of your receive.py output looks like `[x] Received b'Hello World!'`, go into your receive.py file and, under the callback function, alter the print statement to say the following:
 
-      print(" [x] Received %r" %(body.decode('UTF-8')))
+          print(" [x] Received %r" %(body.decode('UTF-8')))
       
     This should fix the issue.
 
