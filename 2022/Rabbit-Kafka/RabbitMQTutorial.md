@@ -1,7 +1,10 @@
 # RabbitMQ Tutorial
+## Written by Lindsey Amaro
 
 ### Background
 RabbitMQ is a message broker, acting as an intermediary service between applications that send and recieve messages. Using RabbitMQ reduces coupling between sender and reciever because, with RabbitMQ handling the transfer and translation of messages, sender and receiver do not directly interact with one another. All messages are stored in queues, which sending and recieving applications can connect to in order to access messages. Sending applications are referred to as producers or publishers, and reciving applications are referred to as consumers or subscribers. Besides the low coupling, RabbitMQ is also beneficial because it allows producers to send their messages in a variety of ways, whether that be directly to a consumer or to an entire group of subscribers. For these and other benefits, RabbitMQ is used by many companies for several types of processes.
+
+**Before beginning this tutorial, ensure that you have 3 AlmaLinux 8 VMs or Compute Nodes that can ping one another set up.** 
 
 ### Installing RabbitMQ
 On a compute node or VM (do not install on the management node), complete the following steps:
