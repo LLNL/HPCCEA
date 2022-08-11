@@ -163,7 +163,7 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
 * Create a file called receive.py
     * On the first line of the file, import the pika, sys, and os modules: `import pika, sys, os`
     * Delcare the main function: `def main():`
-        * Inside that function, just as you did in send.py, establish a connection with the server and delcare the queue you will receive messages from. **The queue you declare here must have the same name as the queue you declared in send.py**  
+        * Inside that function, just as you did in send.py, establish a connection with the server and delcare the queue you will receive messages from. ***The queue you declare here must have the same name as the queue you declared in send.py***  
         * Still inside the main function, define a callback function, which will retrieve messages from the queue:
             
               def callback(ch, method, properties, body):
