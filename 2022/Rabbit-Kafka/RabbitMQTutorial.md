@@ -72,48 +72,48 @@ On a compute node or VM (do not install on the management node), complete the fo
 Navigate back to the home directory on your compute node/VM and complete these steps.
 * Update Yum and enable all repositories:
 
-          yum update -y
-          yum -q makecache -y --disablerepo='*' --enablerepo='rabbitmq_erlang' --enablerepo='rabbitmq_server'
+      yum update -y
+      yum -q makecache -y --disablerepo='*' --enablerepo='rabbitmq_erlang' --enablerepo='rabbitmq_server'
 
 * Install dependencies
 
-          yum install socat logrotate -y
+      yum install socat logrotate -y
 
 * Install Erlang and RabbitMQ
 
-          yum install --repo rabbitmq_erlang --repo rabbitmq_server erlang rabbitmq-server -y
+      yum install --repo rabbitmq_erlang --repo rabbitmq_server erlang rabbitmq-server -y
 
 * Enable and start RabbitMQ
 
-          systemctl enable --now rabbitmq-server
-          systemctl status rabbitmq-server
+      systemctl enable --now rabbitmq-server
+      systemctl status rabbitmq-server
 
 ### Configuring RabbitMQ
 On the node/VM where you installed RabbitMQ:
 * Create a RabbitMQ user:
 
-          rabbitmqctl add_user "your_rabbitmq_username"
+      rabbitmqctl add_user "your_rabbitmq_username"
 
     * Once you type this, it will prompt you to set a password as well
 * Create a Virtual Host for this user to connect to:
 
-          rabbitmqctl add_vhost "your_vhost_name"
+      rabbitmqctl add_vhost "your_vhost_name"
 
 * Set permissions, so the user you created can access your Virtual Host:
 
-          rabbitmqctl set_permissions -p "your_vhost_name" "your_rabbitmq_username" ".*" ".*" ".*"
+      rabbitmqctl set_permissions -p "your_vhost_name" "your_rabbitmq_username" ".*" ".*" ".*"
 
 ### Send and Receive Messages - Hello World Application:
 Now, log into a different compute node or VM that you have *not* installed RabbitMQ on.
 * If you have not installed it already, install pip:
 
-          dnf install -y python3-pip
+      dnf install -y python3-pip
 
 * Install the Pika Python module, which will allow the machine to connect to your RabbitMQ server:
 
-          pip install pika or pip3 install pika
+      pip install pika or pip3 install pika
 
-        * Debug: If your terminal does not recognize the "pip" or "pip3" commands, but you have installed pip, try running the following command instead: `python3 -m pip install pika`
+    * Debug: If your terminal does not recognize the "pip" or "pip3" commands, but you have installed pip, try running the following command instead: `python3 -m pip install pika`
 * Create a file called send.py 
     * On the first line of that file, import pika: `import pika`
     * On the next three lines, as shown below, establish a connection with the RabbitMQ server. Replace `your_rabbitmq_username` and `your_rabbitmq_password` with the RabbitMQ username and password you created in the configuration steps. Replace `server_node` with the name of the node you installed RabbitMQ on (a shortened name or the full name of the node are both acceptable, e.g. 'e3' or 'xenon3'):
