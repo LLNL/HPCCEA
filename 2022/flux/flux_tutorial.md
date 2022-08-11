@@ -129,7 +129,7 @@ allowed-types = [ "munge" ]
 ```
 
 ## Configuring the IMP
->IMP (Independent Minister of Privileges) allows instance owners to run work on behalf of a guest. It has a private configuration space in /usr/local/etc/flux/imp/conf.d/*.toml
+>[IMP](https://flux-framework.readthedocs.io/projects/flux-rfc/en/latest/spec_15.html) (Independent Minister of Privileges) allows instance owners to run work on behalf of a guest. It has a private configuration space in /usr/local/etc/flux/imp/conf.d/*.toml
 
 Make the following directory
 ```
