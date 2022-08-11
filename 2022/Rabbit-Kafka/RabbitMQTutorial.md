@@ -90,4 +90,50 @@ On the node/VM where you installed RabbitMQ:
 * Set permissions, so the user you created can access your Virtual Host:
     * `rabbitmqctl set_permissions -p "your_vhost_name" "your_rabbitmq_username" ".*" ".*" ".*"`
 
+### Send and Receive Messages - Hello World Application:
+Now, log into a different compute node or VM that you have *not* installed RabbitMQ on.
+* If you have not installed it already, install pip:
+    * `dnf install -y python3-pip`
+* Install the Pika Python module, which will allow the machine to connect to your RabbitMQ server:
+    * `pip install pika` or `pip3 install pika`
+        * Debug: If your terminal does not recognize the "pip" or "pip3" commands, but you have installed pip, try running the following command instead: `python3 -m pip install pika`
+* Create a file called send.py 
+    * On the first line of that file, import pika: `import pika`
+    * On the next three lines, as shown below, establish a connection with the RabbitMQ server. Replace `your_rabbitmq_username` and `your_rabbitmq_password` with the RabbitMQ username and password you created in the configuration steps. Replace `server_node` with the name of the node you installed RabbitMQ on (a shortened name or the full name of the node are both acceptable, e.g. 'e3' or 'xenon3'):
+```
+credentials = pika.PlainCredentials('your_rabbitmq_username', 'your_rabbitmq_password')
+connection = pika.BlockingConnection(pika.ConnectionParameters('server_node', 5672, 'your_vhost', credentials))   
+channel = connection.channel()
+```
+    * Now, declare a queue your message will go to. You can give the queue any name you like: You can give the queue any name you like: 
+```
+channel.queue_declare(queue='your_queue_name')
+```
+    * Publish a message. The routing key is used to deliver the message to the correct queue, and in this example, our routing key will be our queue name.
+```
+channel.basic_publish(exchange='', routing_key='your_queue_name', body="Hello World!")
+```
+    * Print a confirmation that your message has been sent, and close the connection between the sender and server: 
+```
+print(" [x] Sent 'Hello World!'")
+connection.close()
+```
+    * Example of the complete program:
+```
+import pika
+
+# establishes a connection with RabbitMQ server
+credentials = pika.PlainCredentials('your_rabbitmq_username', 'your_rabbitmq_password')
+connection = pika.BlockingConnection(pika.ConnectionParameters('server_node',5672,'your_vhost',credentials))
+channel = connection.channel()
+
+# make sure queue we want to send to exists. If it does not exist, RabbitMQ will just create one
+channel.queue_declare(queue='your_queue_name')
+
+# send the message
+channel.basic_publish(exchange='', routing_key='test', body='Hello World!')
+
+print(" [x] Sent 'Hello World!'")
+connection.close()
+```
 
