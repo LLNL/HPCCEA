@@ -3,14 +3,13 @@
 
 ### Background
 RabbitMQ is a message broker, acting as an intermediary service between applications that send and recieve messages. Using RabbitMQ reduces coupling between sender and reciever because, with RabbitMQ handling the transfer and translation of messages, sender and receiver do not directly interact with one another. All messages are stored in queues, which sending and receiving applications can connect to in order to access messages. Sending applications are referred to as producers or publishers, and receiving applications are referred to as consumers or subscribers. Besides the low coupling, RabbitMQ is also beneficial because it allows producers to send their messages in a variety of ways, whether that be directly to a consumer or to an entire group of subscribers. For these and other benefits, RabbitMQ is used by many companies for several types of processes.
-Now, go to a different compute node or VM, one that doesn't have RabbitMQ installed and that doesn't have your send.py file.
 
 
 ***Note: Before beginning this tutorial, ensure that you have set up 3 AlmaLinux 8 VMs or Compute Nodes (with RedHat Linux distributions) that can ping one another.*** 
 
 
 ### Installing RabbitMQ
-On a compute node or VM (do not install on a management node), complete the following steps:
+On a compute node or VM, complete the following steps:
 * Import necessary rpms
 
       rpm --import https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
@@ -136,7 +135,7 @@ Now, log into a different compute node or VM that you have *not* installed Rabbi
 
           channel.basic_publish(exchange='', routing_key='your_queue_name', body="Hello World!")
 
-    * Print a confirmation that your message has been sent, and close the connection between the sender and server: 
+    * Print a confirmation that your message has sent, and close the connection between the sender and server: 
 
           print(" [x] Sent 'Hello World!'")
           connection.close()
@@ -154,7 +153,7 @@ Now, log into a different compute node or VM that you have *not* installed Rabbi
           channel.queue_declare(queue='your_queue_name')
 
           # send the message
-          channel.basic_publish(exchange='', routing_key='test', body='Hello World!')
+          channel.basic_publish(exchange='', routing_key='your_queue_name', body='Hello World!')
 
           print(" [x] Sent 'Hello World!'")
           connection.close()
@@ -164,13 +163,13 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
 * Create a file called receive.py
     * On the first line of the file, import the pika, sys, and os modules: `import pika, sys, os`
     * Delcare the main function: `def main():`
-        * Inside that function, just as you did in send.py, establish a connection with the server and delcare the queue you will receive messages from. *The queue you declare here must have the same name as the queue you declared in send.py*  
+        * Inside that function, just as you did in send.py, establish a connection with the server and delcare the queue you will receive messages from. **The queue you declare here must have the same name as the queue you declared in send.py**  
         * Still inside the main function, define a callback function, which will retrieve messages from the queue:
             
               def callback(ch, method, properties, body):
                   print(" [x] Received %r" %body)
 
-        * Outside of the callback function (but still within the main function), have your receiver begin consuming messages from the queue
+        * Outside of the callback function (but still within the main function), have your receiver begin consuming messages from the queue:
         
               channel.basic_consume(queue='your_queue_name', on_message_callback=callback, auto_ack=True)
               print(' [*] Waiting for messages. To exit, press CTRL+C')
@@ -196,11 +195,11 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
               connection = pika.BlockingConnection(pika.ConnectionParameters('server_node',5672,'your_vhost',credentials))
               channel = connection.channel()
               # must declare queue in both send and receive, since we do not know which will be started first
-              channel.queue_declare(queue='test')
+              channel.queue_declare(queue='your_queue_name')
               def callback(ch, method, properties, body):
                   print(" [x] Received %r" %body)
                   
-              channel.basic_consume(queue='test', on_message_callback=callback, auto_ack=True)
+              channel.basic_consume(queue='your_queue_name', on_message_callback=callback, auto_ack=True)
               print(' [*] Waiting for messages. To exit, press CTRL+C')
               channel.start_consuming()
           if __name__=='__main__':
@@ -215,14 +214,11 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
 
 * Now, you are set to run your programs. Open two terminal windows. In one window, go to the node you created receive.py on and run the program (`python3 receive.py`). In the other window, go the node you created send.py on and run the program (`python3 send.py`). Your output should look like the following:
                 
-   **receive.py - output**
+   **receive.py - output** (The second line of output will appear once you run send.py)
 
       [*] Waiting for messages. To exit, press CTRL+C
       [x] Received 'Hello World!'
     
-    The second line of output will appear once you run send.py 
-
-
    **send.py - output**
 
       [x] Sent 'Hello World!'
@@ -231,6 +227,6 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
 
           print(" [x] Received %r" %(body.decode('UTF-8')))
       
-    This should fix the issue.
+      Your output should now match the sample output.
 
 And that's it! You now have a working RabbitMQ server and Hello World application.
