@@ -207,3 +207,21 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
                   except SystemExit:
                       os._exit(0)
 
+* Now, you are set to run your programs. Open two terminal windows. In one window, go to the node you created receive.py on and run the program ("python3 receive.py"). In the other window, go the node you created send.py on and run the program ("python3 send.py"). Your output should look like the following:
+                
+      # receive.py - output
+      [*] Waiting for messages. To exit, press CTRL+C
+      [x] Received 'Hello World!'
+    
+    The second line of output will appear once you run send.py 
+
+      # send.py - output
+      [x] Sent 'Hello World!'
+
+* Debug: If the second line of your receive.py output looks like `[x] Received b'Hello World!'`, go into your receive.py file and, under the callback function, alter the print statement to say the following:
+
+      print(" [x] Received %r" %(body.decode('UTF-8')))
+      
+    This should fix the issue.
+
+And that's it! You now have a working RabbitMQ server and Hello World application.
