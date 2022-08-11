@@ -32,7 +32,7 @@ On the management node,
 
 2. Restart the nfs-server with the following command
 
-	`systemctl restart nfs-server`
+`systemctl restart nfs-server`
     
     
 On all compute nodes,
@@ -66,31 +66,31 @@ Install Alma 8 packages on all nodes:
 Do the following on the management node. Make sure to install flux-security first then flux-core. flux-core builds on flux-security which is what allows flux to run as multi-users.
 
 Install flux-security
-1. `cd`
-2.`git clone https://github.com/flux-framework/flux-security`
-3. `cd flux-security`
-4. `./autogen.sh`
-5. `./configure`
-6. `make` # Looks into makefile directory and recompiles the files
-7. `make install` # Installs into /usr/local/bin
+`cd`
+`git clone https://github.com/flux-framework/flux-security`
+`cd flux-security`
+`./autogen.sh`
+`./configure`
+`make` # Looks into makefile directory and recompiles the files
+`make install` # Installs into /usr/local/bin
 
 Install flux-core
-1. `cd`
-2. `git clone https://github.com/flux-framework/flux-core.git`
-3.  `cd flux-core`
-4. `./autogen.sh`
-5. `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --with-flux-security` # Allow flux jobs to run as user other than flux
-6. `make` 
-7. `make install` 
+`cd`
+`git clone https://github.com/flux-framework/flux-core.git`
+`cd flux-core`
+`./autogen.sh`
+`PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --with-flux-security` # Allow flux jobs to run as user other than flux
+`make` 
+`make install` 
 
 Install flux-sched
-1. `cd`
-2. `git clone https://github.com/flux-framework/flux-sched.git`
-3. `cd flux-sched`
-4. `./autogen.sh`
-5. `./configure`
-6. `make` 
-7. `make install` 
+`cd`
+`git clone https://github.com/flux-framework/flux-sched.git`
+`cd flux-sched`
+`./autogen.sh`
+`./configure`
+`make` 
+`make install` 
 
 ## Configuring flux-security 
 >Job requests are signed using a library provided by flux-security. This ensures authenticity. This library reads configuration from /usr/local/etc/flux/security/conf.d/*.toml.
@@ -117,7 +117,7 @@ Make the following directory
 Edit imp.toml
 `vi /usr/local/etc/flux/imp/conf.d/imp.toml`
 
-Adding the following lines:
+Add the following lines:
 ```
 # Only allow access to the IMP exec method by the 'flux' user.
 
@@ -264,6 +264,8 @@ Check that flux is running on all nodes:
 
 Display free nodes:
 `flux resource list`
+
+Example output:
 ![](https://i.imgur.com/pJ1PuP0.png)
 
 
@@ -280,7 +282,7 @@ Log in as standard user
 Submit a job with two tasks and two nodes:
 `flux mini run -n2 -N2 hostname 2>/dev/null | grep -v cpu-affinity`
 
-Example outputs:
+Example output:
 ```
 [christine@nvm2 ~]$ flux mini run -n2 -N2 hostname 2>/dev/null | grep -v cpu-affinity 
 nvm3 nvm4
