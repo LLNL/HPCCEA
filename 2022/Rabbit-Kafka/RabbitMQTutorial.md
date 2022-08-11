@@ -12,92 +12,107 @@ On a compute node or VM (do not install on the management node), complete the fo
       rpm --import https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 
 * Navigate to /etc/yum.repos.d/ and create a new file called rabbitmq.repo with the following content:
-``` 
-##
-## Zero dependency Erlang
-##
-[rabbitmq_erlang]
-name=rabbitmq_erlang
-baseurl=https://packagecloud.io/rabbitmq/erlang/el/8/$basearch
-repo_gpgcheck=1
-gpgcheck=1
-enabled=1
-# PackageClouds repository key and RabbitMQ package signing key
-gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-metadata_expire=300
+ 
+      ##
+      ## Zero dependency Erlang
+      ##
+      [rabbitmq_erlang]
+      name=rabbitmq_erlang
+      baseurl=https://packagecloud.io/rabbitmq/erlang/el/8/$basearch
+      repo_gpgcheck=1
+      gpgcheck=1
+      enabled=1
+      # PackageClouds repository key and RabbitMQ package signing key
+      gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
+             https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+      sslverify=1
+      sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+      metadata_expire=300
 
-[rabbitmq_erlang-source]
-name=rabbitmq_erlang-source
-baseurl=https://packagecloud.io/rabbitmq/erlang/el/8/SRPMS
-repo_gpgcheck=1
-gpgcheck=0
-enabled=1
-# PackageClouds repository key and RabbitMQ package signing key
-gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
-https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+      [rabbitmq_erlang-source]
+      name=rabbitmq_erlang-source
+      baseurl=https://packagecloud.io/rabbitmq/erlang/el/8/SRPMS
+      repo_gpgcheck=1
+      gpgcheck=0
+      enabled=1
+      # PackageClouds repository key and RabbitMQ package signing key
+      gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
+             https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+      sslverify=1
+      sslcacert=/etc/pki/tls/certs/ca-bundle.crt
 
-##
-## RabbitMQ server
-##
-[rabbitmq_server]
-name=rabbitmq_server
-baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/8/$basearch
-repo_gpgcheck=1
-gpgcheck=0
-enabled=1
-# PackageClouds repository key and RabbitMQ package signing key
-gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-metadata_expire=300
-metadata_expire=300
+      ##
+      ## RabbitMQ server
+      ##
+      [rabbitmq_server]
+      name=rabbitmq_server
+      baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/8/$basearch
+      repo_gpgcheck=1
+      gpgcheck=0
+      enabled=1
+      # PackageClouds repository key and RabbitMQ package signing key
+      gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+             https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+      sslverify=1
+      sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+      metadata_expire=300
+      metadata_expire=300
 
-[rabbitmq_server-source]
-name=rabbitmq_server-source
-baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/8/SRPMS
-repo_gpgcheck=1
-gpgcheck=0
-enabled=1
-gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-metadata_expire=300
-```
+      [rabbitmq_server-source]
+      name=rabbitmq_server-source
+      baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/8/SRPMS
+      repo_gpgcheck=1
+      gpgcheck=0
+      enabled=1
+      gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+      sslverify=1
+      sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+      metadata_expire=300
 
 Navigate back to the home directory on your compute node/VM and complete these steps.
 * Update Yum and enable all repositories:
-    `yum update -y`
-    `yum -q makecache -y --disablerepo='*' --enablerepo='rabbitmq_erlang' --enablerepo='rabbitmq_server'`
+
+          yum update -y
+          yum -q makecache -y --disablerepo='*' --enablerepo='rabbitmq_erlang' --enablerepo='rabbitmq_server'
+
 * Install dependencies
-    * `yum install socat logrotate -y` 
+
+          yum install socat logrotate -y
+
 * Install Erlang and RabbitMQ
-    * `yum install --repo rabbitmq_erlang --repo rabbitmq_server erlang rabbitmq-server -y`
+
+          yum install --repo rabbitmq_erlang --repo rabbitmq_server erlang rabbitmq-server -y
+
 * Enable and start RabbitMQ
-    * `systemctl enable --now rabbitmq-server`
-    * `systemctl status rabbitmq-server`
+
+          systemctl enable --now rabbitmq-server
+          systemctl status rabbitmq-server
 
 ### Configuring RabbitMQ
 On the node/VM where you installed RabbitMQ:
 * Create a RabbitMQ user:
-    * `rabbitmqctl add_user "your_rabbitmq_username"`
+
+          rabbitmqctl add_user "your_rabbitmq_username"
+
     * Once you type this, it will prompt you to set a password as well
 * Create a Virtual Host for this user to connect to:
-    * `rabbitmqctl add_vhost "your_vhost_name"`
+
+          rabbitmqctl add_vhost "your_vhost_name"
+
 * Set permissions, so the user you created can access your Virtual Host:
-    * `rabbitmqctl set_permissions -p "your_vhost_name" "your_rabbitmq_username" ".*" ".*" ".*"`
+
+          rabbitmqctl set_permissions -p "your_vhost_name" "your_rabbitmq_username" ".*" ".*" ".*"
 
 ### Send and Receive Messages - Hello World Application:
 Now, log into a different compute node or VM that you have *not* installed RabbitMQ on.
 * If you have not installed it already, install pip:
-    * `dnf install -y python3-pip`
+
+          dnf install -y python3-pip
+
 * Install the Pika Python module, which will allow the machine to connect to your RabbitMQ server:
-    * `pip install pika` or `pip3 install pika`
+
+          pip install pika or pip3 install pika
+
         * Debug: If your terminal does not recognize the "pip" or "pip3" commands, but you have installed pip, try running the following command instead: `python3 -m pip install pika`
 * Create a file called send.py 
     * On the first line of that file, import pika: `import pika`
