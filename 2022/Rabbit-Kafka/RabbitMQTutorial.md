@@ -1,15 +1,16 @@
-# RabbitMQ Tutorial
+# RabbitMQ Tutorial for RedHat Enterprise Linux Machines
 **Written by Lindsey Amaro**
 
 ### Background
-RabbitMQ is a message broker, acting as an intermediary service between applications that send and recieve messages. Using RabbitMQ reduces coupling between sender and reciever because, with RabbitMQ handling the transfer and translation of messages, sender and receiver do not directly interact with one another. All messages are stored in queues, which sending and recieving applications can connect to in order to access messages. Sending applications are referred to as producers or publishers, and reciving applications are referred to as consumers or subscribers. Besides the low coupling, RabbitMQ is also beneficial because it allows producers to send their messages in a variety of ways, whether that be directly to a consumer or to an entire group of subscribers. For these and other benefits, RabbitMQ is used by many companies for several types of processes.
+RabbitMQ is a message broker, acting as an intermediary service between applications that send and recieve messages. Using RabbitMQ reduces coupling between sender and reciever because, with RabbitMQ handling the transfer and translation of messages, sender and receiver do not directly interact with one another. All messages are stored in queues, which sending and receiving applications can connect to in order to access messages. Sending applications are referred to as producers or publishers, and receiving applications are referred to as consumers or subscribers. Besides the low coupling, RabbitMQ is also beneficial because it allows producers to send their messages in a variety of ways, whether that be directly to a consumer or to an entire group of subscribers. For these and other benefits, RabbitMQ is used by many companies for several types of processes.
+Now, go to a different compute node or VM, one that doesn't have RabbitMQ installed and that doesn't have your send.py file.
 
 
-**Before beginning this tutorial, ensure that you have 3 AlmaLinux 8 VMs or Compute Nodes that can ping one another set up.** 
+***Note: Before beginning this tutorial, ensure that you have set up 3 AlmaLinux 8 VMs or Compute Nodes (with RedHat Linux distributions) that can ping one another.*** 
 
 
 ### Installing RabbitMQ
-On a compute node or VM (do not install on the management node), complete the following steps:
+On a compute node or VM (do not install on a management node), complete the following steps:
 * Import necessary rpms
 
       rpm --import https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
@@ -116,12 +117,12 @@ Now, log into a different compute node or VM that you have *not* installed Rabbi
 
 * Install the Pika Python module, which will allow the machine to connect to your RabbitMQ server:
 
-      pip install pika or pip3 install pika
+      pip3 install pika
 
-    * Debug: If your terminal does not recognize the "pip" or "pip3" commands, but you have installed pip, try running the following command instead: `python3 -m pip install pika`
+    * Note: If your terminal does not recognize the "pip" or "pip3" commands, but you have installed pip, try running the following command instead: `python3 -m pip install pika`
 * Create a file called send.py 
     * On the first line of that file, import pika: `import pika`
-    * On the next three lines, as shown below, establish a connection with the RabbitMQ server. Replace `your_rabbitmq_username` and `your_rabbitmq_password` with the RabbitMQ username and password you created in the configuration steps. Replace `server_node` with the name of the node you installed RabbitMQ on (a shortened name or the full name of the node are both acceptable, e.g. 'e3' or 'xenon3'):
+    * On the next three lines, as shown below, establish a connection with the RabbitMQ server. Replace `your_rabbitmq_username` and `your_rabbitmq_password` with the RabbitMQ username and password you created in the configuration steps. Replace `server_node` with the name of the node you installed RabbitMQ on:
 
           credentials = pika.PlainCredentials('your_rabbitmq_username', 'your_rabbitmq_password')
           connection =  pika.BlockingConnection(pika.ConnectionParameters('server_node', 5672, 'your_vhost', credentials))
@@ -163,8 +164,8 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
 * Create a file called receive.py
     * On the first line of the file, import the pika, sys, and os modules: `import pika, sys, os`
     * Delcare the main function: `def main():`
-        * Inside that function, establish a connection with the server and delcare the queue you will receive messages from. These 4 lines of code will be exactly the same as they were in send.py. The queue you delcare here must have the same name as the queue you declared in send.py.
-        * Still inside the main function, define a callback function, which will print the messages received by the queue:
+        * Inside that function, just as you did in send.py, establish a connection with the server and delcare the queue you will receive messages from. *The queue you declare here must have the same name as the queue you declared in send.py*  
+        * Still inside the main function, define a callback function, which will retrieve messages from the queue:
             
               def callback(ch, method, properties, body):
                   print(" [x] Received %r" %body)
@@ -212,15 +213,18 @@ Now, go to a different compute node or VM, one that does not have RabbitMQ insta
                   except SystemExit:
                       os._exit(0)
 
-* Now, you are set to run your programs. Open two terminal windows. In one window, go to the node you created receive.py on and run the program ("python3 receive.py"). In the other window, go the node you created send.py on and run the program ("python3 send.py"). Your output should look like the following:
+* Now, you are set to run your programs. Open two terminal windows. In one window, go to the node you created receive.py on and run the program (`python3 receive.py`). In the other window, go the node you created send.py on and run the program (`python3 send.py`). Your output should look like the following:
                 
-      # receive.py - output
+   **receive.py - output**
+
       [*] Waiting for messages. To exit, press CTRL+C
       [x] Received 'Hello World!'
     
     The second line of output will appear once you run send.py 
 
-      # send.py - output
+
+   **send.py - output**
+
       [x] Sent 'Hello World!'
 
     * Debug: If the second line of your receive.py output looks like `[x] Received b'Hello World!'`, go into your receive.py file and, under the callback function, alter the print statement to say the following:
