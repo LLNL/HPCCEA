@@ -100,11 +100,9 @@ Now, log into a different compute node or VM that you have *not* installed Rabbi
 * Create a file called send.py 
     * On the first line of that file, import pika: `import pika`
     * On the next three lines, as shown below, establish a connection with the RabbitMQ server. Replace `your_rabbitmq_username` and `your_rabbitmq_password` with the RabbitMQ username and password you created in the configuration steps. Replace `server_node` with the name of the node you installed RabbitMQ on (a shortened name or the full name of the node are both acceptable, e.g. 'e3' or 'xenon3'):
-```
-credentials = pika.PlainCredentials('your_rabbitmq_username', 'your_rabbitmq_password')
-connection = pika.BlockingConnection(pika.ConnectionParameters('server_node', 5672, 'your_vhost', credentials))   
-channel = connection.channel()
-```
+        credentials = pika.PlainCredentials('your_rabbitmq_username', 'your_rabbitmq_password')
+        connection = pika.BlockingConnection(pika.ConnectionParameters('server_node', 5672, 'your_vhost', credentials))   
+        channel = connection.channel()
     * Now, declare a queue your message will go to. You can give the queue any name you like: You can give the queue any name you like: 
 ```
 channel.queue_declare(queue='your_queue_name')
