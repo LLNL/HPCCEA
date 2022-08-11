@@ -10,13 +10,16 @@ MUNGE - Used to sign job requests submitted to Flux. Set this up if you haven't 
 
 ## Creating users
 > Create two users: flux and a standard user. Flux user will be the one who generates the key to enhance security. The standard user will run the flux jobs.
-
-`useradd flux`
-`useradd christine`
+```
+useradd flux
+useradd christine
+```
 
 Ensure that the UID and GUID are the same across all clusters. The third column is the UID. The fourth column is the GUID.
-`cat /etc/passwd | grep flux`
-`cat /etc/passwd | grep christine`
+```
+cat /etc/passwd | grep flux
+cat /etc/passwd | grep christine
+```
 
 ## Setting up NFS Mount
 > First set up NFS mount. This will make things a lot easier in the future. Mount the directories from the management node to the rest of the nodes with NFS.  The configuration files will only have to be edited once, and we will not have to make copies to the rest of the nodes.
@@ -45,52 +48,65 @@ esilicon1:/home /home nfs  defaults  0 0
     
 
 2.  Mount the directory
-    
-	`mount /usr/local`	
-	`mount /home`
+```    
+mount /usr/local
+mount /home
+```
 
 
 ## Installation of packages
 >Three software packages ([flux-core](https://flux-framework.readthedocs.io/projects/flux-core/en/latest/index.html), [flux-security](https://flux-framework.readthedocs.io/projects/flux-security/en/latest/index.html), [flux-sched](https://github.com/flux-framework/flux-sched)) must be installed before using flux.
 
 Install epel release
-`dnf install -y epel-release`
+```
+dnf install -y epel-release
+```
 
 Enable epel repo and powertools repo on all nodes:
-`dnf config-manager --enable epel`
-`dnf config-manager --set-enabled powertools`
+```
+dnf config-manager --enable epel
+dnf config-manager --set-enabled powertools
+```
 
 Install Alma 8 packages on all nodes:
-`dnf install -y autoconf automake libtool make pkgconfig glibc-devel zeromq-devel czmq-devel libuuid-devel jansson-devel lz4-devel libarchive-devel hwloc-devel sqlite-devel lua lua-devel lua-posix python3-devel python3-cffi python3-yaml python3-jsonschema python3-sphinx aspell aspell-en valgrind-devel mpich-devel jq libsodium-devel jansson-devel libuuid-devel munge-devel hwloc-devel boost-devel boost-graph boost-system boost-filesystem boost-regex libedit-devel libxml2-devel python3-pyyaml yaml-cpp-devel gcc-c++`
+```
+dnf install -y autoconf automake libtool make pkgconfig glibc-devel zeromq-devel czmq-devel libuuid-devel jansson-devel lz4-devel libarchive-devel hwloc-devel sqlite-devel lua lua-devel lua-posix python3-devel python3-cffi python3-yaml python3-jsonschema python3-sphinx aspell aspell-en valgrind-devel mpich-devel jq libsodium-devel jansson-devel libuuid-devel munge-devel hwloc-devel boost-devel boost-graph boost-system boost-filesystem boost-regex libedit-devel libxml2-devel python3-pyyaml yaml-cpp-devel gcc-c++
+```
 
 Do the following on the management node. Make sure to install flux-security first then flux-core. flux-core builds on flux-security which is what allows flux to run as multi-users.
 
 Install flux-security
-`cd`
-`git clone https://github.com/flux-framework/flux-security`
-`cd flux-security`
-`./autogen.sh`
-`./configure`
-`make` # Looks into makefile directory and recompiles the files
-`make install` # Installs into /usr/local/bin
+```
+cd
+git clone https://github.com/flux-framework/flux-security
+cd flux-security
+./autogen.sh
+./configure
+make # Looks into makefile directory and recompiles the files
+make install # Installs into /usr/local/bin
+```
 
 Install flux-core
-`cd`
-`git clone https://github.com/flux-framework/flux-core.git`
-`cd flux-core`
-`./autogen.sh`
-`PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --with-flux-security` # Allow flux jobs to run as user other than flux
-`make` 
-`make install` 
+```
+cd
+git clone https://github.com/flux-framework/flux-core.git
+cd flux-core
+./autogen.sh
+PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --with-flux-security # Allow flux jobs to run as user other than flux
+make
+make install
+```
 
 Install flux-sched
-`cd`
-`git clone https://github.com/flux-framework/flux-sched.git`
-`cd flux-sched`
-`./autogen.sh`
-`./configure`
-`make` 
-`make install` 
+```
+cd
+git clone https://github.com/flux-framework/flux-sched.git
+cd flux-sched
+./autogen.sh
+./configure
+make
+make install
+```
 
 ## Configuring flux-security 
 >Job requests are signed using a library provided by flux-security. This ensures authenticity. This library reads configuration from /usr/local/etc/flux/security/conf.d/*.toml.
@@ -112,10 +128,14 @@ allowed-types = [ "munge" ]
 >IMP (Independent Minister of Privileges) allows instance owners to run work on behalf of a guest. It has a private configuration space in /usr/local/etc/flux/imp/conf.d/*.toml
 
 Make the following directory
-`mkdir -p /usr/local/etc/flux/imp/conf.d`
+```
+mkdir -p /usr/local/etc/flux/imp/conf.d
+```
 
 Edit imp.toml
-`vi /usr/local/etc/flux/imp/conf.d/imp.toml`
+```
+vi /usr/local/etc/flux/imp/conf.d/imp.toml
+```
 
 Add the following lines:
 ```
@@ -138,28 +158,42 @@ Change permissions of the file. This is so that flux jobs can be ran under a sta
 
 
 Log in as flux user:
-`sudo su - flux`
+```
+sudo su - flux
+```
 
 Generate key:
-`flux keygen /tmp/curve.cert`
+```
+flux keygen /tmp/curve.cert
+```
 
 Log out of flux:
-`exit`
+```
+exit
+```
 
 Make directory:
-`mkdir -p /usr/local/etc/flux/system/`
+```
+mkdir -p /usr/local/etc/flux/system/
+```
 
 Move the key:
-`mv /tmp/curve.cert /usr/local/etc/flux/system/`
+```
+mv /tmp/curve.cert /usr/local/etc/flux/system/
+```
 
 Since we have /usr/local mounted, the certificate will also be copied over to the other nodes automatically.
 
 ## Configuring the Flux System Instance
 Make directory:
-`mkdir -p /usr/local/etc/flux/system/conf.d`
+```
+mkdir -p /usr/local/etc/flux/system/conf.d
+```
 
 Edit system.toml file: 
-`vi /usr/local/etc/flux/system/conf.d/system.toml`
+```
+vi /usr/local/etc/flux/system/conf.d/system.toml
+```
 
 Make it same as the contents below. **==Change hosts to correct cluster.==**
 ```
@@ -243,29 +277,44 @@ inactive-age-limit = "7d"
 >`flux R encode` encodes the arguments into RFC 20 (ASCII format for network interchange). You can assign string-based properties to ranks using the properties field in R. Properties are used in job constraints specified by users on the command line. At the minimum, a hostlist and core idset must be specified
 
 Generate RFC 20 format (**Change to correct cluster under hosts**):
-`flux R encode --hosts=siliconi,silicon[2-5] --cores=0-3 >/usr/local/etc/flux/system/R`
+```
+flux R encode --hosts=siliconi,silicon[2-5] --cores=0-3 >/usr/local/etc/flux/system/R
+```
 
 View the RFC 20 generated format:
-`cat /usr/local/etc/flux/system/R`
+```
+cat /usr/local/etc/flux/system/R
+```
+
+Example output: 
+
 ![](https://i.imgur.com/vx4vuAO.png)
 
 
 ## Getting Flux to start on boot up
 >Flux.service file needs to be copied to system default location so that flux can be started, stopped, enabled, and disabled with systemctl.
 
-Copy the flux.service file into the system default location on all nodes:
-`cp /usr/local/usr/lib/systemd/system/flux.service /usr/lib/systemd/system/`
+Copy the flux.service file into the system default location on all nodes:  
+```
+cp /usr/local/usr/lib/systemd/system/flux.service /usr/lib/systemd/system/
+```
 
-Enable and start flux on all nodes.
-`systemctl enable --now flux` 
+Enable and start flux on all nodes.  
+```
+systemctl enable --now flux
+``` 
 
-Check that flux is running on all nodes:
-`systemctl status flux`
+Check that flux is running on all nodes:  
+```
+systemctl status flux
+```
 
-Display free nodes:
-`flux resource list`
+Display free nodes:  
+```
+flux resource list
+```
 
-Example output:
+Example output  
 ![](https://i.imgur.com/pJ1PuP0.png)
 
 
@@ -282,7 +331,7 @@ Log in as standard user
 Submit a job with two tasks and two nodes:
 `flux mini run -n2 -N2 hostname 2>/dev/null | grep -v cpu-affinity`
 
-Example output:
+Example output:  
 ```
 [christine@nvm2 ~]$ flux mini run -n2 -N2 hostname 2>/dev/null | grep -v cpu-affinity 
 nvm3 nvm4
@@ -290,11 +339,15 @@ nvm3 nvm4
 nvm4 nvm4
 ```
 ## Running an MPI job
-Install mpicc if you haven't already done so:
-`dnf install -y openmpi-devel`
+Install mpicc if you haven't already done so:  
+```
+dnf install -y openmpi-devel
+```
 
-Create a file called hello.c
-`vi hello.c`
+Create a file called hello.c:  
+```
+vi hello.c
+```
 
 Add the following contents
 ```
@@ -327,11 +380,15 @@ int main(int argc, char** argv) {
     MPI_Finalize();
 }
 ```
-Compile the file:
-`/usr/lib64/openmpi/bin/mpicc -o hello hello.c`
+Compile the file:  
+```
+/usr/lib64/openmpi/bin/mpicc -o hello hello.c
+```
 
-Submit the job (Change to correct directory)
-` flux mini run -n2 -N2 /home/christine/hello 2>/dev/null | grep -v cpu-affinity`
+Submit the job (Change to correct directory)  
+```
+flux mini run -n2 -N2 /home/christine/hello 2>/dev/null | grep -v cpu-affinity
+```
 
 Expected output:
 ```
