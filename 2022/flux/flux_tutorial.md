@@ -35,7 +35,9 @@ On the management node,
 
 2. Restart the nfs-server with the following command
 
-`systemctl restart nfs-server`
+```
+systemctl restart nfs-server
+```
     
     
 On all compute nodes,
