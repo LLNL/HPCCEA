@@ -153,8 +153,7 @@ Now, log into a different compute node or VM that you have *not* installed Rabbi
           print(" [x] Sent 'Hello World!'")
           connection.close()
 
-
-w, go to a different compute node or VM, one that doesn't have RabbitMQ installed and that doesn't have your send.py file. 
+Now, go to a different compute node or VM, one that does not have RabbitMQ installed and that does not have your send.py file. 
 * Install pip (if not already installed) and the Pika Python module, as you did on the node with send.py
 * Create a file called receive.py
     * On the first line of the file, import the pika, sys, and os modules: `import pika, sys, os`
