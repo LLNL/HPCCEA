@@ -321,7 +321,7 @@ flux resource list
 ```
 
 Example output:    
-``
+```
 [root@siliconi ~]# flux resource list
      STATE NNODES   NCORES    NGPUS NODELIST
       free      5       20        0 siliconi,silicon[2-5]
