@@ -1,9 +1,9 @@
+#!/usr/bin/python3
+
 '''
 Kafka Producer for use case. Reads from syslog and publishes task messages to the 
 given Kafka topic.
 '''
-
-#!/usr/bin/python3
 
 from kafka import KafkaProducer
 from sh import tail
@@ -48,15 +48,12 @@ def main():
 
 #iterates through each new message in syslog 
 #if message is task message, send message to topic
-#prints every new message in syslog 
 
    for line in tail("-f", "/var/log/messages", _iter=True):
-      print(line, end='')
       hit = re.search(r".*TASK:.*", line)
       if hit:
          print('HIT: ', hit.group())
          resp = message_producer.send_msg(hit.group())
-         print(resp)
       
 
 if __name__ == "__main__":
