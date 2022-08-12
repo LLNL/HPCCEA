@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 '''
 Kafka reporter program. Reads from given topic and displays sequential list of tasks issued and 
 completed.
@@ -34,7 +35,6 @@ class MessageConsumer:
                                  enable_auto_commit=False,
                                  value_deserializer=lambda m: json.loads(m.decode('ascii')))
 
-        #consumer.subscribe(self.topic)
         print("consumer is rewinding....")
         topic_partition = TopicPartition(self.topic, 0)
         assigned_topic = [topic_partition]
