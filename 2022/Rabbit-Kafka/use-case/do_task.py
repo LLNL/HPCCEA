@@ -1,7 +1,7 @@
 '''
-This program simulates doing a task in our use case. Once this simulated task is complete, 
-a task completion message is then posted to syslog. Binding key is used to determine what types
-of jobs the queue will receive
+This program listens for and simulates doing tasks in our use case. 
+Once this simulated task is complete, a task completion message is then posted to syslog. 
+Binding key is used to determine what types of jobs the queue will receive.
 '''
 
 import pika, sys, os, time, syslog, argparse
