@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 '''
 This program listens for and simulates doing tasks in our use case. 
 Once this simulated task is complete, a task completion message is then posted to syslog. 
