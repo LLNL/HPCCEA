@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 '''
 Kafka Consumer and RabbitMQ Producer program. Reads from given Kafka topic and publishes task
 to appropriate RabbitMQ agent using a specific RabbitMQ routing key for GPU tasks.
