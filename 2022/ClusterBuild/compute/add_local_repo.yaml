@@ -1,0 +1,11 @@
+---
+- name: "Add yum repository"
+  hosts: compute
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+    - name: "Add repo file"
+      template:
+        src: ../mgmt/template.repo
+        dest: "/etc/yum.repos.d/{{ repofilename }}"
+

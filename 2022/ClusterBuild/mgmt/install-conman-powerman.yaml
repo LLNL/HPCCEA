@@ -1,0 +1,12 @@
+---
+- name: "Install conman/powerman"
+  hosts: management
+  gather_facts: no
+  tasks:
+    - name: "Install rpms from local repo"
+      yum:
+        name:
+          - conman
+          - powerman
+        disablerepo: "epel" 
+        state: present

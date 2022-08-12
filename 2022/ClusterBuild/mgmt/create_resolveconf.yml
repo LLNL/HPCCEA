@@ -1,0 +1,10 @@
+---
+- hosts: management
+  tasks:
+  - name: Creating a resolv.conf file
+    copy:
+      dest: "/etc/resolv.conf"
+      content: |
+        domain llnl.gov
+        nameserver 192.12.17.17
+

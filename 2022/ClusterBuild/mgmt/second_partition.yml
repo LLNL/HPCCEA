@@ -1,0 +1,38 @@
+---
+- name: Make a Second Partition
+  hosts: management
+  remote_user: root
+
+  tasks:
+  - name: Part /dev/sdb
+    parted:
+      device: /dev/sdb
+      state: present
+      label: gpt
+      number: 1
+
+  - name: Part /dev/sdb Again
+    parted: 
+      device: /dev/sdb
+      state: present
+      fs_type: xfs
+      number: 1
+
+  - name: Make filesystem on /dev/sdb1
+    filesystem:
+      dev: /dev/sdb1
+      state: present
+      fstype: xfs
+      
+  - name: Make directory /tftpboot
+    file:
+      path: /tftpboot
+      state: directory
+
+
+  - name: Mount tftpboot
+    ansible.posix.mount:
+       path: /tftpboot
+       src: /dev/sdb1
+       state: mounted
+       fstype: xfs

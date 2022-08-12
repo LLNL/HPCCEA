@@ -1,0 +1,34 @@
+---
+- name: "Configure nfs on management node"
+  hosts: management
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+  - name: "edit /etc/exports"
+    lineinfile:
+      path: /etc/exports
+      line: "/home        {{ mgmtPrefix }}0/{{ netmask }}(rw,sync,no_root_squash)"
+  - name: "Start nfs"
+    systemd:
+      name: nfs-server
+      enabled: yes 
+      state: started
+
+- name: "Configure nfs on compute nodes"
+  hosts: compute
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+  - name: "Mount home directory"
+    mount:
+      path: /home
+      state: mounted
+      src: e{{ cluster }}1:/home
+      fstype: nfs
+  - name: "setsebool to use nfs_home_dirs"
+    shell: setsebool -P use_nfs_home_dirs 1
+  - name: restart sshd
+    systemd:
+      name: sshd
+      state: restarted
+

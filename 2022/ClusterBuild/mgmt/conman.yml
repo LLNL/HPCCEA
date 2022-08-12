@@ -1,0 +1,20 @@
+---
+- name: "Install Conman"
+  hosts: management
+  vars_files:
+    - hosts_vars.yml
+  tasks:
+    - name: "Copy conman.conf"
+      copy:
+        src: conman.conf
+        dest: /etc/conman.conf
+    - name: "Add entries to conman.conf"
+      lineinfile:
+        path: /etc/conman.conf
+        line: "CONSOLE name=\"{{item.hostname}}\"   dev=\"ipmi:{{item.ipmi_interface}}\" ipmiopts=\"\""
+      loop: "{{hostDict}}"
+    - name: "Enable conman"
+      systemd:
+        name: conman
+        state: started
+        enabled: yes

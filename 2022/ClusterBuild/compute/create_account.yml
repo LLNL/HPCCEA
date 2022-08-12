@@ -1,0 +1,31 @@
+- hosts: management
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+    - name: Creating an account and generating SSH key pair
+      user:
+        name: "{{initialuser}}"
+        password: "{{ lookup('env','INITIALUPASS') }}"
+        generate_ssh_key: yes
+        ssh_key_bits: 4096
+        ssh_key_file: .ssh/id_rsa
+    - name: Set up sudo
+      blockinfile:
+        path: /etc/sudoers
+        block: |
+          {{initialuser}}      ALL=(ALL)       ALL
+    - name: Copy user public key to authorized_keys
+      blockinfile:
+        path: /home/{{initialuser}}/.ssh/authorized_keys
+        create: yes # file will be created if does not exist
+        insertafter: EOF
+        block: "{{ lookup('file','/home/{{initialuser}}/.ssh/id_rsa.pub') }}"
+
+- hosts: compute
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+    - name: Creating an account on compute nodes
+      user:
+        name: "{{initialuser}}"
+        password: "{{ lookup('env','INITIALUPASS') }}"

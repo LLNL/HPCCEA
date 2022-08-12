@@ -1,0 +1,11 @@
+---
+ 
+- name: "start httpd"
+  hosts: management
+  gather_facts: no
+  tasks:
+    - name: "Make sure the httpd service unit is running"
+      systemd: 
+        state: started
+        name: httpd	
+        enabled: yes

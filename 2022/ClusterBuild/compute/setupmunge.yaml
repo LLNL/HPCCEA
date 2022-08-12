@@ -1,0 +1,31 @@
+---
+- name: "Setup munge environment and copy files to all nodes"
+  hosts: management
+  gather_facts: no
+  tasks: 
+    - name: "Create Munge Key"
+      shell: /usr/sbin/create-munge-key -f
+
+    - name: "Systemctl Enable Munge"
+      ansible.builtin.systemd:
+        name: munge
+        state: started
+        enabled: yes
+        masked: no
+
+- name: "copy munge key to compute nodes"
+  hosts: compute
+  tasks:
+    - name: "copy munge key"
+      copy:
+        src: /etc/munge/munge.key
+        dest: /etc/munge/munge.key
+        owner: munge
+        group: munge
+        mode: 0400
+    - name: "Systemctl Enable Munge"
+      ansible.builtin.systemd:
+        name: munge
+        state: started
+        enabled: yes
+        masked: no

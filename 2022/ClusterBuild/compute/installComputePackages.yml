@@ -1,0 +1,45 @@
+---
+- name: "Install packages"
+  hosts: management, compute
+  tasks:
+    - name: "Install EPEL"
+      yum:
+        name:
+          - epel-release
+    - name: "dnf installs"
+      yum:
+        name:
+          - libibverbs-utils
+          - infiniband-diags
+          - perftest
+          - libmlx4
+          - libibverbs
+          - opensm
+          - net-tools
+          - openmpi
+          - openmpi-devel
+          - chrony
+          - wget
+          - rpm-build
+          - bzip2-devel
+          - perl-ExtUtils-MakeMaker
+          - openssl
+          - openssl-devel
+          - pam-devel
+          - readline-devel
+          - mariadb-server
+          - mariadb-devel
+          - python3
+          - make
+          - libtool
+          - perl-Switch
+          - munge-devel
+          - nfs-utils
+          - libnfs-utils
+          - mpitests-openmpi
+          - atlas-devel
+          - rsyslog
+          - munge
+          - slurm
+        enablerepo: "powertools,epel"
+        state: present

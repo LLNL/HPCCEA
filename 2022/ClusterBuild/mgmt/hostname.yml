@@ -1,0 +1,12 @@
+---
+- name: "Create hostname file"
+  hosts: management
+  remote_user: root
+  vars_files:
+    - hosts_vars.yml
+  tasks:
+    - name: "add hostname into /etc/hostname"
+      copy:
+        dest: /etc/hostname
+        content: |
+          {{ cluster }}i

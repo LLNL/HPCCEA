@@ -1,0 +1,42 @@
+---
+- name: mount alma linux iso etc
+  hosts: management
+
+  tasks:
+  - name: make directories
+    file:
+     path: /mnt/alma8-install/
+     state: directory
+
+  - name: create directory tftpboot/alma8
+    file:
+     path: /tftpboot/alma8
+     state: directory
+
+
+  - name: mount iso
+    mount:
+     path: /mnt/alma8-install/
+     src: /root/AlmaLinux-8.5-x86_64-minimal.iso
+     fstype: iso9660
+     state: mounted
+
+
+  - name: copy to alma8 folder
+    copy:
+     src: /mnt/alma8-install/images/pxeboot/initrd.img
+     dest: /tftpboot/alma8
+     remote_src: yes
+
+  - name: copy to alma8 folder pt.2
+    copy:
+     src: /mnt/alma8-install/images/pxeboot/vmlinuz
+     dest: /tftpboot/alma8
+     remote_src: yes
+
+  - name: copy iso contents to /var/www/html/
+    copy:
+     src: /mnt/alma8-install
+     dest: /var/www/html/
+     remote_src: yes
+

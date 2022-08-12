@@ -1,0 +1,9 @@
+---
+- hosts: management
+  vars_files:
+    - hosts_vars.yml
+  tasks:
+    - name: Create /etc/hosts
+      template: 
+        src=./hosts.j2 
+        dest=/etc/hosts

@@ -1,0 +1,12 @@
+---
+- name: Setup Chrony
+  hosts: management,compute
+  remote_user: root
+  tasks:
+  - name: start and enable chrony
+    ansible.builtin.systemd:
+     name: chronyd
+     state: started
+     enabled: yes
+
+

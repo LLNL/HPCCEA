@@ -1,0 +1,5 @@
+[{{reponame}}]
+name={{ fullreponame }}
+baseurl=http://{{ repohost }}{{repopath}}
+enabled=1
+gpgcheck=0
