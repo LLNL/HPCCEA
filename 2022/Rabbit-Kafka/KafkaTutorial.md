@@ -157,11 +157,13 @@ group_id = 'consumer-1'
 consumer1 = MessageConsumer(broker,topic,group_id)
 consumer1.activate_listener()
 
-consumer2 = MessageConsumer(broker,topic,group_id)
-consumer2.activate_listener()
 ```
 ---
 Finally run these files and verify that Kafka is working on your machine 
 
 - (on the machine with producer) : python3 testproducer.py
 - (on the machine with consumer) : python3 testconsumer.py 
+
+Note: code above from tutorial at 
+- https://www.tutorialsbuddy.com/kafka-python-producer-example
+- https://www.tutorialsbuddy.com/kafka-python-consumer-example
