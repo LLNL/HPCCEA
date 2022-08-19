@@ -1,0 +1,71 @@
+---
+- name: "Install / Configure Slurm"
+  hosts: management, compute
+  tasks:
+    - name: "Install slurm rpms from local repo"
+      yum:
+        name: 
+          - slurm
+          - slurm-slurmd
+          - slurm-slurmctld
+          - slurm-pam_slurm
+          - slurm-perlapi
+          - slurm-devel
+          - slurm-contribs
+          - slurm-example-configs
+          - slurm-libpmi
+        disablerepo: "epel" 
+        state: present
+    - name: "Create slurm user"
+      user:
+        name: slurm
+        shell: /sbin/nologin
+        system: yes
+        state: present
+    - name: "Create /var/spool/slurm"
+      file:
+        state: directory
+        dest: /var/spool/slurm
+        owner: slurm
+        group: slurm
+    - name: "Copy cgroup file"
+      copy:
+        src: /etc/slurm/cgroup.conf.example
+        dest: /etc/slurm/cgroup.conf
+        remote_src: yes
+
+- name: "Copy files to other nodes"
+  hosts: compute
+  tasks:
+    - name: "Copy account files"
+      copy: src={{ item.src }} dest={{ item.dest }}
+      with_items:
+        - { src: '/etc/passwd', dest: '/etc/' }
+        - { src: '/etc/group', dest: '/etc/' }
+        - { src: '/etc/shadow', dest: '/etc/' }
+        - { src: '/etc/gshadow', dest: '/etc/' }
+
+- name: "Create slurm configs"
+  hosts: management, compute
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+    - template:
+        src: slurm.conf
+        dest: /etc/slurm/slurm.conf
+
+- name: "Enable Slurmctld on management"
+  hosts: management
+  tasks:
+    - systemd:
+        name: slurmctld
+        state: started
+        enabled: yes
+
+- name: "Enable slurmd on compute nodes"
+  hosts: compute
+  tasks:
+    - systemd:
+        name: slurmd
+        state: started
+        enabled: yes

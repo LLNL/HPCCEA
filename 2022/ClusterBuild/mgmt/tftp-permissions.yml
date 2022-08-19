@@ -1,0 +1,21 @@
+---
+- name: "Fix tftp permissions and restart services"
+  hosts: management
+  tasks:
+    - name: "Restore SELinux for /tftpboot"
+      shell: restorecon -Rv /tftpboot
+    - name: "Change SELinux type for /tftpboot"
+      file:
+        path: /tftpboot/
+        state: directory
+        recurse: yes
+        setype: public_content_t
+    - name: "Restart tftp, xinetd, and httpd"
+      systemd:
+        name: '{{ item }}'
+        state: restarted
+      loop:       # this needs to line up with the module
+        - tftp
+        - xinetd
+        - httpd
+...

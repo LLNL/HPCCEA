@@ -1,0 +1,91 @@
+---
+- name: Set up kickstart file and place into alma8 folder
+  hosts: management
+
+  tasks: 
+
+     - name: Edit ks file
+       blockinfile:
+         create: yes
+         path: /var/www/html/alma8-install/anaconda-ks.cfg
+         block: | 
+          # Reboot after installation
+          reboot
+          eula --agreed
+          # Use text mode install
+          text --non-interactive
+          # Installation logging level
+          logging --level=debug --host=192.168.95.1 --port=514
+          
+          %packages
+          @^minimal-environment
+          kexec-tools
+          kexec-tools
+          nfs-utils
+          
+          %end
+          
+          # Keyboard layouts
+          keyboard --vckeymap=us --xlayouts='us'
+          # System language
+          lang en_US.UTF-8
+          #
+          # Firewall configuration
+          firewall --disabled
+          # Network information
+          network  --bootproto=dhcp --device=link --ipv6=auto --activate
+          network  --hostname=localhost.localdomain
+          
+          # Use network installation
+          url --url="http://192.168.95.1/alma8-install/" --noverifyssl
+          
+          # System authorization information
+          authselect --enableshadow --passalgo=sha512
+          
+          firstboot --enable
+          # Do not configure the X Window System
+          skipx
+          
+          #ignoredisk --only-use=sda
+          # System bootloader configuration
+          bootloader --append="crashkernel=auto" --location=mbr --boot-drive=sda
+          autopart --type=plain --nohome
+          
+          # Clear the Master Boot Record
+          zerombr
+          # Partition clearing information
+          clearpart --all --initlabel --drives=sda
+          
+          # System timezone
+          timezone America/Los_Angeles --isUtc --nontp
+          
+          # Root password
+          rootpw --plaintext {{ lookup('env','KSPASS') }}
+      
+          %post --log=/root/ks-postinstall.log
+          mkdir -m 700 /root/.ssh
+          curl http://192.168.95.1/id_rsa.pub -o /root/.ssh/authorized_keys
+          chmod 600 /root/.ssh/authorized_keys
+          %end
+
+         
+          %addon com_redhat_kdump --enable --reserve-mb='auto'
+         
+          %end
+         
+          %anaconda
+          pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+          pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+          pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+          %end
+
+     - name: Change ks file permissions
+       file: 
+         path: /var/www/html/alma8-install/anaconda-ks.cfg
+         mode: '755'
+
+     - name: put id_rsa.pub in place for compute nodes to grab
+       copy: 
+         src: /root/.ssh/id_rsa.pub
+         dest: /var/www/html/id_rsa.pub
+         remote_src: yes

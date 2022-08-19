@@ -1,0 +1,49 @@
+---
+- name: "Create DHCP and TFTP server"
+  hosts: management
+  vars_files:
+    - hosts_vars.yml
+  tasks:
+  tasks:
+    - name: "Install DHCP and TFTP server"
+      dnf:
+        name:
+          - dhcp-server
+          - xinetd
+        state: latest
+    - name: "Copy DHCPD template"
+      template:
+        src: dhcpd.conf
+        dest: /etc/dhcp/dhcpd.conf
+    - name: "Add DHCP entries for nodes"
+      blockinfile:
+        path: /etc/dhcp/dhcpd.conf
+        block: |2
+                 host {{ item.hostname }} {
+                     hardware ethernet {{ item.mac }};
+                     fixed-address {{ item.ip }};
+                     option host-name "{{ item.hostname }}";
+                     filename "/pxelinux.0";
+                 }
+        marker: ""
+      loop: "{{hostDict}}"
+    - name: "Close the DHCP conf file."
+      lineinfile:
+        dest: /etc/dhcp/dhcpd.conf
+        line: |2
+              }
+          }
+    - name: "Enable and start dhcpd"
+      systemd:
+        name: dhcpd
+        state: started
+        enabled: yes
+    - name: "Copy tftp config"
+      copy:
+        src: tftp
+        dest: /etc/xinetd.d/tftp
+    - name: "Start xinetd"
+      systemd:
+        name: xinetd
+        enabled: yes
+        state: started

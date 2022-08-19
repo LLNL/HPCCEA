@@ -1,0 +1,42 @@
+---
+- name: "Create a yum repository"
+  hosts: management
+  vars_files:
+    - hosts_vars.yml
+  tasks:
+    - name: "Install tools"
+      yum:
+        name:
+          - httpd
+          - createrepo
+          - yum-utils
+        state: latest
+
+    - name: "Start Apache"
+      systemd:
+        name: httpd
+        enabled: yes
+        state: started
+
+    - name: "Make folder for repo"
+      file:
+        path: "{{ repopath }}"
+        state: directory
+
+    - name: "Copy RPMS" 
+      copy:
+        src: "{{ rpmsrcdir }}"
+        dest: "{{ apachehome }}{{ repopath}}"
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: "Create repository"
+      command:
+        cmd: "createrepo {{ apachehome }}{{ repopath }}"
+
+    - name: "Add repo file"
+      template:
+        src: template.repo
+        dest: "/etc/yum.repos.d/{{ repofilename }}"
+

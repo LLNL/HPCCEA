@@ -1,0 +1,8 @@
+TYPE=infiniband
+DEVICE={{ ibdevice }}
+BOOTPROTO=static
+NAME={{ ibdevice }}
+ONBOOT=yes
+IPADDR={{ ibpre }}.{{ ibipindex }}
+NETMASK={{ netmask }}
+CONNECTED_MODE=yes

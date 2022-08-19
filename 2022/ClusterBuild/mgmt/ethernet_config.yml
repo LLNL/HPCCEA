@@ -1,0 +1,55 @@
+---
+- name: Ethernet Configuration
+  hosts: management
+  remote_user: root
+  vars_files:
+    - hosts_vars.yml
+
+  tasks:
+  - name: Configure Eno1
+    copy:
+      content: |
+        TYPE=Ethernet
+        BOOTPROTO=static
+        DEFROUTE=yes
+        NAME=eno1
+        DEVICE=eno1
+        ONBOOT=yes
+        IPADDR={{ externalIP }}
+        NETMASK=255.255.224.0
+        GATEWAY=192.168.59.200
+      dest: /etc/sysconfig/network-scripts/ifcfg-eno1
+      backup: yes
+  
+  - name: Configure Eno2
+    copy:
+      content: |
+        TYPE=Ethernet
+        BOOTPROTO=static
+        NAME=eno2
+        DEVICE=eno2
+        ONBOOT=yes
+        IPADDR={{ mgmtPrefix }}1
+        NETMASK=255.255.255.0
+      dest:  /etc/sysconfig/network-scripts/ifcfg-eno2
+      backup: yes
+
+  - name: Configure Eno2:1
+    copy:
+      content: |
+        TYPE=Ethernet
+        BOOTPROTO=static
+        NAME=eno2:1
+        DEVICE=eno2:1
+        ONBOOT=yes
+        IPADDR=192.168.96.1
+        NETMASK=255.255.255.0
+      dest: /etc/sysconfig/network-scripts/ifcfg-eno2:1
+      backup: yes
+  
+  - name: Start Eno1
+    command: ifup eno1
+ 
+# note brings up eno2 and eno2:1
+  - name: Start Eno2
+    command: ifup eno2

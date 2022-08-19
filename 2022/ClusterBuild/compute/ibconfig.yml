@@ -1,0 +1,53 @@
+---
+## Note assumes the IB IP final octet is the same as the ethernet's
+- name: "Configure infiniband on compute"
+  hosts: compute
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+    - name: "set IB IP Addr var"
+      set_fact:
+        ibipindex: "{{ inventory_hostname[-1] }}"
+    - name: "Configure /etc/sysconfig/network-scripts/ifcfg-ib0"
+      template:
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        src: ib-cfg.template
+    # note likely get errors so ignore
+    - name: "Turn off infiniband network"
+      shell: ifdown "{{ ibdevice }}"
+      ignore_errors: yes
+    # note likely get errors so ignore
+    - name: "Turn on infiniband network"
+      shell: ifup "{{ ibdevice }}"
+      ignore_errors: yes
+
+- name: "Configure infiniband on management"
+  hosts: management
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+  tasks:
+    - name: "set IB IP Addr var"
+      set_fact:
+        ibipindex: "1"
+    - name: "Configure /etc/sysconfig/network-scripts/ifcfg-ib0"
+      template:
+        dest: /etc/sysconfig/network-scripts/ifcfg-ib0
+        src: ib-cfg.template
+    # note likely get errors so ignore
+    - name: "Turn off infiniband network"
+      shell: ifdown "{{ ibdevice }}"
+      ignore_errors: yes
+    # note likely get errors so ignore
+    - name: "Turn on infiniband network"
+      shell: ifup "{{ ibdevice }}"
+      ignore_errors: yes
+
+- name: "Enable and start opensm on management node"
+  hosts: management
+  tasks:
+  - name: "Enable and start opensm"
+    systemd:
+      name: opensm
+      enabled: yes
+      state: started
+...

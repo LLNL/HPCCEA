@@ -1,0 +1,43 @@
+---
+- name: Setup IP Tables/NAT
+  remote_user: root 
+  hosts: management
+  vars_files:
+    - ../mgmt/hosts_vars.yml
+
+  tasks: 
+   - name: Install Packages
+     dnf:
+       name: iptables-services
+       state: present
+
+   - name: Stop & Disable Firewall
+     systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+   - name: setup IP forwarding with sysctl
+     sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+        
+   - name: Edit /etc/sysconfig/iptables
+     copy: 
+       dest: /etc/sysconfig/iptables
+       content: | 
+          *nat
+          -A POSTROUTING -s 192.168.95.0/24 -o eno1 -j SNAT --to-source {{ externalIP }}
+          COMMIT
+
+   - name: Start/Enable IP tables
+     systemd:
+        name: iptables
+        state: started
+        enabled: yes
+
+# verify iptables rules with  iptables -L -t nat
+

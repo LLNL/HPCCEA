@@ -1,0 +1,99 @@
+---
+- name: "Download packages and drivers"
+  hosts: management
+  gather_facts: no
+  tasks:
+    - name: "Install servers and other necessary packages"
+      yum:
+        name:
+          - syslinux
+          - tftp-server
+          - httpd
+          - wget
+          - dhcp-server
+          - xinetd
+          - tftp
+          - pykickstart
+          - freeipmi
+          - expect
+          - freeipmi-devel
+          - epel-release
+          - make
+          - tar
+          - gcc
+          - curl-devel
+          - net-snmp-devel
+          - rpm-build
+          - iptables-services
+          - pdsh-rcmd-ssh
+          - libibverbs-utils
+          - infiniband-diags
+          - perftest
+          - libmlx4
+          - libibverbs
+          - opensm
+          - net-tools
+          - openmpi
+          - openmpi-devel
+          - chrony
+          - bzip2-devel
+          - perl-ExtUtils-MakeMaker
+          - openssl
+          - openssl-devel
+          - pam-devel
+          - readline-devel
+          - mariadb-server
+          - mariadb-devel
+          - python3
+          - libtool
+          - munge
+          - perl-Switch
+          - munge-devel
+          - nfs-utils
+          - libnfs-utils
+          - mpitests-openmpi
+          - atlas-devel
+          - rsyslog
+        enablerepo: "powertools,epel" 
+        state: present
+    - name: "Download almalinux repo"
+      get_url:
+        url: https://gdo-lc.llnl.gov/AlmaLinux-8.5-x86_64-minimal.iso
+        dest: /root/
+    - name: "Download SAS drivers"
+      get_url:
+        url: https://elrepo.org/linux/dud/el8/x86_64/dd-megaraid_sas-07.717.02.00-1.el8_5.elrepo.iso
+        dest: /root/
+    - name: "Dowload Mellanox IB adapter drivers"
+      get_url:
+        url: https://elrepo.org/linux/dud/el8/x86_64/dd-mlx4-4.0-6.el8_5.elrepo.iso
+        dest: /root/
+    - name: "Dowload Slurm"
+      get_url:
+        url: https://download.schedmd.com/slurm/slurm-22.05.0.tar.bz2
+        dest: /root/
+    - name: "Download and unzip powerman"
+      ansible.builtin.unarchive:
+        src: https://github.com/chaos/powerman/releases/download/2.3.26/powerman-2.3.26.tar.gz
+        dest: /root/
+        remote_src: yes
+    - name: "Download and unzip conman"
+      ansible.builtin.unarchive:
+        src: https://github.com/dun/conman/releases/download/conman-0.3.0/conman-0.3.0.tar.xz
+        dest: /root/
+        remote_src: yes
+    - name: "Download and unzip hpl"
+      ansible.builtin.unarchive:
+        src: http://www.netlib.org/benchmark/hpl/hpl-2.3.tar.gz
+        dest: /root/
+        remote_src: yes
+    - name: Download ElRepo Key
+      rpm_key:
+        key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+        state: present
+    - name: "Install ElRepo, with epel disabled"
+      yum:
+        name: https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
+        disablerepo: epel
+        state: present
+...

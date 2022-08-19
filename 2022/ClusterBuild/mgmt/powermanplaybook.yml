@@ -1,0 +1,34 @@
+---
+- name: powerman setup
+  hosts: management
+  remote_user: root
+  vars_files:
+    - hosts_vars.yml
+  tasks:
+  - name: make powerman directory
+    file:
+     path: /etc/powerman
+     state: directory
+
+  - name: create powerman.conf
+    template:
+      src=./powerman.conf
+      dest=/etc/powerman/powerman.conf
+
+  - name: make directory powerman
+    file:
+     path: /var/run/powerman/
+     state: directory
+
+  - name: change ownership
+    ansible.builtin.file:
+     path: /var/run/powerman/
+     owner: daemon
+     group: daemon
+
+#not changing state, cannot find host 
+  - name: enable powerman
+    ansible.builtin.systemd:
+     name: powerman
+     state: started
+     enabled: yes

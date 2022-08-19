@@ -1,0 +1,26 @@
+---
+  cluster: oxygen
+  externalIP: 192.168.59.30
+  mgmtPrefix: 192.168.95.
+  ipmiPrefix: 192.168.96.
+  ibPrefix: 192.168.128.
+  ibpre: 192.168.128
+  ibdevice: ib0
+  numNodes: 2
+  initialuser: testuser
+  ipmipowerstr: p2  # node only 1 compute node on oxygen if larger cluster string could be something like p[2-5]
+  subnet: 192.168.95
+  netmask: 255.255.255.0
+  reponame: local
+  fullreponame: A local repo
+  repohost: '192.168.95.1'
+  apachehome: /var/www/html
+  repopath: /repos/local/
+  rpmsrcdir: /root/rpmbuild/RPMS/x86_64/
+  repofilename: local.repo
+  hostDict:
+    - oxygen2:
+      hostname: "oxygen2"
+      mac: 00:1e:67:6b:7d:6a
+      ip: 192.168.95.2
+      ipmi_interface: p2

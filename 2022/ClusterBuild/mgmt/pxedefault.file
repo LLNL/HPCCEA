@@ -1,0 +1,18 @@
+DEFAULT menu.c32
+PROMPT 0
+MENU TITLE ########## PXE Boot Menu ##########
+TIMEOUT 150
+TOTALTIMEOUT 6000
+ONTIMEOUT 1  # go to this label after timeout expires
+  
+
+LABEL 1
+       MENU LABEL ^1) Install Alma 8 x64 over the network with Kickstart
+       KERNEL alma8/vmlinuz
+APPEND initrd=alma8/initrd.img inst.ks=http://192.168.95.1/alma8-install/anaconda-ks.cfg inst.dd=http://192.168.95.1/alma8-install/dd-megaraid_sas-07.717.02.00-1.el8_5.elrepo.iso inst.dd=http://192.168.95.1/alma8-install/dd-mlx4-4.0-6.el8_5.elrepo.iso inst.cmdline inst.gpt console=ttyS1,115200n8  # Note Change ttyS1 to ttyS0 for the silicon and nickel cluster
+  
+LABEL local
+        MENU LABEL ^2) local boot
+        MENU DEFAULT
+        COM32 chain.c32
+        APPEND hd0

@@ -1,0 +1,24 @@
+---
+- name: Set up tftpboot
+  hosts: management
+
+  tasks:
+  - name: make tftpboot  directories
+    file:
+     path: /tftpboot
+     state: directory
+
+  - name: copy contents to tftpboot 
+    copy:
+     src: /usr/share/syslinux/
+     dest: /tftpboot
+
+  - name: create pxelinux.cfg directory
+    file:
+     path: /tftpboot/pxelinux.cfg
+     state: directory
+
+  - name: create default tftpboot file
+    copy:
+     src: pxedefault.file
+     dest: "/tftpboot/pxelinux.cfg/default"
