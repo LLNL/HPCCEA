@@ -1,0 +1,38 @@
+---
+- name: Install and configure IPA server with DNS
+  hosts: server
+  become: yes
+
+  tasks:
+    - name: Install EPEL release package
+      dnf:
+        name: epel-release
+        state: present
+
+    - name: Enable idm:DL1 module
+      dnf:
+        name: idm:DL1
+        state: present
+
+    - name: Install IPA server package
+      dnf:
+        name: ipa-server
+        state: present
+
+    - name: Install IPA DNS package
+      dnf:
+        name: freeipa-server-dns
+        state: present
+
+    - name: Stop firewalld service
+      systemd:
+        name: firewalld
+        state: stopped
+
+    - name: Disable firewalld service at boot
+      systemd:
+        name: firewalld
+        enabled: no
+
+    - name: Run IPA server installation
+    - command: ipa-server-install -r IPA.TEST -a NOT_A_REAL_PASSWORD -p NOT_A_REAL_PASSWORD --setup-dns --auto-forwarder --unattended

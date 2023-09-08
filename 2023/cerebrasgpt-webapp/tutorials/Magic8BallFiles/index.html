@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Main Project</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="../static/styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=BioRhyme&display=swap" rel="stylesheet">
+    </head>
+  
+    <body>
+        <div class="navbar">
+            <ul>
+                <li style="float:left"><a href="/">HPC LLM</a></li>
+                <li><a href="/">Home</a></li>
+            </ul>
+        </div>
+        <div class="input" id="answerContainer">
+            <h3>Type your question here:</h3>
+            <form id="myForm" action="/answer" method="POST">
+                <textarea name="inputText" id="inputText" placeholder="Enter question here"></textarea>
+                <button type="submit" id="submitBtn">Submit</button>
+            </form>
+        </div>
+    </body>
+</html>

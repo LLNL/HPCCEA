@@ -1,0 +1,126 @@
+---
+- name: Install Kafka on all nodes of the cluster
+  hosts: management 
+  become: true
+
+  tasks:
+  - name: 'install wget, tar, python3-pip, and Java JDK 8'
+    ansible.builtin.dnf:
+      name:
+        - wget
+        - tar
+        - java-1.8.0-openjdk
+        - java-1.8.0-openjdk-devel
+        - python3-pip
+      state: present
+
+  - name: wget Kafka package into /opt directory
+    ansible.builtin.get_url:
+      url: https://dlcdn.apache.org/kafka/3.5.0/kafka_2.13-3.5.0.tgz
+      dest: /opt/kafka_2.13-3.5.0.tgz
+
+  - name: create kafka_2.13-3.5.0 directory
+    ansible.builtin.file:
+      path: /opt/kafka_2.13-3.5.0
+      state: directory
+
+  - name: extract Kafka tarball
+    ansible.builtin.unarchive:
+      src: /opt/kafka_2.13-3.5.0.tgz
+      dest: /opt       #/kafka_2.13-3.5.0
+      remote_src: yes
+      #extra_opts: "xvf"
+
+  - name: create symbolic link that points to Kafka directory
+    ansible.builtin.file:
+      src: /opt/kafka_2.13-3.5.0
+      dest: /opt/kafka
+      state: link
+
+  - name: create a new user called kafka to run Kafka and Zookeeper
+    ansible.builtin.user:
+      name: kafka
+      state: present
+      
+  - name: make kafka user the owner of /opt/kafka_2.13-3.5.0
+    ansible.builtin.file:
+      path: /opt/kafka_2.13-3.5.0
+      owner: kafka
+      group: kafka
+      recurse: yes
+
+  - name: make kafka user the owner of /opt/kafka_2.13-3.5.0.tgz
+    ansible.builtin.file:
+      path: /opt/kafka_2.13-3.5.0.tgz
+      owner: kafka
+      group: kafka
+
+  - name: make kafka user the owner of /opt/kafka
+    ansible.builtin.file:
+      path: /opt/kafka
+      owner: kafka
+      group: kafka
+      follow: no
+      state: link
+
+  - name: create zookeeper.service file
+    ansible.builtin.copy:
+      dest: /etc/systemd/system/zookeeper.service
+      content: |
+        [Unit]
+        Description=zookeeper
+        After=syslog.target network.target
+
+        [Service]
+        Type=simple
+
+        User=kafka
+        Group=kafka
+
+        ExecStart=/opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
+        ExecStop=/opt/kafka/bin/zookeeper-server-stop.sh
+
+        [Install]
+        WantedBy=multi-user.target
+        audit.enable=true
+
+  - name: create kafka.service file
+    ansible.builtin.copy:
+      dest: /etc/systemd/system/kafka.service
+      content: |
+        [Unit]
+        Description=Apache Kafka
+        Requires=zookeeper.service
+        After=zookeeper.service
+
+        [Service]
+        Type=simple
+
+        User=kafka
+        Group=kafka
+
+        ExecStart=/opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+        ExecStop=/opt/kafka/bin/kafka-server-stop.sh
+
+        [Install]
+        WantedBy=multi-user.target
+
+  - name: reload system
+    ansible.builtin.systemd:
+      daemon_reload: yes
+ 
+  - name: start ZooKeeper service
+    ansible.builtin.systemd:
+      name: zookeeper
+      state: started
+    
+  - name: start Kafka service
+    ansible.builtin.systemd:
+      name: kafka
+      state: started
+
+  - name: pip3 install kafka-python
+    ansible.builtin.pip:
+      name: kafka-python
+      executable: pip3
+

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Main Project</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="../static/styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=BioRhyme&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/590bed0132.js" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+        <div class="navbar">
+            <ul>
+                <li style="float:left"><a href="/">HPC LLM</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/analytics">Analytics</a></li>
+                <li><a href="/">Home</a></li>
+            </ul>
+        </div>
+        <div class="output">
+            <h3 id="question">Question: {{ que }}</h3>
+            <h3>Answer:</h3>
+            <p id="output">{{ ans }}</p>
+            <div class="button-container">
+                <form action="/" method="GET">
+                    <button type="submit" id="returnBtn">Return</button>
+                </form>
+                <div class="rating">
+                    <form action="/thumbs" method="GET" id="thumb">
+                        <button class="up" type="submit" name="thumbs" value="up"><i class="fa-regular fa-thumbs-up fa-lg"></i></button>
+                        <button class="down" type="submit" name="thumbs" value="down"><i class="fa-regular fa-thumbs-down fa-lg"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

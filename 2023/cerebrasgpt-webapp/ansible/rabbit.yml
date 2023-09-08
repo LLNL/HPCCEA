@@ -1,0 +1,144 @@
+---
+- name: Install RabbitMQ on compute node of cluster
+  hosts: ekrypton1 #MAKE THIS THE NODE ON YOUR CLUSTER WHERE YOU WANT TO INSTALL RABBITMQ
+  become: true
+  vars_prompt:
+    - name: rabbitmq_user
+      prompt: "Enter your rabbitMQ username:"
+      private: no
+    - name: rabbitmq_pass
+      prompt: "Enter your rabbitMQ pass:"
+      private: no
+    - name: vhost_user
+      prompt: "Enter your vhost rabbitMQ user:"
+      private: no
+ 
+  tasks:
+  - name: Import necessary RPMs
+    shell: |
+      rpm --import https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+      rpm --import https://packagecloud.io/rabbitmq/erlang/gpgkey
+      rpm --import https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+ 
+  - name: Create rabbitmq.repo file
+    blockinfile:
+      path: /etc/yum.repos.d/rabbitmq.repo
+      create: true
+      block: |
+        ##
+        ## Zero dependency Erlang
+        ##
+ 
+        [rabbitmq_erlang]
+        name=rabbitmq_erlang
+        baseurl=https://packagecloud.io/rabbitmq/erlang/el/8/$basearch
+        repo_gpgcheck=1
+        gpgcheck=1
+        enabled=1
+        # PackageCloud's repository key and RabbitMQ package signing key
+        gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
+               https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+        sslverify=1
+        sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+        metadata_expire=300
+ 
+        [rabbitmq_erlang-source]
+        name=rabbitmq_erlang-source
+        baseurl=https://packagecloud.io/rabbitmq/erlang/el/8/SRPMS
+        repo_gpgcheck=1
+        gpgcheck=0
+        enabled=1
+        # PackageCloud's repository key and RabbitMQ package signing key
+        gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
+               https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+        sslverify=1
+        sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+        metadata_expire=300
+ 
+        ##
+        ## RabbitMQ server
+        ##
+        [rabbitmq_server]
+        name=rabbitmq_server
+        baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/8/$basearch
+        repo_gpgcheck=1
+        gpgcheck=0
+        enabled=1
+        # PackageCloud's repository key and RabbitMQ package signing key
+        gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+               https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+        sslverify=1
+        sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+        metadata_expire=300
+ 
+        [rabbitmq_server-source]
+        name=rabbitmq_server-source
+        baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/8/SRPMS
+        repo_gpgcheck=1
+        gpgcheck=0
+        enabled=1
+        gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+        sslverify=1
+        sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+        metadata_expire=300
+ 
+        #  - name: Update yum
+        # yum:
+        #name: '*'
+        #state: latest
+ 
+  - name: Enable all repositories
+    yum:
+      update_cache: yes
+      disablerepo: '*'
+      enablerepo: "rabbitmq_erlang, rabbitmq_server"
+ 
+  - name: Install Dependencies
+    yum:
+      name:
+        - socat
+        - logrotate
+      state: present
+ 
+  - name: Install Erlang and RabbitMQ
+    yum:
+      name:
+        - erlang
+        - rabbitmq-server
+      state: present
+      enablerepo:
+        - rabbitmq_erlang
+        - rabbitmq_server
+ 
+  - name: Enable and start RabbitMQ
+    systemd:
+      name: rabbitmq-server
+      enabled: yes
+      state: started
+ 
+  - name: Add vhost
+    community.rabbitmq.rabbitmq_vhost:
+      name: "{{ vhost_user }}"
+      state: present
+ 
+  - name: Configure user with vhost
+    community.rabbitmq.rabbitmq_user:
+      user: "{{ rabbitmq_user }}"
+      password: "{{ rabbitmq_pass }}"
+      permissions:
+        - vhost: "{{ vhost_user }}"
+          configure_priv: .*
+          read_priv: .*
+          write_priv: .*
+      state: present
+ 
+  - name: Install pip to connect to rabbitMQ server
+    dnf:
+      name: python3-pip
+      state: present
+ 
+  - name: Install pika
+    pip:
+      name: pika
+      executable: pip3
+      state: present

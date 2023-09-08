@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Main Project</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="../static/styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=BioRhyme&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+
+    <body>
+        <div class="navbar">
+            <ul>
+                <li style="float:left"><a href="/">HPC LLM</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/analytics">Analytics</a></li>
+                <li><a href="/">Home</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col2">
+                <h3>Response Time</h3>
+                <div class="col-box">
+                    <h4>Most Recent Response Time: {{ rt }} second(s)</h4>
+                    <div style="height: 50vh; width: 100%;">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col2">
+                <h3>User Satisfaction</h3>
+                <div class="col-box">
+                    <h4>Thumbs Up: {{ up }}%    |    Thumbs Down: {{ down }}%</h4>
+                    <div style="height: 50vh; width: 100%;">
+                        <canvas id="satisfactionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <h3>Sentiment</h3>
+            <div class="col3l">
+                <div class="col-box">
+                    <h4>Most Recent Question</h4>
+                    <h5>Polarity: {{ qpol }}</h5>
+                    <h5>Subjectivity: {{ qsub }}</h5>
+                    <h4>Most Recent Answer</h4>
+                    <h5>Polarity: {{ apol }}</h5>
+                    <h5>Subjectivity: {{ asub }}</h5>
+                </div>
+            </div>
+            <div class="col3r">
+                <div class="col-box">
+                    <div style="height: 50vh; width: 100%;">
+                        <canvas id="polChart"></canvas>
+                    </div>
+                    <div style="height: 50vh; width: 100%;">
+                        <canvas id="subChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            const tlabels = {{ labels | tojson }};
+     
+            const tdata = {
+                labels: tlabels,
+                datasets: [{
+                    label: 'Response Time',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: {{ tdata | tojson }},
+                }]
+            };
+     
+            const tconfig = {
+                type: 'line',
+                data: tdata,
+                options: { 
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                        display: true,
+                        text: 'Response Time'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Question #'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Response Time (s)'
+                            }
+                        }
+                    }
+                }
+            };
+     
+            const timeChart = new Chart(
+                document.getElementById('timeChart'),
+                tconfig
+            );
+
+            const sdata = {
+                labels: [
+                    'Like',
+                    'Dislike'
+                ],
+                datasets: [{
+                    label: 'User Satisfaction',
+                    data: [
+                        {{ up | tojson }},
+                        {{ down | tojson }}
+                    ],
+                    backgroundColor: [
+                        'rgb(142, 214, 94)',
+                        'rgb(201, 66, 66)'
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+
+            const sconfig = {
+                type: 'doughnut',
+                data: sdata
+            };
+
+            const satisfactionChart = new Chart(
+                document.getElementById('satisfactionChart'),
+                sconfig
+            );
+
+            const poldata = {
+                labels: {{ labels | tojson }},
+                datasets: [
+                    {
+                        label: 'Question',
+                        data: {{ qpoldata | tojson }},
+                        backgroundColor: 'rgb(54, 162, 235)',
+                        borderColor: 'rgb(54, 162, 235)'
+                    },
+                    {
+                        label: 'Answer',
+                        data: {{apoldata | tojson }},
+                        backgroundColor: 'rgb(255, 205, 86)',
+                        borderColor: 'rgb(255, 205, 86)',
+                    }
+                ]
+            };
+
+            const polconfig = {
+                type: 'line',
+                data: poldata,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Polarity Analysis'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Question #'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Polarity Rating [-1, 1]'
+                            }
+                        }
+                    }
+                }
+            };
+
+            const polChart = new Chart(
+                document.getElementById('polChart'),
+                polconfig
+            );
+
+            const subdata = {
+                labels: {{ labels | tojson }},
+                datasets: [
+                    {
+                        label: 'Question',
+                        data: {{ qsubdata | tojson }},
+                        backgroundColor: 'rgb(54, 162, 235)',
+                        borderColor: 'rgb(54, 162, 235)'
+                    },
+                    {
+                        label: 'Answer',
+                        data: {{asubdata | tojson }},
+                        backgroundColor: 'rgb(255, 205, 86)',
+                        borderColor: 'rgb(255, 205, 86)',
+                    }
+                ]
+            };
+
+            const subconfig = {
+                type: 'line',
+                data: subdata,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Subjectivity Analysis'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Question #'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Subjectivity Rating [0, 1]'
+                            }
+                        }
+                    }
+                }
+            };
+
+            const subChart = new Chart(
+                document.getElementById('subChart'),
+                subconfig
+            );
+     
+        </script>
+    </body>
+</html>
