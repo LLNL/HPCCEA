@@ -152,3 +152,8 @@ print("Generated output by the model: {}".format(output))
 ```
 python3 useCerebrasGPT.py
 ```
+
+## Cited Works
+
+CerebrasGPT: https://www.listendata.com/2023/03/open-source-chatgpt-models-step-by-step.html#cerebrasgpt
+
