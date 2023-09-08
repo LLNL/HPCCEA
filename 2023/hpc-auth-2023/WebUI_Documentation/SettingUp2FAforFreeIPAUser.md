@@ -6,7 +6,7 @@ Make sure you have Google Authenticator downloaded on your phone or hardware dev
 
 1. Login to your user via the Web UI. Click on the top of the homepage where it says OTP Tokens:
 
-![homepage photo](https://lc.llnl.gov/gitlab/acosta19/hpc-auth-2023/-/tree/main/WebUI%20Documentation/photos/1.png)
+![homepage photo](./photos/1.png)
 
 2. Select add and confirm TOTP. You'll be presented with a QR code.
 
