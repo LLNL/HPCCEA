@@ -12,15 +12,15 @@ Make sure you have Google Authenticator downloaded on your phone or hardware dev
 
 ![add button photo](./photos/2.png)
 
-![OTP token photo](.photos/3.png)
+![OTP token photo](./photos/3.png)
 
-![QR Code photo](https://lc.llnl.gov/gitlab/acosta19/hpc-auth-2023/-/tree/main/WebUI%20Documentation/photos/4.png)
+![QR Code photo](./photos/4.png)
 
     NOTE: Since we can't use our cameras on-site, we want to click on "Show configuration url" in the bottom left. Then type the token after
 
 3. Scan this QR code within the Google Authenticator App (or if you're on-site click the first option). Select the plus icon in the bottom right, click QR code, and scan. You should now have a 6 digit code that is synced with FreeIPA
 
-![google auth homepage photo](.photos/5.jpg)
+![google auth homepage photo](./photos/5.jpg)
 
 ![QR code button photo](./photos/6.jpg)
 
