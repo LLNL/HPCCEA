@@ -57,7 +57,7 @@
     
     - headers = send messages and queue them based on headers rather than routing keys
 
-![RabbitMQ Architecture](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/architectures/rabbitmq_arc.png): source link below
+![RabbitMQ Architecture](./architectures/rabbitmq_arc.png): source link below
 
 
 ## Kafka Overview
@@ -76,18 +76,18 @@
 
 - Brokers - servers that store topics and partitions, big system has many brokers
 
-![Kafka Architecture](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/architectures/kafka_arc.png): source link below
+![Kafka Architecture](./architectures/kafka_arc.png): source link below
 
 
 ## Architecture
 
-![Architecture](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/architectures/Architecture.png)
+![Architecture](./architectures/Architecture.png)
 
 ## Ansible
 
 - Wrote 2 ansible scripts to automate install of RabbitMQ and Kafka
-- [RabbitMQ](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/ansible/rabbit.yml) 
-- [Kafka](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/ansible/install_kafka.yml)
+- [RabbitMQ](./ansible/rabbit.yml) 
+- [Kafka](./ansible/install_kafka.yml)
 
 
 ## Magic 8 Ball Tutorial
@@ -95,29 +95,29 @@
 - Set up a simple Flask web app that asks for a Yes or No Question. RabbitMQ producer sends question to consumer
 to determine random answer, which sends back to the app to display on the answer page.
 
-[Magic 8 Ball](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/tutorials/Magic8BallTutorial.md)
+[Magic 8 Ball](./tutorials/Magic8BallTutorial.md)
 
 ## How to Train CerebrasGPT
 
 - Tutorial to train CerebrasGPT model for our project.
 
-[CerebrasGPT Training Tutorial](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/tutorials/CerebrasGPTTrain.md)
+[CerebrasGPT Training Tutorial](./tutorials/CerebrasGPTTrain.md)
 
 ## VNC Tutorial
 
 - Tutorial to use VNC Viewer for viewing web application. 
 
-[VNC Tutorial](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/tutorials/VNCTutorial.md)
+[VNC Tutorial](./tutorials/VNCTutorial.md)
 
 - Simple hello world flask app to accompany VNC Tutorial
 
-[Hello World](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/tutorials/HelloWorldFlaskTutorial.md)
+[Hello World](./tutorials/HelloWorldFlaskTutorial.md)
 
 ## Debugging Tips
 
 - Debugging tips page for creation and installation of our web application.
 
-[Debugging](https://lc.llnl.gov/gitlab/rohovit1/cerebrasgpt-webapp/-/blob/main/Debugging.md)
+[Debugging](./Debugging.md)
 
 ## Cited Works
 
