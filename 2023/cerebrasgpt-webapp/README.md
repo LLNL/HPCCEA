@@ -99,9 +99,9 @@ to determine random answer, which sends back to the app to display on the answer
 
 ## How to Train CerebrasGPT
 
-- Tutorial to train CerebrasGPT model for our project.
+- Tutorial to tune the CerebrasGPT model for our project.
 
-[CerebrasGPT Training Tutorial](./tutorials/CerebrasGPTTune.md)
+[CerebrasGPT Tuning Tutorial](./tutorials/CerebrasGPTTune.md)
 
 ## VNC Tutorial
 
