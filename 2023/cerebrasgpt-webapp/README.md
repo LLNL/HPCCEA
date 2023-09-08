@@ -101,7 +101,7 @@ to determine random answer, which sends back to the app to display on the answer
 
 - Tutorial to train CerebrasGPT model for our project.
 
-[CerebrasGPT Training Tutorial](./tutorials/CerebrasGPTTrain.md)
+[CerebrasGPT Training Tutorial](./tutorials/CerebrasGPTTune.md)
 
 ## VNC Tutorial
 
